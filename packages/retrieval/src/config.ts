@@ -56,7 +56,9 @@ export function parseEmbeddingConfig(env: NodeJS.ProcessEnv): EmbeddingConfig {
     (value.EMBEDDING_PROVIDER === "openai"
       ? value.OPENAI_API_KEY
       : value.OPENAI_COMPATIBLE_API_KEY);
-  const baseURL = value.EMBEDDING_BASE_URL ?? value.OPENAI_BASE_URL;
+  const baseURL =
+    value.EMBEDDING_BASE_URL ??
+    (value.EMBEDDING_PROVIDER === "openai-compatible" ? value.OPENAI_BASE_URL : undefined);
   if (!apiKey || (value.EMBEDDING_PROVIDER === "openai-compatible" && !baseURL)) {
     throw new EmbeddingConfigurationError();
   }

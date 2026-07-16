@@ -34,11 +34,24 @@ async function retry<T>(operation: () => Promise<T>, maxRetries: number): Promis
 
 export function validateEmbeddings(embeddings: readonly number[][], expectedCount: number): void {
   if (embeddings.length !== expectedCount) throw new Error("Embedding 返回数量与输入不一致");
-  for (const vector of embeddings) {
-    if (vector.length !== 1536 || vector.some((value) => !Number.isFinite(value))) {
-      throw new Error("Embedding 必须是 1536 维有限数值向量");
+  for (const [index, vector] of embeddings.entries()) {
+    if (vector.length !== 1536) {
+      throw new Error(
+        `Embedding 维度不匹配：第 ${index + 1} 条期望 1536 维，实际 ${vector.length} 维`,
+      );
+    }
+    if (vector.some((value) => !Number.isFinite(value))) {
+      throw new Error(`Embedding 包含非有限数值：第 ${index + 1} 条`);
     }
   }
+}
+
+export function createEmbeddingProviderOptions(dimensions: number) {
+  return {
+    openai: {
+      dimensions,
+    },
+  } as const;
 }
 
 export function createEmbeddingService(config: EmbeddingConfig): EmbeddingService {
@@ -48,6 +61,7 @@ export function createEmbeddingService(config: EmbeddingConfig): EmbeddingServic
     name: `embedding-${config.provider}`,
   });
   const model = provider.embeddingModel(config.model);
+  const providerOptions = createEmbeddingProviderOptions(config.dimensions);
 
   return {
     async embedMany(values) {
@@ -56,7 +70,7 @@ export function createEmbeddingService(config: EmbeddingConfig): EmbeddingServic
         const batch = values.slice(offset, offset + config.batchSize);
         const startedAt = Date.now();
         const result = await retry(
-          () => embedMany({ model, values: [...batch], maxRetries: 0 }),
+          () => embedMany({ model, values: [...batch], maxRetries: 0, providerOptions }),
           config.maxRetries,
         );
         validateEmbeddings(result.embeddings, batch.length);
@@ -68,7 +82,10 @@ export function createEmbeddingService(config: EmbeddingConfig): EmbeddingServic
       return embeddings;
     },
     async embedOne(value) {
-      const result = await retry(() => embed({ model, value, maxRetries: 0 }), config.maxRetries);
+      const result = await retry(
+        () => embed({ model, value, maxRetries: 0, providerOptions }),
+        config.maxRetries,
+      );
       validateEmbeddings([result.embedding], 1);
       return result.embedding;
     },
