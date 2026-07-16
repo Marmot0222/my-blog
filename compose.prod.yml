@@ -58,6 +58,8 @@ services:
         condition: service_completed_successfully
     networks:
       - backend
+      # 索引任务需要访问外部 Embedding API；frontend 提供非 internal 的出口。
+      - frontend
     restart: "no"
 
   app:
