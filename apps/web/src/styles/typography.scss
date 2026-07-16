@@ -1,0 +1,13 @@
+body {
+  font-family:
+    var(--font-sans), Inter, "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-size: 1rem;
+  line-height: 1.6;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+.serif-title {
+  font-family: var(--font-serif), "Noto Serif SC", "Songti SC", SimSun, serif;
+}

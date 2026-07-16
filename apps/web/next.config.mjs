@@ -7,6 +7,13 @@ const currentDirectory = path.dirname(fileURLToPath(import.meta.url));
 const nextConfig = {
   output: "standalone",
   outputFileTracingRoot: path.join(currentDirectory, "../.."),
+  transpilePackages: [
+    "@ting-lab/ui",
+    "@ting-lab/content",
+    "@ting-lab/database",
+    "@ting-lab/ai",
+    "@ting-lab/retrieval",
+  ],
 };
 
 export default nextConfig;

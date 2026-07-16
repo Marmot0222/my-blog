@@ -1,0 +1,158 @@
+.hero {
+  display: grid;
+  grid-area: hero;
+  grid-template-columns: minmax(0, 1.5fr) minmax(13rem, 0.62fr);
+  align-items: end;
+  gap: clamp(2.5rem, 5vw, 5.5rem);
+  min-width: 0;
+}
+
+.copy {
+  min-width: 0;
+}
+
+.kicker {
+  margin-bottom: clamp(1.25rem, 2.5vw, 2.25rem);
+  color: var(--color-text-tertiary);
+  font-size: 0.68rem;
+  font-weight: 650;
+  letter-spacing: 0.16em;
+}
+
+.copy h1 {
+  max-width: 12ch;
+  font-family: var(--font-serif), "Noto Serif SC", "Songti SC", SimSun, serif;
+  font-size: clamp(3.25rem, 5.45vw, 6.3rem);
+  font-weight: 600;
+  line-height: 1.08;
+  letter-spacing: -0.055em;
+  text-wrap: balance;
+
+  span {
+    color: var(--color-primary);
+  }
+}
+
+.description {
+  margin-top: clamp(1.5rem, 2.5vw, 2.25rem);
+  color: var(--color-text-secondary);
+  font-size: clamp(0.95rem, 1.25vw, 1.08rem);
+}
+
+.primaryAction {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+  min-height: 3rem;
+  margin-top: clamp(1.5rem, 2.5vw, 2.25rem);
+  padding: 0.7rem 1.2rem;
+  border: 1px solid var(--color-primary);
+  color: var(--color-surface);
+  background: var(--color-primary);
+  font-size: 0.88rem;
+  font-weight: 650;
+  transition:
+    background-color var(--duration-fast) ease,
+    transform var(--duration-fast) var(--ease-out);
+
+  &:hover {
+    background: var(--color-primary-hover);
+    transform: translateY(-2px);
+  }
+}
+
+.index {
+  padding-bottom: 1.2rem;
+}
+
+.index ol {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.index li {
+  display: grid;
+  grid-template-columns: auto minmax(1.75rem, 1fr) minmax(0, 4.5fr);
+  align-items: center;
+  gap: 0.8rem;
+  color: var(--color-text-tertiary);
+  font-size: 0.7rem;
+
+  > span {
+    font-variant-numeric: tabular-nums;
+  }
+
+  i {
+    height: 1px;
+    background: var(--color-border);
+  }
+
+  a {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.index .current {
+  color: var(--color-text);
+
+  > span {
+    color: var(--color-primary);
+    font-size: 0.9rem;
+    font-weight: 700;
+  }
+
+  i {
+    background: var(--color-primary);
+  }
+}
+
+.allArticles {
+  display: inline-flex;
+  gap: 0.7rem;
+  margin-top: 2rem;
+  color: var(--color-text-secondary);
+  font-size: 0.72rem;
+  transition: color var(--duration-fast) ease;
+
+  &:hover {
+    color: var(--color-primary);
+  }
+}
+
+@media (max-width: 74rem) {
+  .hero {
+    grid-template-columns: 1fr;
+  }
+
+  .index {
+    display: none;
+  }
+
+  .copy h1 {
+    font-size: clamp(3.2rem, 6.5vw, 5rem);
+  }
+}
+
+@media (max-width: 48rem) {
+  .kicker {
+    font-size: 0.62rem;
+  }
+
+  .copy h1 {
+    font-size: clamp(2.7rem, 12vw, 4.7rem);
+    letter-spacing: -0.045em;
+  }
+}
+
+@media (max-width: 24.375rem) {
+  .copy h1 {
+    font-size: clamp(2.55rem, 11.7vw, 3rem);
+  }
+
+  .primaryAction {
+    width: 100%;
+  }
+}

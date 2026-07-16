@@ -1,0 +1,78 @@
+.block {
+  min-width: 0;
+  padding: clamp(1.4rem, 2.5vw, 2rem) clamp(1rem, 2.5vw, 2rem) 0 0;
+  border-right: 1px solid var(--color-border);
+}
+
+.titleRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 0.8rem;
+
+  h2 {
+    font-family: var(--font-serif), "Noto Serif SC", "Songti SC", serif;
+    font-size: 0.95rem;
+    font-weight: 650;
+  }
+
+  span {
+    color: var(--color-text-tertiary);
+    font-size: 0.55rem;
+    letter-spacing: 0.12em;
+  }
+}
+
+.block ul {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.block li {
+  display: grid;
+  grid-template-columns: 0.85rem minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.55rem;
+  font-size: 0.69rem;
+
+  svg {
+    width: 0.8rem;
+    fill: none;
+    stroke: currentcolor;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 1.6;
+  }
+
+  a {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  time {
+    color: var(--color-text-tertiary);
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+.more {
+  display: inline-flex;
+  gap: 0.6rem;
+  margin-top: 1rem;
+  color: var(--color-text-secondary);
+  font-size: 0.66rem;
+
+  &:hover {
+    color: var(--color-primary);
+  }
+}
+
+@media (max-width: 74rem) {
+  .block {
+    padding-right: 0;
+    padding-bottom: 1.5rem;
+    border-right: 0;
+    border-bottom: 1px solid var(--color-border);
+  }
+}

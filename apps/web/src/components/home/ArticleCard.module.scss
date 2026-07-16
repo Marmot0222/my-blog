@@ -1,0 +1,214 @@
+.card {
+  min-width: 0;
+  border-right: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
+  background: transparent;
+  transition:
+    border-color var(--duration-fast) ease,
+    transform var(--duration-fast) var(--ease-out);
+
+  &:hover {
+    z-index: 1;
+    border-color: var(--color-border-strong);
+    transform: translateY(-3px);
+  }
+}
+
+.cardLink {
+  display: block;
+  height: 100%;
+  padding: clamp(0.9rem, 1.4vw, 1.2rem);
+}
+
+.visual {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 1.82;
+  margin-bottom: 1rem;
+  border: 1px solid #e3e3df;
+  background: #efeee9;
+}
+
+.visualGrid,
+.visualPrimary,
+.visualSecondary,
+.visualAccent {
+  position: absolute;
+  display: block;
+}
+
+.interface {
+  background:
+    linear-gradient(115deg, transparent 0 48%, rgb(17 18 20 / 5%) 48.3% 48.7%, transparent 49%),
+    #f1f0ec;
+
+  .visualGrid {
+    top: 20%;
+    left: 8%;
+    width: 18%;
+    height: 38%;
+    border-radius: 0.2rem;
+    background: linear-gradient(135deg, #777, #222);
+  }
+
+  .visualPrimary {
+    top: 25%;
+    left: 31%;
+    width: 46%;
+    height: 40%;
+    border: 1px solid #d5d5d0;
+    background:
+      linear-gradient(var(--color-primary), var(--color-primary)) 8% 20% / 0.55rem 0.55rem no-repeat,
+      linear-gradient(#d2d2ce, #d2d2ce) 23% 22% / 58% 0.18rem no-repeat,
+      linear-gradient(#dadad5, #dadad5) 8% 50% / 68% 0.16rem no-repeat,
+      #fff;
+  }
+
+  .visualSecondary {
+    right: 7%;
+    bottom: 10%;
+    width: 46%;
+    height: 44%;
+    background:
+      linear-gradient(rgb(255 255 255 / 16%), rgb(255 255 255 / 16%)) 18% 32% / 55% 0.16rem
+        no-repeat,
+      linear-gradient(rgb(255 255 255 / 11%), rgb(255 255 255 / 11%)) 18% 56% / 40% 0.16rem
+        no-repeat,
+      #24262b;
+  }
+
+  .visualAccent {
+    top: 34%;
+    left: 56%;
+    width: 0.65rem;
+    height: 1.8rem;
+    background: var(--color-primary);
+  }
+}
+
+.system {
+  background:
+    linear-gradient(90deg, rgb(17 18 20 / 8%) 1px, transparent 1px) 0 0 / 1.2rem 1.2rem,
+    linear-gradient(rgb(17 18 20 / 8%) 1px, transparent 1px) 0 0 / 1.2rem 1.2rem,
+    #f2f1ed;
+
+  .visualPrimary,
+  .visualSecondary {
+    bottom: 15%;
+    width: 36%;
+    height: 58%;
+    border: 1px solid rgb(255 255 255 / 35%);
+    background: var(--color-primary);
+  }
+
+  .visualPrimary {
+    left: 24%;
+    transform: skewY(-14deg);
+  }
+
+  .visualSecondary {
+    right: 22%;
+    opacity: 0.88;
+    transform: skewY(14deg);
+  }
+
+  .visualAccent {
+    top: 14%;
+    right: 12%;
+    width: 28%;
+    height: 68%;
+    border-top: 1px solid #b8b8b3;
+    border-right: 1px solid #b8b8b3;
+  }
+}
+
+.code {
+  background: #f0efeb;
+
+  .visualGrid {
+    inset: 17% 7%;
+    background:
+      radial-gradient(circle, #8a8c91 0 0.13rem, transparent 0.15rem) 0.7rem 0.65rem / 0.8rem 0.8rem
+        repeat-y,
+      linear-gradient(90deg, #787b80 0 12%, #2d2f34 12%);
+  }
+
+  .visualPrimary {
+    top: 31%;
+    left: 26%;
+    width: 52%;
+    height: 40%;
+    background:
+      linear-gradient(90deg, var(--color-primary) 0 22%, #ddd 22% 70%, transparent 70%) 0 0 / 100%
+        0.25rem no-repeat,
+      linear-gradient(90deg, #c7c8ca 0 62%, transparent 62%) 12% 45% / 88% 0.25rem no-repeat,
+      linear-gradient(90deg, var(--color-primary) 0 45%, #e8e8e8 45% 85%, transparent 85%) 22% 90% /
+        78% 0.25rem no-repeat;
+  }
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  min-height: 12.5rem;
+}
+
+.meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  color: var(--color-text-secondary);
+  font-size: 0.68rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.content h3 {
+  max-width: 15ch;
+  margin-top: 0.8rem;
+  font-family: var(--font-serif), "Noto Serif SC", "Songti SC", serif;
+  font-size: clamp(1.15rem, 1.45vw, 1.45rem);
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.content p {
+  margin-top: 0.55rem;
+  color: var(--color-text-secondary);
+  font-size: 0.76rem;
+  line-height: 1.7;
+}
+
+.arrow {
+  align-self: end;
+  margin-top: auto;
+  padding-top: 1rem;
+  font-size: 1.15rem;
+  transition: transform var(--duration-fast) var(--ease-out);
+}
+
+.card:hover .arrow {
+  transform: translateX(4px);
+}
+
+@media (max-width: 74rem) and (min-width: 35.01rem) {
+  .cardLink {
+    display: grid;
+    grid-template-columns: minmax(10rem, 0.8fr) minmax(0, 1.2fr);
+    gap: 1.25rem;
+  }
+
+  .visual {
+    align-self: center;
+    margin-bottom: 0;
+  }
+
+  .content {
+    min-height: 9.5rem;
+  }
+}
+
+@media (max-width: 35rem) {
+  .content {
+    min-height: 11.5rem;
+  }
+}

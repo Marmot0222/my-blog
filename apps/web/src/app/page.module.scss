@@ -1,31 +1,60 @@
-.shell {
+.page {
   display: grid;
-  min-height: 100vh;
-  align-content: center;
-  width: min(72rem, calc(100% - 3rem));
+  grid-template-areas:
+    "hero ai"
+    "featured ai"
+    "meta ai";
+  grid-template-columns: minmax(0, 2.35fr) minmax(19rem, 0.85fr);
+  gap: clamp(2.5rem, 4vw, 4.75rem);
+  width: min(var(--page-max-width), calc(100% - (var(--page-padding) * 2)));
   margin: 0 auto;
+  padding-block: clamp(3.5rem, 7vw, 7rem) clamp(3rem, 6vw, 6rem);
+}
 
-  h1 {
-    max-width: 12ch;
-    margin: 0;
-    font-family: Georgia, "Times New Roman", serif;
-    font-size: clamp(3.25rem, 10vw, 8rem);
-    font-weight: 400;
-    line-height: 0.95;
-    letter-spacing: -0.06em;
+.metaSection {
+  display: grid;
+  grid-area: meta;
+  grid-template-columns: 0.9fr 1.1fr;
+  border-top: 1px solid var(--color-border);
+}
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  width: min(var(--page-max-width), calc(100% - (var(--page-padding) * 2)));
+  margin: 0 auto;
+  padding-block: 1.5rem 2rem;
+  border-top: 1px solid var(--color-border);
+  color: var(--color-text-tertiary);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+}
+
+@media (max-width: 74rem) {
+  .page {
+    grid-template-columns: minmax(0, 1fr) minmax(17.5rem, 0.52fr);
+    gap: clamp(1.75rem, 3vw, 2.5rem);
+  }
+
+  .metaSection {
+    grid-template-columns: 1fr;
   }
 }
 
-.eyebrow {
-  margin: 0 0 1.5rem;
-  color: #5f6f62;
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.22em;
-}
+@media (max-width: 48rem) {
+  .page {
+    grid-template-areas:
+      "hero"
+      "featured"
+      "ai"
+      "meta";
+    grid-template-columns: minmax(0, 1fr);
+    gap: clamp(3rem, 10vw, 4.5rem);
+    padding-block-start: clamp(2.75rem, 10vw, 4.5rem);
+  }
 
-.summary {
-  margin: 2rem 0 0;
-  color: #5c625d;
-  font-size: clamp(1rem, 2vw, 1.25rem);
+  .footer {
+    gap: 1.5rem;
+    font-size: 0.65rem;
+  }
 }
