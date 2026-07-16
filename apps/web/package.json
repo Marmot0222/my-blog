@@ -7,7 +7,7 @@
     "build": "next build",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "test": "tsx --test src/lib/chat/validation.test.ts src/lib/chat/rate-limit.test.ts src/lib/chat/errors.test.ts src/lib/chat/rag.test.ts"
+    "test": "tsx --test src/app/api/health/route.test.ts src/lib/chat/validation.test.ts src/lib/chat/rate-limit.test.ts src/lib/chat/errors.test.ts src/lib/chat/rag.test.ts"
   },
   "dependencies": {
     "@ai-sdk/react": "^3.0.230",

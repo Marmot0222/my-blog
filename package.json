@@ -17,6 +17,7 @@
     "db:generate": "pnpm --filter @ting-lab/database db:generate",
     "db:migrate": "pnpm --filter @ting-lab/database db:migrate",
     "db:check": "pnpm --filter @ting-lab/database db:check",
+    "deploy:prod": "bash ./scripts/deploy.sh",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "lint": "turbo lint",

@@ -1,0 +1,127 @@
+name: ting-lab
+
+services:
+  db:
+    image: pgvector/pgvector:0.8.2-pg16-bookworm
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
+    restart: unless-stopped
+    stop_grace_period: 30s
+
+  migrate:
+    build:
+      context: .
+      target: tools
+    env_file:
+      - path: .env.production
+        required: false
+    command: ["pnpm", "--filter", "@ting-lab/database", "exec", "tsx", "src/migrate.ts"]
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - backend
+    restart: "no"
+
+  indexer:
+    build:
+      context: .
+      target: tools
+    env_file:
+      - path: .env.production
+        required: false
+    command:
+      - /bin/sh
+      - -ec
+      - |
+        if [ "$${SKIP_CONTENT_INDEX:-0}" = "1" ]; then
+          echo "SKIP_CONTENT_INDEX=1，已明确跳过内容索引。"
+          exit 0
+        fi
+        pnpm --filter @ting-lab/retrieval exec tsx src/index-cli.ts ../../content/posts
+    depends_on:
+      db:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+    networks:
+      - backend
+    restart: "no"
+
+  app:
+    build:
+      context: .
+      target: web-runner
+      args:
+        APP_VERSION: ${APP_VERSION:-unknown}
+    env_file:
+      - path: .env.production
+        required: false
+    expose:
+      - "3000"
+    init: true
+    depends_on:
+      db:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+    networks:
+      - frontend
+      - backend
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:3000/api/health').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+    restart: unless-stopped
+    stop_grace_period: 30s
+
+  caddy:
+    image: caddy:2.10.2-alpine
+    environment:
+      DOMAIN: ${DOMAIN}
+      ACME_EMAIL: ${ACME_EMAIL:-}
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      app:
+        condition: service_healthy
+    networks:
+      - frontend
+    restart: unless-stopped
+    stop_grace_period: 30s
+
+networks:
+  frontend:
+  backend:
+    internal: true
+
+volumes:
+  postgres_data:
+  caddy_data:
+  caddy_config:

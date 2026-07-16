@@ -16,7 +16,7 @@
     "db:migrate": "tsx --env-file ../../apps/web/.env.local src/migrate.ts",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "test": "tsx --test src/config.test.ts src/schema.test.ts src/database.integration.test.ts"
+    "test": "tsx --test src/config.test.ts src/client.test.ts src/schema.test.ts src/database.integration.test.ts"
   },
   "devDependencies": {
     "@ting-lab/eslint-config": "workspace:*",

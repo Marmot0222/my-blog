@@ -1,4 +1,11 @@
-export { createDatabase } from "./client";
+export {
+  buildDatabase,
+  createDatabase,
+  createDatabaseAccessor,
+  createIsolatedDatabase,
+  withIsolatedDatabase,
+  type DatabaseRuntimeFactory,
+} from "./client";
 export { DatabaseConfigurationError, parseDatabaseConfig } from "./config";
 export { deleteDocumentIndexes, listDocumentStates, replaceDocumentIndex } from "./documents";
 export { documentChunks, documents } from "./schema";

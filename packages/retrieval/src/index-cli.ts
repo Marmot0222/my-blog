@@ -1,7 +1,7 @@
 import path from "node:path";
 
 import { createContentRepository } from "@ting-lab/content";
-import { createDatabase } from "@ting-lab/database";
+import { createIsolatedDatabase } from "@ting-lab/database";
 
 import { parseEmbeddingConfig } from "./config";
 import { createEmbeddingService } from "./embedding";
@@ -13,7 +13,7 @@ const postsDirectory = path.resolve(
 );
 const dryRun = args.includes("--dry-run");
 const environment = { ...process.env };
-const database = createDatabase(environment);
+const database = createIsolatedDatabase(environment);
 
 try {
   const embeddingConfig = parseEmbeddingConfig(environment);

@@ -1,4 +1,4 @@
-import { createDatabase } from "@ting-lab/database";
+import { createIsolatedDatabase } from "@ting-lab/database";
 
 import { parseEmbeddingConfig, parseRetrievalConfig } from "./config";
 import { createEmbeddingService } from "./embedding";
@@ -12,7 +12,7 @@ const query = process.argv
 if (!query) throw new Error('请提供查询，例如 pnpm content:search -- "Next.js 静态生成"');
 
 const environment = { ...process.env };
-const database = createDatabase(environment);
+const database = createIsolatedDatabase(environment);
 try {
   const result = await retrieveRelevantChunks({
     query,
