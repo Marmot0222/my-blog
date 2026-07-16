@@ -1,11 +1,11 @@
 import Link from "next/link";
 
-import type { Topic } from "@/data/home";
+import type { TagSummary } from "@ting-lab/content";
 
 import styles from "./TopicTags.module.scss";
 
 type TopicTagsProps = Readonly<{
-  topics: readonly Topic[];
+  topics: readonly TagSummary[];
 }>;
 
 export function TopicTags({ topics }: TopicTagsProps) {
@@ -22,6 +22,7 @@ export function TopicTags({ topics }: TopicTagsProps) {
           </li>
         ))}
       </ul>
+      {topics.length === 0 ? <p className={styles.empty}>暂无话题。</p> : null}
       <Link className={styles.more} href="/tags">
         查看全部话题 <span aria-hidden="true">→</span>
       </Link>

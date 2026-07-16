@@ -11,14 +11,21 @@
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
+    "content:check": "tsx src/check.ts",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "test": "node --test"
+    "test": "tsx --test src/posts.test.ts"
+  },
+  "dependencies": {
+    "gray-matter": "^4.0.3",
+    "reading-time": "^1.5.0",
+    "zod": "^3.25.67"
   },
   "devDependencies": {
     "@ting-lab/eslint-config": "workspace:*",
     "@ting-lab/typescript-config": "workspace:*",
     "eslint": "^9.29.0",
+    "tsx": "^4.20.3",
     "typescript": "^5.8.3"
   }
 }

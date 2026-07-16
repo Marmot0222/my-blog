@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { SiteHeader } from "@/components/home/SiteHeader";
-import { topics } from "@/data/home";
+import { contentRepository } from "@/lib/content";
 
 import styles from "../editorial-page.module.scss";
 
@@ -12,6 +12,8 @@ export const metadata: Metadata = {
 };
 
 export default function TagsPage() {
+  const topics = contentRepository.getAllTags();
+
   return (
     <>
       <SiteHeader />
@@ -23,7 +25,7 @@ export default function TagsPage() {
           {topics.map((topic) => (
             <li key={topic.slug}>
               <Link className={styles.tagLink} href={`/tags/${topic.slug}`}>
-                # {topic.label}
+                # {topic.label} <span>{topic.count}</span>
               </Link>
             </li>
           ))}

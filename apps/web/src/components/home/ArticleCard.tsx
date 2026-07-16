@@ -1,14 +1,16 @@
 import Link from "next/link";
 
-import { formatFullDate, type FeaturedArticle } from "@/data/home";
+import type { PostMetadata, PostVisual } from "@ting-lab/content";
+
+import { formatFullDate } from "@/lib/format-date";
 
 import styles from "./ArticleCard.module.scss";
 
 type ArticleCardProps = Readonly<{
-  article: FeaturedArticle;
+  article: PostMetadata;
 }>;
 
-function ArticleVisual({ variant }: Readonly<{ variant: FeaturedArticle["visual"] }>) {
+function ArticleVisual({ variant }: Readonly<{ variant: PostVisual }>) {
   return (
     <div className={`${styles.visual} ${styles[variant]}`} aria-hidden="true">
       <span className={styles.visualGrid} />
@@ -20,10 +22,12 @@ function ArticleVisual({ variant }: Readonly<{ variant: FeaturedArticle["visual"
 }
 
 export function ArticleCard({ article }: ArticleCardProps) {
+  const visual = article.visual ?? "interface";
+
   return (
-    <article className={styles.card} id={article.id}>
+    <article className={styles.card} id={article.slug}>
       <Link className={styles.cardLink} href={`/posts/${article.slug}`}>
-        <ArticleVisual variant={article.visual} />
+        <ArticleVisual variant={visual} />
         <div className={styles.content}>
           <div className={styles.meta}>
             <span>{article.category}</span>

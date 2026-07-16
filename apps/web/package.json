@@ -10,14 +10,25 @@
     "test": "node --test"
   },
   "dependencies": {
+    "@shikijs/rehype": "^3.8.1",
+    "@ting-lab/content": "workspace:*",
+    "github-slugger": "^2.0.0",
+    "mdast-util-to-string": "^4.0.0",
     "next": "^15.5.7",
+    "next-mdx-remote": "^5.0.0",
     "react": "^19.1.1",
-    "react-dom": "^19.1.1"
+    "react-dom": "^19.1.1",
+    "rehype-slug": "^6.0.0",
+    "remark-gfm": "^4.0.1",
+    "shiki": "^3.8.1",
+    "unified": "^11.0.5",
+    "unist-util-visit": "^5.0.0"
   },
   "devDependencies": {
     "@ting-lab/eslint-config": "workspace:*",
     "@ting-lab/typescript-config": "workspace:*",
     "@types/node": "^20.17.57",
+    "@types/mdast": "^4.0.4",
     "@types/react": "^19.1.9",
     "@types/react-dom": "^19.1.7",
     "eslint": "^9.29.0",

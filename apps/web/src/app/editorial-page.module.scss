@@ -110,6 +110,12 @@
     border-color: var(--color-primary);
     color: var(--color-primary);
   }
+
+  span {
+    margin-left: 0.45rem;
+    color: var(--color-text-tertiary);
+    font-variant-numeric: tabular-nums;
+  }
 }
 
 .notFoundTitle {

@@ -1,62 +1,101 @@
+import { tagToSlug } from "@ting-lab/content";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { ArticleToc } from "@/components/article/ArticleToc";
 import { SiteHeader } from "@/components/home/SiteHeader";
-import { featuredArticles, formatFullDate, getPostBySlug, latestNotes } from "@/data/home";
+import { compilePostMdx } from "@/components/mdx/MdxContent";
+import { contentRepository } from "@/lib/content";
+import { formatFullDate } from "@/lib/format-date";
 
-import styles from "../../editorial-page.module.scss";
+import styles from "./page.module.scss";
 
 type PostPageProps = Readonly<{
   params: Promise<{ slug: string }>;
 }>;
 
+export const dynamicParams = false;
+
 export function generateStaticParams() {
-  return [...featuredArticles, ...latestNotes].map(({ slug }) => ({ slug }));
+  return contentRepository.getAllPostSlugs().map((slug) => ({ slug }));
 }
 
 export async function generateMetadata({ params }: PostPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const post = getPostBySlug(slug);
+  const post = contentRepository.getPostBySlug(slug);
 
-  if (!post) {
+  if (!post?.metadata.published) {
     return { title: "内容未找到 — Ting Lab" };
   }
 
+  const { metadata } = post;
+
   return {
-    title: `${post.title} — Ting Lab`,
-    description: post.description,
+    title: `${metadata.title} — Ting Lab`,
+    description: metadata.description,
+    authors: [{ name: "Ting Lab" }],
+    keywords: metadata.tags,
+    openGraph: {
+      type: "article",
+      title: metadata.title,
+      description: metadata.description,
+      publishedTime: metadata.date,
+      modifiedTime: metadata.updatedAt,
+      authors: ["Ting Lab"],
+      tags: metadata.tags,
+    },
   };
 }
 
 export default async function PostPage({ params }: PostPageProps) {
   const { slug } = await params;
-  const post = getPostBySlug(slug);
+  const post = contentRepository.getPostBySlug(slug);
 
-  if (!post) {
+  if (!post?.metadata.published) {
     notFound();
   }
+
+  const { metadata, content } = post;
+  const compiled = await compilePostMdx(content);
 
   return (
     <>
       <SiteHeader activeItem="posts" />
       <main className={styles.page}>
         <article>
-          <p className={styles.eyebrow}>
-            {post.category} / <time dateTime={post.date}>{formatFullDate(post.date)}</time>
-          </p>
-          <h1 className={styles.title}>{post.title}</h1>
-          <p className={styles.description}>{post.description}</p>
-          <div className={styles.rule} aria-hidden="true" />
-          <p className={styles.notice}>正文内容尚未发布，本轮仅保留静态详情入口。</p>
-          <div className={styles.actions}>
-            <Link className={styles.primaryLink} href="/posts">
-              ← 返回文章列表
-            </Link>
-            <Link className={styles.secondaryLink} href="/">
-              返回首页
-            </Link>
+          <header className={styles.header}>
+            <p className={styles.eyebrow}>
+              {metadata.kind === "article" ? "Article" : "Note"} / {metadata.category}
+            </p>
+            <h1>{metadata.title}</h1>
+            <p className={styles.description}>{metadata.description}</p>
+            <div className={styles.meta}>
+              <time dateTime={metadata.date}>发布于 {formatFullDate(metadata.date)}</time>
+              {metadata.updatedAt ? (
+                <time dateTime={metadata.updatedAt}>
+                  更新于 {formatFullDate(metadata.updatedAt)}
+                </time>
+              ) : null}
+              <span>{metadata.readingTime}</span>
+            </div>
+            <ul className={styles.tags} aria-label="文章标签">
+              {metadata.tags.map((tag) => (
+                <li key={tag}>
+                  <Link href={`/tags/${tagToSlug(tag)}`}># {tag}</Link>
+                </li>
+              ))}
+            </ul>
+          </header>
+
+          <div className={styles.articleLayout}>
+            <div className={styles.body}>{compiled.content}</div>
+            <ArticleToc headings={compiled.headings} />
           </div>
+
+          <footer className={styles.footer}>
+            <Link href="/posts">← 返回文章列表</Link>
+          </footer>
         </article>
       </main>
     </>

@@ -1,0 +1,105 @@
+.page {
+  width: min(74rem, calc(100% - (var(--page-padding) * 2)));
+  margin: 0 auto;
+  padding-block: clamp(3.5rem, 8vw, 7.5rem) clamp(4rem, 9vw, 8rem);
+}
+
+.header {
+  max-width: 52rem;
+  padding-bottom: clamp(3rem, 7vw, 5.5rem);
+
+  h1 {
+    margin-top: 1rem;
+    font-family: var(--font-serif), "Noto Serif SC", "Songti SC", serif;
+    font-size: clamp(2.7rem, 7vw, 5.75rem);
+    font-weight: 600;
+    line-height: 1.12;
+    letter-spacing: -0.045em;
+    overflow-wrap: anywhere;
+  }
+}
+
+.eyebrow {
+  color: var(--color-primary);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.description {
+  max-width: 46rem;
+  margin-top: 1.5rem;
+  color: var(--color-text-secondary);
+  font-size: clamp(1rem, 1.6vw, 1.18rem);
+  line-height: 1.8;
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem 1.2rem;
+  margin-top: 1.5rem;
+  color: var(--color-text-tertiary);
+  font-size: 0.7rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1.15rem;
+
+  a {
+    display: inline-flex;
+    min-height: 2rem;
+    align-items: center;
+    padding: 0.3rem 0.65rem;
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+    color: var(--color-text-secondary);
+    font-size: 0.68rem;
+    transition:
+      color var(--duration-fast) ease,
+      border-color var(--duration-fast) ease;
+  }
+
+  a:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+  }
+}
+
+.articleLayout {
+  display: grid;
+  grid-template-columns: minmax(0, 48rem) minmax(10rem, 14rem);
+  gap: clamp(3rem, 7vw, 6rem);
+  align-items: start;
+  border-top: 1px solid var(--color-border-strong);
+  padding-top: clamp(2.5rem, 6vw, 4.5rem);
+}
+
+.body {
+  min-width: 0;
+}
+
+.footer {
+  max-width: 48rem;
+  margin-top: clamp(4rem, 9vw, 7rem);
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--color-border);
+  color: var(--color-text-secondary);
+  font-size: 0.8rem;
+
+  a:hover {
+    color: var(--color-primary);
+  }
+}
+
+@media (max-width: 64rem) {
+  .articleLayout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2rem;
+  }
+}

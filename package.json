@@ -9,6 +9,7 @@
   "scripts": {
     "dev": "turbo dev",
     "build": "turbo build",
+    "content:check": "pnpm --filter @ting-lab/content content:check ../../content/posts",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "lint": "turbo lint",

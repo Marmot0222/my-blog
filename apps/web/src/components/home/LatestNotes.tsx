@@ -1,11 +1,13 @@
 import Link from "next/link";
 
-import { formatMonthDay, type LatestNote } from "@/data/home";
+import type { PostMetadata } from "@ting-lab/content";
+
+import { formatMonthDay } from "@/lib/format-date";
 
 import styles from "./LatestNotes.module.scss";
 
 type LatestNotesProps = Readonly<{
-  notes: readonly LatestNote[];
+  notes: readonly PostMetadata[];
 }>;
 
 function NoteIcon() {
@@ -33,6 +35,7 @@ export function LatestNotes({ notes }: LatestNotesProps) {
           </li>
         ))}
       </ul>
+      {notes.length === 0 ? <p className={styles.empty}>暂无笔记。</p> : null}
       <Link className={styles.more} href="/posts">
         查看全部笔记 <span aria-hidden="true">→</span>
       </Link>

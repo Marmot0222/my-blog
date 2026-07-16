@@ -1,11 +1,11 @@
 import Link from "next/link";
 
-import type { FeaturedArticle } from "@/data/home";
+import type { PostMetadata } from "@ting-lab/content";
 
 import styles from "./HeroSection.module.scss";
 
 type HeroSectionProps = Readonly<{
-  articles: readonly FeaturedArticle[];
+  articles: readonly PostMetadata[];
 }>;
 
 export function HeroSection({ articles }: HeroSectionProps) {
@@ -28,13 +28,14 @@ export function HeroSection({ articles }: HeroSectionProps) {
       <div className={styles.index} aria-label="精选文章索引">
         <ol>
           {articles.map((article, index) => (
-            <li key={article.id} className={index === 0 ? styles.current : undefined}>
+            <li key={article.slug} className={index === 0 ? styles.current : undefined}>
               <span>{String(index + 1).padStart(2, "0")}</span>
               <i aria-hidden="true" />
               <Link href={`/posts/${article.slug}`}>{article.title}</Link>
             </li>
           ))}
         </ol>
+        {articles.length === 0 ? <p>精选内容正在整理中。</p> : null}
         <Link className={styles.allArticles} href="/posts">
           查看全部文章 <span aria-hidden="true">→</span>
         </Link>

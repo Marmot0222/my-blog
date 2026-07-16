@@ -1,0 +1,41 @@
+---
+title: "让 AI 真正帮你写代码"
+description: "探索 AI 编程助手的边界与协作方式，让工具真正提升代码开发效率。"
+date: "2026-07-01"
+tags:
+  - AI 编程
+  - 工程化
+  - TypeScript
+category: "AI 与开发"
+published: true
+featured: true
+kind: "article"
+visual: "code"
+---
+
+AI 编程助手最有价值的角色不是自动补全更多字符，而是帮助团队缩短从问题描述到可验证改动之间的距离。
+
+## 先给出可验证的任务
+
+一个好的任务会明确输入、边界和完成条件。与其要求“优化这段代码”，不如提供失败用例和不能改变的公共接口。
+
+### 把反馈环路写进提示
+
+可以要求助手按固定顺序工作：
+
+- 阅读仓库约束和相关实现。
+- 先复现问题，再做最小修改。
+- 运行类型检查和针对性测试。
+- 说明仍然无法验证的部分。
+
+```ts
+export function isComplete(result: CheckResult): boolean {
+  return result.typecheck && result.tests && result.diffReviewed;
+}
+```
+
+## 保留人的判断
+
+架构取舍、产品语义和风险接受标准不能被一次生成替代。AI 可以扩大探索范围，但最终改动仍要进入团队已有的审查与验证流程。
+
+协作质量取决于上下文是否准确，也取决于我们是否愿意用测试结果推翻一段看似流畅的答案。

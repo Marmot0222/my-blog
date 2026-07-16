@@ -59,6 +59,11 @@
   }
 }
 
+.empty {
+  color: var(--color-text-secondary);
+  font-size: 0.72rem;
+}
+
 @media (max-width: 74rem) {
   .block {
     padding-left: 0;

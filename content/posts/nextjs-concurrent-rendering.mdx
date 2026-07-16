@@ -1,0 +1,53 @@
+---
+title: "理解 Next.js 15 的并发渲染机制"
+description: "深入剖析并发渲染的工作原理，以及它如何改善应用响应性与用户体验。"
+date: "2026-07-10"
+updatedAt: "2026-07-12"
+tags:
+  - Next.js
+  - React
+  - 前端工程
+category: "前端开发"
+published: true
+featured: true
+kind: "article"
+visual: "interface"
+---
+
+并发渲染并不是让 JavaScript 同时执行多份工作，而是让 React 能够暂停、恢复和放弃一次尚未提交的渲染。理解这个区别，是用好 Next.js App Router 的起点。
+
+## 并发渲染解决了什么
+
+传统同步渲染一旦开始，就会持续占用主线程直到完成。并发能力把渲染工作拆成可调度的片段，让更紧急的输入反馈有机会先被处理。
+
+### 提交之前都可以重来
+
+React 只会把最终确认的结果提交到 DOM。一次中间渲染可以被暂停甚至丢弃，因此渲染函数必须保持纯粹：
+
+- 不在渲染阶段修改外部状态。
+- 把副作用留给事件或 Effect。
+- 为可等待内容设计稳定的 Suspense 边界。
+
+```tsx
+import { Suspense } from "react";
+
+export default function Page() {
+  return (
+    <Suspense fallback={<p>正在读取文章…</p>}>
+      <ArticleFeed />
+    </Suspense>
+  );
+}
+```
+
+## 在 App Router 中观察它
+
+Server Components、流式响应和 Suspense 共同决定内容抵达页面的节奏。页面不必等待所有数据准备完毕，外壳可以先输出，较慢的区域随后补齐。
+
+| 能力       | 用户感知         | 设计重点         |
+| ---------- | ---------------- | ---------------- |
+| 流式响应   | 更早看到页面骨架 | 划分有意义的边界 |
+| 可中断渲染 | 输入反馈更及时   | 保持渲染纯粹     |
+| 服务端组件 | 减少客户端代码   | 明确交互边界     |
+
+真正的优化不是增加更多加载动画，而是让每个边界都对应用户能够理解的内容单元。

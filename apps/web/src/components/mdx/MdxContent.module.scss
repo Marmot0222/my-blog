@@ -1,0 +1,128 @@
+.content {
+  min-width: 0;
+  color: var(--color-text);
+  font-size: clamp(1rem, 1.25vw, 1.08rem);
+  line-height: 1.82;
+  overflow-wrap: anywhere;
+
+  h2,
+  h3 {
+    scroll-margin-top: calc(var(--header-height) + 1.5rem);
+    font-family: var(--font-serif), "Noto Serif SC", "Songti SC", serif;
+    font-weight: 600;
+    line-height: 1.35;
+  }
+
+  h2 {
+    margin: clamp(3.75rem, 8vw, 5.5rem) 0 1.25rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--color-border);
+    font-size: clamp(1.7rem, 3vw, 2.35rem);
+  }
+
+  h3 {
+    margin: 2.5rem 0 0.9rem;
+    font-size: clamp(1.25rem, 2vw, 1.55rem);
+  }
+
+  p,
+  ul,
+  ol,
+  blockquote,
+  table,
+  pre {
+    margin-block: 1.25rem;
+  }
+
+  ul,
+  ol {
+    padding-left: 1.4rem;
+  }
+
+  li {
+    padding-left: 0.25rem;
+  }
+
+  li + li {
+    margin-top: 0.35rem;
+  }
+
+  a {
+    color: var(--color-primary);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.18em;
+  }
+
+  blockquote {
+    padding-left: 1.25rem;
+    border-left: 2px solid var(--color-primary);
+    color: var(--color-text-secondary);
+  }
+
+  hr {
+    height: 1px;
+    margin-block: 3rem;
+    border: 0;
+    background: var(--color-border);
+  }
+
+  :not(pre) > code {
+    padding: 0.12em 0.35em;
+    border: 1px solid var(--color-border);
+    border-radius: 0.25rem;
+    background: rgb(255 255 255 / 55%);
+    font-size: 0.88em;
+  }
+
+  pre {
+    position: relative;
+    max-width: 100%;
+    padding: 2.8rem 1.25rem 1.25rem;
+    border: 1px solid rgb(255 255 255 / 10%);
+    border-radius: var(--radius-md);
+    overflow-x: auto;
+    font-size: 0.82rem;
+    line-height: 1.65;
+    tab-size: 2;
+  }
+
+  pre::before {
+    position: absolute;
+    top: 0.75rem;
+    left: 1.25rem;
+    color: rgb(255 255 255 / 55%);
+    content: attr(data-language);
+    font-family: var(--font-sans), sans-serif;
+    font-size: 0.62rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  pre code {
+    display: block;
+    min-width: max-content;
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  }
+
+  table {
+    display: block;
+    max-width: 100%;
+    border-collapse: collapse;
+    overflow-x: auto;
+    font-size: 0.88rem;
+  }
+
+  th,
+  td {
+    min-width: 8rem;
+    padding: 0.65rem 0.8rem;
+    border: 1px solid var(--color-border);
+    text-align: left;
+  }
+
+  th {
+    background: rgb(255 255 255 / 50%);
+    font-weight: 650;
+  }
+}

@@ -1,0 +1,38 @@
+---
+title: "用一个中间件理解 Koa 的洋葱模型"
+description: "沿着一次请求的进入与返回过程，理解 Koa 中间件为何能够组合前置逻辑和后置逻辑。"
+date: "2026-07-08"
+tags:
+  - TypeScript
+  - 工程化
+category: "开发笔记"
+published: true
+featured: false
+kind: "note"
+---
+
+洋葱模型最容易被误解成一种特殊的数据结构。它其实来自异步函数的调用栈：`await next()` 之前是请求进入阶段，之后是响应返回阶段。
+
+## 跟随一次请求
+
+```ts
+app.use(async (context, next) => {
+  const startedAt = Date.now();
+  await next();
+  context.set("Server-Timing", `app;dur=${Date.now() - startedAt}`);
+});
+```
+
+### next 是边界
+
+执行顺序可以概括为：
+
+1. 外层中间件执行前半段。
+2. 内层中间件完成自己的工作。
+3. 控制权逐层返回，执行后半段。
+
+## 组合带来的价值
+
+日志、鉴权和错误处理都能围绕业务处理器组合，同时保持彼此独立。关键是每一层都必须正确等待 `next()`，否则返回链会提前断开。
+
+这套思路也适用于其他请求管线：先定义控制权如何传递，再决定每一层负责什么。
