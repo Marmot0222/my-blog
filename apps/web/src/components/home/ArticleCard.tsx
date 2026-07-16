@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import type { FeaturedArticle } from "@/data/home";
+import { formatFullDate, type FeaturedArticle } from "@/data/home";
 
 import styles from "./ArticleCard.module.scss";
 
@@ -22,12 +22,12 @@ function ArticleVisual({ variant }: Readonly<{ variant: FeaturedArticle["visual"
 export function ArticleCard({ article }: ArticleCardProps) {
   return (
     <article className={styles.card} id={article.id}>
-      <Link className={styles.cardLink} href={`#${article.id}`}>
+      <Link className={styles.cardLink} href={`/posts/${article.slug}`}>
         <ArticleVisual variant={article.visual} />
         <div className={styles.content}>
           <div className={styles.meta}>
             <span>{article.category}</span>
-            <time dateTime={article.date.replaceAll(".", "-")}>{article.date}</time>
+            <time dateTime={article.date}>{formatFullDate(article.date)}</time>
           </div>
           <h3>{article.title}</h3>
           <p>{article.description}</p>

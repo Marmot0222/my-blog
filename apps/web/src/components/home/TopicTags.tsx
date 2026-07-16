@@ -1,9 +1,11 @@
 import Link from "next/link";
 
+import type { Topic } from "@/data/home";
+
 import styles from "./TopicTags.module.scss";
 
 type TopicTagsProps = Readonly<{
-  topics: readonly string[];
+  topics: readonly Topic[];
 }>;
 
 export function TopicTags({ topics }: TopicTagsProps) {
@@ -15,12 +17,12 @@ export function TopicTags({ topics }: TopicTagsProps) {
       </div>
       <ul>
         {topics.map((topic) => (
-          <li key={topic}>
-            <Link href="#featured"># {topic}</Link>
+          <li key={topic.slug}>
+            <Link href={`/tags/${topic.slug}`}># {topic.label}</Link>
           </li>
         ))}
       </ul>
-      <Link className={styles.more} href="#featured">
+      <Link className={styles.more} href="/tags">
         查看全部话题 <span aria-hidden="true">→</span>
       </Link>
     </div>

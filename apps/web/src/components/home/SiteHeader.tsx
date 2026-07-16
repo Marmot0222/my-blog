@@ -3,11 +3,17 @@ import Link from "next/link";
 import styles from "./SiteHeader.module.scss";
 
 const navItems = [
-  { label: "文章", href: "#featured", active: true },
-  { label: "项目", href: "#projects", active: false },
-  { label: "关于", href: "#about", active: false },
-  { label: "AI 问答", href: "#ai", active: false },
+  { key: "posts", label: "文章", href: "/posts" },
+  { key: "projects", label: "项目", href: "/projects" },
+  { key: "about", label: "关于", href: "/about" },
+  { key: undefined, label: "AI 问答", href: "/#ai" },
 ] as const;
+
+export type NavigationKey = "home" | "posts" | "projects" | "about";
+
+type SiteHeaderProps = Readonly<{
+  activeItem?: NavigationKey;
+}>;
 
 function SearchIcon() {
   return (
@@ -27,7 +33,9 @@ function SunIcon() {
   );
 }
 
-export function SiteHeader() {
+export function SiteHeader({ activeItem }: SiteHeaderProps) {
+  const activeNavigationItem = activeItem === "home" ? "posts" : activeItem;
+
   return (
     <header className={styles.header}>
       <div className={styles.inner}>
@@ -39,9 +47,9 @@ export function SiteHeader() {
           {navItems.map((item) => (
             <Link
               key={item.label}
-              className={item.active ? styles.activeLink : styles.navLink}
+              className={item.key === activeNavigationItem ? styles.activeLink : styles.navLink}
               href={item.href}
-              aria-current={item.active ? "page" : undefined}
+              aria-current={item.key === activeNavigationItem ? "page" : undefined}
             >
               {item.label}
             </Link>
@@ -49,17 +57,29 @@ export function SiteHeader() {
         </nav>
 
         <div className={styles.actions}>
-          <button className={styles.iconButton} type="button" aria-label="搜索文章">
+          <button
+            className={styles.iconButton}
+            type="button"
+            aria-label="搜索文章（功能开发中）"
+            title="功能开发中"
+            disabled
+          >
             <SearchIcon />
           </button>
           <span className={styles.divider} aria-hidden="true" />
-          <button className={styles.themeButton} type="button" aria-label="切换主题（暂未开放）">
+          <button
+            className={styles.themeButton}
+            type="button"
+            aria-label="切换主题（功能开发中）"
+            title="功能开发中"
+            disabled
+          >
             <SunIcon />
           </button>
         </div>
 
         <details className={styles.mobileMenu}>
-          <summary aria-label="打开导航菜单">
+          <summary aria-label="导航菜单">
             <span className={styles.menuIcon} aria-hidden="true">
               <i />
               <i />
@@ -70,16 +90,16 @@ export function SiteHeader() {
               <Link
                 key={item.label}
                 href={item.href}
-                aria-current={item.active ? "page" : undefined}
+                aria-current={item.key === activeNavigationItem ? "page" : undefined}
               >
                 {item.label}
               </Link>
             ))}
             <div className={styles.mobileActions}>
-              <button type="button" aria-label="搜索文章">
+              <button type="button" aria-label="搜索文章（功能开发中）" title="功能开发中" disabled>
                 <SearchIcon /> 搜索
               </button>
-              <button type="button" aria-label="切换主题（暂未开放）">
+              <button type="button" aria-label="切换主题（功能开发中）" title="功能开发中" disabled>
                 <SunIcon /> 主题
               </button>
             </div>

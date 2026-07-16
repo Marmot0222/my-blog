@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import type { LatestNote } from "@/data/home";
+import { formatMonthDay, type LatestNote } from "@/data/home";
 
 import styles from "./LatestNotes.module.scss";
 
@@ -28,12 +28,12 @@ export function LatestNotes({ notes }: LatestNotesProps) {
         {notes.map((note) => (
           <li key={note.title}>
             <NoteIcon />
-            <Link href="#featured">{note.title}</Link>
-            <time>{note.date}</time>
+            <Link href={`/posts/${note.slug}`}>{note.title}</Link>
+            <time dateTime={note.date}>{formatMonthDay(note.date)}</time>
           </li>
         ))}
       </ul>
-      <Link className={styles.more} href="#featured">
+      <Link className={styles.more} href="/posts">
         查看全部笔记 <span aria-hidden="true">→</span>
       </Link>
     </div>

@@ -11,7 +11,7 @@ import styles from "./page.module.scss";
 export default function Home() {
   return (
     <>
-      <SiteHeader />
+      <SiteHeader activeItem="home" />
       <main className={styles.page}>
         <HeroSection articles={featuredArticles} />
         <FeaturedArticles articles={featuredArticles} />
