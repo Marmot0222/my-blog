@@ -1,51 +1,64 @@
 # Ting Lab
 
-Ting Lab 是一个基于 pnpm workspace、Turborepo 与 Next.js App Router 的个人技术博客。文章来自仓库内 MDX 文件，首页 AI 面板支持可选的服务端流式对话；未配置 AI 时静态博客仍可正常浏览。
+Ting Lab 是一个基于 pnpm workspace、Turborepo 和 Next.js App Router 的个人技术博客。文章以仓库内 MDX 为唯一事实来源；PostgreSQL + pgvector 仅保存可重建的检索索引，首页 AI 面板通过服务端 RAG 返回带可信博客来源的流式回答。
 
 ## 项目结构
 
 ```text
 apps/web/                    Next.js 页面、Chat Route 与交互 UI
 packages/content/            MDX 读取、校验和内容查询
-packages/ai/                 服务端 AI 配置、供应商、Prompt 与错误边界
-packages/database/           数据持久化边界（当前未实现业务）
-packages/retrieval/          RAG 编排边界（当前未实现业务）
+packages/database/           Drizzle Schema、migration 和 pgvector 查询
+packages/retrieval/          AST 分块、Embedding、增量索引与 RAG
+packages/ai/                 Chat 模型配置、Provider 与安全错误边界
 packages/ui/                 轻量共享 UI 基础
-content/posts/               MDX 文章源内容
+content/posts/               MDX 文章唯一内容源
+compose.dev.yml              本地 PostgreSQL + pgvector
 ```
 
-## 启动
+## 本地启动
 
-需要 Node.js 20+ 与 pnpm 9。
+需要 Node.js 20+、pnpm 9；启用知识库还需要 Docker Compose。
 
-```bash
+```powershell
 pnpm install
-Copy-Item .env.example .env.local
+Copy-Item apps/web/.env.example apps/web/.env.local
+pnpm db:up
+pnpm db:migrate
+pnpm db:check
+pnpm content:index
 pnpm dev
 ```
 
-Web 应用默认运行于 `http://localhost:3000`。`.env.local` 仅用于本地环境，不要提交真实 Key。
+Web 默认运行于 `http://localhost:3000`。`.env.local` 仅供本地使用，禁止提交真实 Key、数据库密码或连接字符串。
 
-## AI 配置
+## Chat 与 Embedding
 
-共同配置：
+Chat 和 Embedding 完全独立，可以使用不同供应商：
 
-```dotenv
-AI_PROVIDER=openai
-AI_MODEL=你的服务端模型名
-AI_MAX_OUTPUT_TOKENS=1200
-AI_REQUEST_TIMEOUT_MS=60000
+- Chat：`AI_PROVIDER=openai | openai-compatible | google`。
+- Embedding：`EMBEDDING_PROVIDER=openai | openai-compatible`。
+- OpenAI-compatible Embedding 必须使用合法 Base URL；可设置 `EMBEDDING_BASE_URL`，或复用服务端 `OPENAI_BASE_URL`。
+- `EMBEDDING_API_KEY` 未设置时，会按 Embedding provider 安全复用对应服务端 Key。
+- `EMBEDDING_DIMENSIONS` 固定为 `1536`；修改维度必须新增 migration。
+
+没有数据库或 Embedding 配置时，静态博客仍能构建和浏览，Chat 会降级为通用回答，并明确显示本次未使用博客知识库。
+
+## 数据库与索引
+
+```bash
+pnpm db:up                  # 启动本地 pgvector，不删除已有 volume
+pnpm db:down                # 停止服务，不删除 volume
+pnpm db:generate            # 根据 Schema 生成新 migration
+pnpm db:migrate             # 应用已提交 migration
+pnpm db:check               # 检查 PostgreSQL 与 pgvector
+pnpm content:index          # 增量索引已发布 MDX
+pnpm content:index -- --dry-run
+pnpm content:search -- "Next.js 并发渲染是什么？"
 ```
 
-三种 provider：
+索引通过文章内容、检索相关 Front Matter、分块算法版本及 Embedding 配置计算 checksum。内容未变化时跳过 Embedding；删除或取消发布的文章会从索引中清理。需要完整重建时，应先人工清理 `documents` 表，再运行 `pnpm content:index`；MDX 文件始终是可恢复索引的唯一来源。
 
-- `openai`：设置 `OPENAI_API_KEY`；需要代理时可选设置 `OPENAI_BASE_URL`。
-- `openai-compatible`：设置 `OPENAI_COMPATIBLE_API_KEY`、`OPENAI_BASE_URL` 和兼容 Chat Completions 的模型名。
-- `google`：设置 `GOOGLE_GENERATIVE_AI_API_KEY` 和 Gemini 模型名。
-
-供应商、模型名、Base URL 和 Key 只在服务端读取。AI 未配置时，`/api/chat` 返回安全的 `AI_NOT_CONFIGURED` 错误，首页、文章和标签仍可使用。
-
-内存限流默认使用匿名共享桶。仅当部署在会覆盖客户端 `x-forwarded-for` 的可信反向代理后方时，才设置 `TRUST_PROXY=true`。该方案仅适用于单实例，不支持分布式限流。
+Schema 变化必须通过 `pnpm db:generate` 生成并审查 migration，不使用 `drizzle-kit push` 代替部署 migration。
 
 ## 验证
 
@@ -57,6 +70,5 @@ pnpm lint
 pnpm typecheck
 pnpm test
 pnpm build
-pnpm --filter @ting-lab/ai test
 pnpm --filter @ting-lab/web build
 ```

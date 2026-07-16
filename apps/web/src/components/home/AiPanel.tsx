@@ -26,7 +26,7 @@ export function AiPanel() {
         <div className={styles.intro}>
           <p className={styles.eyebrow}>TING LAB / ASSISTANT</p>
           <h2 id="ai-panel-title">问问 AI</h2>
-          <p>可以先聊前端、编程与软件工程。博客知识检索将在下一阶段接入。</p>
+          <p>可以聊前端、编程与软件工程；已索引的博客内容会附带可靠来源。</p>
         </div>
         <AiChat />
       </div>

@@ -11,14 +11,31 @@
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
+    "content:index": "tsx --env-file ../../apps/web/.env.local src/index-cli.ts",
+    "content:search": "tsx --env-file ../../apps/web/.env.local src/search-cli.ts",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "test": "node --test"
+    "test": "tsx --test src/chunker.test.ts src/checksum.test.ts src/embedding.test.ts src/indexer.test.ts src/context.test.ts src/retrieve.test.ts"
   },
   "devDependencies": {
     "@ting-lab/eslint-config": "workspace:*",
     "@ting-lab/typescript-config": "workspace:*",
+    "@types/mdast": "^4.0.4",
     "eslint": "^9.29.0",
+    "tsx": "^4.23.1",
     "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "@ai-sdk/openai": "^3.0.85",
+    "@ting-lab/content": "workspace:^",
+    "@ting-lab/database": "workspace:^",
+    "ai": "^6.0.228",
+    "github-slugger": "^2.0.0",
+    "mdast-util-to-string": "^4.0.0",
+    "remark-gfm": "^4.0.1",
+    "remark-parse": "^11.0.0",
+    "unified": "^11.0.5",
+    "unist-util-visit": "^5.1.0",
+    "zod": "^3.25.76"
   }
 }

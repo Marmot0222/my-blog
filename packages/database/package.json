@@ -11,14 +11,25 @@
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
+    "db:check": "tsx --env-file ../../apps/web/.env.local src/check.ts",
+    "db:generate": "drizzle-kit generate --config drizzle.config.ts",
+    "db:migrate": "tsx --env-file ../../apps/web/.env.local src/migrate.ts",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "test": "node --test"
+    "test": "tsx --test src/config.test.ts src/schema.test.ts src/database.integration.test.ts"
   },
   "devDependencies": {
     "@ting-lab/eslint-config": "workspace:*",
     "@ting-lab/typescript-config": "workspace:*",
+    "@types/pg": "^8.20.0",
+    "drizzle-kit": "^0.31.10",
     "eslint": "^9.29.0",
+    "tsx": "^4.23.1",
     "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "drizzle-orm": "^0.45.2",
+    "pg": "^8.22.0",
+    "zod": "^3.25.76"
   }
 }

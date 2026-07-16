@@ -1,7 +1,8 @@
-import { safeValidateUIMessages, type UIMessage } from "ai";
+import { safeValidateUIMessages } from "ai";
 import { z } from "zod";
 
 import { ChatRequestError } from "./errors";
+import type { TingLabUIMessage } from "./types";
 
 const MAX_MESSAGES = 20;
 const MAX_USER_TEXT_LENGTH = 4000;
@@ -18,7 +19,7 @@ const chatRequestSchema = z
 
 export type ValidatedChatRequest = Readonly<{
   id: string;
-  messages: UIMessage[];
+  messages: TingLabUIMessage[];
   trigger: "submit-message" | "regenerate-message";
   messageId?: string;
 }>;
@@ -35,7 +36,7 @@ export async function validateChatRequest(input: unknown): Promise<ValidatedChat
     throw new ChatRequestError("消息格式无效。");
   }
 
-  const messages = validated.data;
+  const messages = validated.data as TingLabUIMessage[];
   if (messages.length === 0) {
     throw new ChatRequestError("请输入问题后再发送。");
   }
@@ -51,7 +52,10 @@ export async function validateChatRequest(input: unknown): Promise<ValidatedChat
       throw new ChatRequestError("不支持客户端 system 消息。");
     }
 
-    if (message.parts.length === 0 || message.parts.some((part) => part.type !== "text")) {
+    if (
+      message.parts.length === 0 ||
+      (message.role === "user" && message.parts.some((part) => part.type !== "text"))
+    ) {
       throw new ChatRequestError("当前仅支持纯文本消息。");
     }
 
@@ -76,5 +80,11 @@ export async function validateChatRequest(input: unknown): Promise<ValidatedChat
     throw new ChatRequestError(`会话文本总长度不能超过 ${MAX_TOTAL_TEXT_LENGTH} 个字符。`);
   }
 
-  return { ...body.data, messages };
+  const sanitizedMessages: TingLabUIMessage[] = messages.map((message) => ({
+    id: message.id,
+    role: message.role,
+    parts: message.parts.filter((part) => part.type === "text"),
+  }));
+
+  return { ...body.data, messages: sanitizedMessages };
 }

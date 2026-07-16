@@ -5,16 +5,17 @@ import { DefaultChatTransport } from "ai";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { parseClientChatError } from "@/lib/chat/errors";
+import type { TingLabUIMessage } from "@/lib/chat/types";
 
 import { AiComposer } from "./AiComposer";
 import styles from "./AiChat.module.scss";
 import { AiMessage } from "./AiMessage";
-import { suggestedQuestions } from "./chat-ui";
+import { formatRagStatus, getMessageRagStatus, suggestedQuestions } from "./chat-ui";
 
 export function AiChat() {
   const transport = useMemo(() => new DefaultChatTransport({ api: "/api/chat" }), []);
   const { messages, sendMessage, regenerate, stop, setMessages, status, error, clearError } =
-    useChat({ transport, experimental_throttle: 60 });
+    useChat<TingLabUIMessage>({ transport, experimental_throttle: 60 });
   const [input, setInput] = useState("");
   const [isNearBottom, setIsNearBottom] = useState(true);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -22,6 +23,7 @@ export function AiChat() {
   const nearBottomRef = useRef(true);
   const isGenerating = status === "submitted" || status === "streaming";
   const publicError = error ? parseClientChatError(error) : undefined;
+  const latestRagStatus = [...messages].reverse().find((message) => message.role === "assistant");
 
   const scrollToBottom = useCallback((force = false) => {
     const container = scrollRef.current;
@@ -81,7 +83,9 @@ export function AiChat() {
   return (
     <div className={styles.chat}>
       <div className={styles.toolbar}>
-        <span>暂未接入博客知识库</span>
+        <span>
+          {formatRagStatus(latestRagStatus ? getMessageRagStatus(latestRagStatus) : undefined)}
+        </span>
         <button type="button" onClick={clearConversation} disabled={messages.length === 0}>
           清空会话
         </button>
