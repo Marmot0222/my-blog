@@ -19,7 +19,7 @@
   "dependencies": {
     "gray-matter": "^4.0.3",
     "reading-time": "^1.5.0",
-    "zod": "^3.25.67"
+    "zod": "^3.25.76"
   },
   "devDependencies": {
     "@ting-lab/eslint-config": "workspace:*",

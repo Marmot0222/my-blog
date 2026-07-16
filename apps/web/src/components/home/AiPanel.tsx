@@ -1,4 +1,4 @@
-import { AiComposer } from "@/components/ai/AiComposer";
+import { AiChat } from "@/components/ai/AiChat";
 
 import styles from "./AiPanel.module.scss";
 
@@ -17,39 +17,18 @@ export function AiPanel() {
         <strong>AI 问答</strong>
         <div className={styles.status}>
           <span aria-hidden="true" />
-          在线
+          按需连接
           <ExpandIcon />
         </div>
       </div>
 
       <div className={styles.body}>
         <div className={styles.intro}>
-          <p className={styles.eyebrow}>TING LAB / KNOWLEDGE</p>
-          <h2 id="ai-panel-title">问问我的博客</h2>
-          <p>基于本站内容，回答你的技术问题</p>
+          <p className={styles.eyebrow}>TING LAB / ASSISTANT</p>
+          <h2 id="ai-panel-title">问问 AI</h2>
+          <p>可以先聊前端、编程与软件工程。博客知识检索将在下一阶段接入。</p>
         </div>
-
-        <div className={styles.conversation} aria-label="AI 问答示例">
-          <div className={styles.userMessage}>
-            <p>Next.js 15 的并发渲染是什么？</p>
-            <time>10:24 ✓</time>
-          </div>
-
-          <div className={styles.answerRow}>
-            <span className={styles.avatar} aria-hidden="true">
-              T
-            </span>
-            <div className={styles.aiMessage}>
-              <p>
-                并发渲染让 React
-                可以暂停、恢复或放弃一次渲染，把紧急交互放在更高优先级处理，从而让页面在复杂更新中依然保持响应。
-              </p>
-              <time>10:24</time>
-            </div>
-          </div>
-        </div>
-
-        <AiComposer />
+        <AiChat />
       </div>
     </aside>
   );

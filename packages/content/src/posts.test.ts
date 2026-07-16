@@ -61,7 +61,7 @@ test("解析有效 Front Matter 并生成阅读时间", () => {
   withRepository({ "valid-post.mdx": fixtureSource() }, (repository) => {
     const post = repository.getPostBySlug("valid-post");
     assert.equal(post?.metadata.title, "测试文章");
-    assert.match(post?.metadata.readingTime ?? "", /read/);
+    assert.match(post?.metadata.readingTime ?? "", /^约 \d+ 分钟阅读$/);
     assert.match(post?.content ?? "", /用于计算阅读时间/);
   });
 });

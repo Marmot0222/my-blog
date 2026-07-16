@@ -33,10 +33,11 @@ function parsePostFile(filePath: string): Post {
     }
 
     const frontMatter = postFrontMatterSchema.parse(parsed.data);
+    const reading = readingTime(parsed.content);
     const metadata: PostMetadata = {
       slug,
       ...frontMatter,
-      readingTime: readingTime(parsed.content).text,
+      readingTime: `约 ${Math.max(1, Math.ceil(reading.minutes))} 分钟阅读`,
     };
 
     for (const tag of metadata.tags) {
