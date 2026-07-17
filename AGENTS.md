@@ -77,11 +77,12 @@ AI 对话有两个入口，必须复用同一聊天内核，不得在首页与 `
 - 全页面工作区 `/ai`：`apps/web/src/app/ai/page.tsx` + `apps/web/src/components/ai/AiWorkspace.tsx`。导航中“AI 问答”统一指向 `/ai`。
 - 共享聊天状态在 `apps/web/src/components/ai/chat-provider.tsx`（root layout 持有唯一 `Chat` 实例），`AiChat` 通过 `useChat({ chat })` 复用。展示模式 `compact`/`workspace` 只控制布局，不参与协议与状态管理。
 
-UI Message Stream 协议不变量（实现于 `apps/web/src/app/api/chat/route.ts`，详见 `docs/ai-chat.md`）：
+UI Message Stream 协议不变量（实现于 `apps/web/src/lib/chat/stream.ts`，由 `apps/web/src/app/api/chat/route.ts` 的 `POST` 调用；详见 `docs/ai-chat.md`）：
 
 - 一次提交 = 一次 `POST /api/chat` = 一次 RAG 检索 = 一次模型生成 = 至多一条 assistant message。RAG `data-ragStatus`/`data-sources`/`source-url` 与正文 `text-*` 归属同一条消息。
 - 合并 `streamText` token 流时必须使用 `result.toUIMessageStream({ sendStart: false })`，避免模型流再次发出 message-start 导致“回答两次”（根因：客户端 `replaceMessage` 的 `structuredClone` 破坏引用 + 服务端 start 覆盖 message id，触发第二条空 assistant 消息）。
 - 禁止在渲染层按相邻消息、文本或索引粗暴去重来掩盖协议错误；必须修复根因。
+- `route.ts` 是 Next.js Route Handler，只允许导出 HTTP 方法与路由配置字段（`runtime`/`dynamic` 等）；协议函数与类型（`buildChatStream`/`handleChatRequest`/`ChatStreamDeps`）必须放在 `lib/chat/stream.ts`，否则构建期类型校验失败。
 - 协议层有回归测试：`apps/web/src/app/api/chat/route.test.ts`（用真实 `Chat` + `MockLanguageModelV3` 驱动 `buildChatStream`，断言单一 assistant message）。
 
 文章抽屉：来源点击在 `/ai` 右侧抽屉打开，不离开对话。`/ai` Server Component 用 `contentRepository.getPostBySlug` 校验已发布文章后 `compilePostMdx` 编译，把 MDX ReactNode 传入客户端抽屉，复用文章详情渲染，不建第二套解析器。只允许读取已发布文章；slug 经 `isSafeSlug` 校验；客户端不能提交任意路径/外部 URL。打开/关闭抽屉通过 searchParams 变化触发服务端重渲染，`AiChat` 不加 key 保持挂载，因此不重置聊天、不重新请求模型。首页 compact 来源点击统一跳转 `/ai?post=<slug>`。

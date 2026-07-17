@@ -7,8 +7,8 @@ import type { RagResult } from "@ting-lab/retrieval";
 import { simulateReadableStream, type UIMessageChunk } from "ai";
 import { MockLanguageModelV3 } from "ai/test";
 
-import type { ChatStreamDeps } from "./route";
-import { buildChatStream } from "./route";
+import type { ChatStreamDeps } from "@/lib/chat/stream";
+import { buildChatStream } from "@/lib/chat/stream";
 import type { TingLabUIMessage } from "@/lib/chat/types";
 import type { ChatTransport } from "ai";
 

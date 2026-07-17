@@ -15,11 +15,11 @@ AI 对话有两个入口，复用同一聊天能力，不得复制逻辑：
 
 ## UI Message Stream 协议不变量
 
-一次用户提交必须严格对应：一次 `POST /api/chat`、一次 RAG 检索、一次模型生成、至多一条 assistant message。服务端实现位于 `apps/web/src/app/api/chat/route.ts`：
+一次用户提交必须严格对应：一次 `POST /api/chat`、一次 RAG 检索、一次模型生成、至多一条 assistant message。服务端协议实现位于 `apps/web/src/lib/chat/stream.ts`（`buildChatStream`/`handleChatRequest`/`ChatStreamDeps`），由 `apps/web/src/app/api/chat/route.ts` 的 `POST` 调用。`route.ts` 是 Next.js Route Handler，只允许导出 HTTP 方法与路由配置字段，因此协议函数与类型必须放在 `lib/chat/stream.ts`：
 
 - `buildChatStream(messages, deps, abortSignal)`：协议核心，依赖注入边界（`ChatStreamDeps` 含 `model`/`systemPrompt`/`config`/`retrieve`），便于测试用 `MockLanguageModelV3`（`ai/test`）与 fake `retrieve` 驱动。
 - `handleChatRequest(chat, deps, abortSignal)`：组装 `createUIMessageStreamResponse`。
-- `POST`：解析请求、限流、`validateChatRequest`、`createAiRuntime()`、委托 `handleChatRequest`。
+- `POST`（`route.ts`）：解析请求、限流、`validateChatRequest`、`createAiRuntime()`、委托 `handleChatRequest`。
 
 关键不变量：
 
@@ -64,7 +64,7 @@ RAG 来源是服务端可信结果（`PublicRagSource`，`url` 形如 `/posts/<s
 
 ## 关键文件位置
 
-- 协议与服务端：`apps/web/src/app/api/chat/route.ts`、`route.test.ts`
+- 协议与服务端：`apps/web/src/lib/chat/stream.ts`（`buildChatStream`/`handleChatRequest`/`ChatStreamDeps`）、`apps/web/src/app/api/chat/route.ts`（`POST`）、`apps/web/src/app/api/chat/route.test.ts`
 - 客户端聊天内核：`apps/web/src/components/ai/AiChat.tsx`、`AiMessage.tsx`、`AiComposer.tsx`、`chat-ui.ts`、`chat-provider.tsx`
 - 工作区与抽屉：`apps/web/src/components/ai/AiWorkspace.tsx`、`ArticleDrawer.tsx`、对应 `.module.scss`
 - 首页侧栏：`apps/web/src/components/home/AiPanel.tsx`、`AiPanel.module.scss`
