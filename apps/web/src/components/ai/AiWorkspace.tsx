@@ -17,6 +17,7 @@ export type DrawerPost = Readonly<{
   metadata: PostMetadata;
   content: ReactNode;
   headings: readonly TocHeading[];
+  tagLinks: ReadonlyArray<Readonly<{ tag: string; slug: string }>>;
 }>;
 
 type AiWorkspaceProps = Readonly<{

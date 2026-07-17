@@ -1,6 +1,5 @@
 "use client";
 
-import { tagToSlug } from "@ting-lab/content";
 import { useEffect, useRef, type MouseEvent } from "react";
 import Link from "next/link";
 
@@ -28,9 +27,9 @@ function ArticleMeta({ post }: Readonly<{ post: DrawerPost }>) {
       ) : null}
       <span>{metadata.readingTime}</span>
       <ul className={styles.tags} aria-label="文章标签">
-        {metadata.tags.map((tag) => (
+        {post.tagLinks.map(({ tag, slug }) => (
           <li key={tag}>
-            <Link href={`/tags/${tagToSlug(tag)}`}># {tag}</Link>
+            <Link href={`/tags/${slug}`}># {tag}</Link>
           </li>
         ))}
       </ul>

@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 
+import { tagToSlug } from "@ting-lab/content";
+
 import { AiWorkspace, type DrawerPost } from "@/components/ai/AiWorkspace";
 import { compilePostMdx, type TocHeading } from "@/components/mdx/MdxContent";
 import { contentRepository } from "@/lib/content";
@@ -33,6 +35,7 @@ export default async function AiPage({ searchParams }: AiPageProps) {
         metadata,
         content: compiled.content as ReactNode,
         headings: compiled.headings as readonly TocHeading[],
+        tagLinks: metadata.tags.map((tag) => ({ tag, slug: tagToSlug(tag) })),
       };
     }
   }
