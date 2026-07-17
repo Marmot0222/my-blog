@@ -1,6 +1,7 @@
 import {
   boolean,
   date,
+  halfvec,
   index,
   integer,
   pgTable,
@@ -8,7 +9,6 @@ import {
   timestamp,
   uniqueIndex,
   uuid,
-  vector,
 } from "drizzle-orm/pg-core";
 
 import { EMBEDDING_DIMENSIONS } from "./types";
@@ -45,7 +45,7 @@ export const documentChunks = pgTable(
     content: text("content").notNull(),
     contentHash: text("content_hash").notNull(),
     tokenCount: integer("token_count").notNull(),
-    embedding: vector("embedding", { dimensions: EMBEDDING_DIMENSIONS }).notNull(),
+    embedding: halfvec("embedding", { dimensions: EMBEDDING_DIMENSIONS }).notNull(),
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   },
   (table) => [
@@ -53,7 +53,7 @@ export const documentChunks = pgTable(
     index("document_chunks_document_id_idx").on(table.documentId),
     index("document_chunks_embedding_hnsw_idx").using(
       "hnsw",
-      table.embedding.op("vector_cosine_ops"),
+      table.embedding.op("halfvec_cosine_ops"),
     ),
   ],
 );

@@ -42,7 +42,7 @@ Chat 和 Embedding 完全独立，可以使用不同供应商：
 - Embedding：`EMBEDDING_PROVIDER=openai | openai-compatible`。
 - OpenAI-compatible Embedding 必须使用合法 Base URL；可设置 `EMBEDDING_BASE_URL`，或复用服务端 `OPENAI_BASE_URL`。
 - `EMBEDDING_API_KEY` 未设置时，会按 Embedding provider 安全复用对应服务端 Key。
-- `EMBEDDING_DIMENSIONS` 固定为 `1024`；修改维度必须新增 migration。
+- `EMBEDDING_DIMENSIONS` 固定为 `2048`；使用 `halfvec` 保留 HNSW 索引，修改维度必须新增 migration。
 
 没有数据库或 Embedding 配置时，静态博客仍能构建和浏览，Chat 会降级为通用回答，并明确显示本次未使用博客知识库。
 
@@ -63,7 +63,7 @@ pnpm content:search -- "Next.js 并发渲染是什么？"
 
 Schema 变化必须通过 `pnpm db:generate` 生成并审查 migration，不使用 `drizzle-kit push` 代替部署 migration。
 
-`0002_special_runaways.sql` 将历史 1536 维索引迁移为 1024 维。它只清理 PostgreSQL 中可由 MDX 重建的 `documents`/`document_chunks` 检索索引，不会修改 `content/posts`；同一次生产部署必须继续执行 indexer 完成重建。
+向量维度 migration 只清理 PostgreSQL 中可由 MDX 重建的 `documents`/`document_chunks` 检索索引，不会修改 `content/posts`；同一次生产部署必须继续执行 indexer 完成重建。当前 schema 使用 `halfvec(2048)`，以兼容方舟原生 2048 维输出和 pgvector 的 HNSW 维度限制。
 
 ## VPS 生产部署
 

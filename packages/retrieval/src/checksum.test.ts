@@ -24,7 +24,7 @@ const post: Post = {
 const embedding: EmbeddingConfig = {
   provider: "openai",
   model: "embedding-model",
-  dimensions: 1024,
+  dimensions: 2048,
   apiKey: "fixture-key",
   batchSize: 32,
   maxRetries: 2,
