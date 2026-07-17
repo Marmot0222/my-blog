@@ -24,7 +24,7 @@ test("结果按相似度排序并限制单篇文章占比", () => {
 test("fake Embedding 与查询返回 used/no_match，不访问真实服务", async () => {
   const embedding: EmbeddingService = {
     embedMany: async () => [],
-    embedOne: async () => Array.from({ length: 1536 }, () => 0),
+    embedOne: async () => Array.from({ length: 1024 }, () => 0),
   };
   const db = {} as TingLabDatabase;
   const used = await retrieveRelevantChunks({

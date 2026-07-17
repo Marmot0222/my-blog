@@ -20,8 +20,8 @@ integration("文档替换、级联删除与相似度排序", async () => {
     path.dirname(fileURLToPath(import.meta.url)),
     "../migrations",
   );
-  const vectorA = Array.from({ length: 1536 }, (_, index) => (index === 0 ? 1 : 0));
-  const vectorB = Array.from({ length: 1536 }, (_, index) => (index === 1 ? 1 : 0));
+  const vectorA = Array.from({ length: 1024 }, (_, index) => (index === 0 ? 1 : 0));
+  const vectorB = Array.from({ length: 1024 }, (_, index) => (index === 1 ? 1 : 0));
 
   try {
     await migrate(runtime.db, { migrationsFolder: migrationFolder });

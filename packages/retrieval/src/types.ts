@@ -3,7 +3,7 @@ export type EmbeddingProvider = "openai" | "openai-compatible";
 export type EmbeddingConfig = Readonly<{
   provider: EmbeddingProvider;
   model: string;
-  dimensions: 1536;
+  dimensions: 1024;
   apiKey: string;
   baseURL?: string;
   batchSize: number;

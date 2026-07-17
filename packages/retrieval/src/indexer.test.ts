@@ -10,7 +10,7 @@ import type { EmbeddingConfig } from "./types";
 const embedding: EmbeddingConfig = {
   provider: "openai",
   model: "fixture",
-  dimensions: 1536,
+  dimensions: 1024,
   apiKey: "fixture",
   batchSize: 32,
   maxRetries: 0,

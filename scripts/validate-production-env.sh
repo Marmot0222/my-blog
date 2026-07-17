@@ -72,7 +72,7 @@ case "${ENV_VALUES[EMBEDDING_PROVIDER]:-}" in
   *) errors+=("EMBEDDING_PROVIDER 必须是 openai 或 openai-compatible") ;;
 esac
 
-[[ "${ENV_VALUES[EMBEDDING_DIMENSIONS]:-}" == "1536" ]] || errors+=("EMBEDDING_DIMENSIONS 必须为 1536")
+[[ "${ENV_VALUES[EMBEDDING_DIMENSIONS]:-}" == "1024" ]] || errors+=("EMBEDDING_DIMENSIONS 必须为 1024")
 [[ "${ENV_VALUES[TRUST_PROXY]:-}" == "true" ]] || errors+=("生产环境 TRUST_PROXY 必须为 true")
 [[ "${ENV_VALUES[SKIP_CONTENT_INDEX]:-}" =~ ^[01]$ ]] || errors+=("SKIP_CONTENT_INDEX 必须为 0 或 1")
 

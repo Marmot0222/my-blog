@@ -15,6 +15,13 @@
       "when": 1784193095000,
       "tag": "0001_sleepy_firelord",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1784208838980,
+      "tag": "0002_special_runaways",
+      "breakpoints": true
     }
   ]
 }

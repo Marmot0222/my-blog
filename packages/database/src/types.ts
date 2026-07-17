@@ -3,7 +3,7 @@ import type { Pool } from "pg";
 
 import type * as schema from "./schema";
 
-export const EMBEDDING_DIMENSIONS = 1536;
+export const EMBEDDING_DIMENSIONS = 1024;
 
 export type TingLabDatabase = NodePgDatabase<typeof schema>;
 

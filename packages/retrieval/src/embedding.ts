@@ -1,4 +1,5 @@
 import { createOpenAI } from "@ai-sdk/openai";
+import { EMBEDDING_DIMENSIONS } from "@ting-lab/database";
 import { embed, embedMany } from "ai";
 
 import type { EmbeddingConfig, EmbeddingService } from "./types";
@@ -35,9 +36,9 @@ async function retry<T>(operation: () => Promise<T>, maxRetries: number): Promis
 export function validateEmbeddings(embeddings: readonly number[][], expectedCount: number): void {
   if (embeddings.length !== expectedCount) throw new Error("Embedding 返回数量与输入不一致");
   for (const [index, vector] of embeddings.entries()) {
-    if (vector.length !== 1536) {
+    if (vector.length !== EMBEDDING_DIMENSIONS) {
       throw new Error(
-        `Embedding 维度不匹配：第 ${index + 1} 条期望 1536 维，实际 ${vector.length} 维`,
+        `Embedding 维度不匹配：第 ${index + 1} 条期望 ${EMBEDDING_DIMENSIONS} 维，实际 ${vector.length} 维`,
       );
     }
     if (vector.some((value) => !Number.isFinite(value))) {
@@ -46,12 +47,12 @@ export function validateEmbeddings(embeddings: readonly number[][], expectedCoun
   }
 }
 
-export function createEmbeddingProviderOptions(dimensions: number) {
-  return {
-    openai: {
-      dimensions,
-    },
-  } as const;
+export function createEmbeddingProviderOptions(
+  config: Pick<EmbeddingConfig, "provider" | "dimensions">,
+) {
+  return config.provider === "openai"
+    ? ({ openai: { dimensions: config.dimensions } } as const)
+    : undefined;
 }
 
 export function createEmbeddingService(config: EmbeddingConfig): EmbeddingService {
@@ -61,7 +62,7 @@ export function createEmbeddingService(config: EmbeddingConfig): EmbeddingServic
     name: `embedding-${config.provider}`,
   });
   const model = provider.embeddingModel(config.model);
-  const providerOptions = createEmbeddingProviderOptions(config.dimensions);
+  const providerOptions = createEmbeddingProviderOptions(config);
 
   return {
     async embedMany(values) {
