@@ -1,0 +1,86 @@
+.workspace {
+  display: flex;
+  position: relative;
+  flex-direction: column;
+  width: 100%;
+  height: 100dvh;
+  min-height: 100dvh;
+  background: var(--color-canvas);
+  overflow: hidden;
+}
+
+.topbar {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  height: var(--header-height);
+  padding-inline: var(--page-padding);
+  border-bottom: 1px solid var(--color-border);
+  background: rgb(247 246 242 / 92%);
+  backdrop-filter: blur(1rem);
+}
+
+.brand {
+  font-size: clamp(1rem, 1.5vw, 1.3rem);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-decoration: none;
+  color: var(--color-text);
+}
+
+.topNav {
+  display: flex;
+  align-items: center;
+  gap: clamp(1rem, 2vw, 1.75rem);
+}
+
+.topLink {
+  color: var(--color-text-secondary);
+  font-size: 0.86rem;
+  font-weight: 540;
+  text-decoration: none;
+  transition: color var(--duration-fast) ease;
+
+  &:hover {
+    color: var(--color-text);
+  }
+}
+
+.main {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+  padding-inline: var(--page-padding);
+  padding-block: clamp(1rem, 2vw, 1.75rem);
+}
+
+.chatColumn {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  width: min(46rem, 100%);
+  min-height: 0;
+  margin: 0 auto;
+}
+
+@media (max-width: 48rem) {
+  .topbar {
+    padding-inline: clamp(1rem, 4vw, 1.5rem);
+  }
+
+  .topNav {
+    gap: 0.85rem;
+  }
+
+  .topLink {
+    font-size: 0.78rem;
+  }
+
+  .main {
+    padding-inline: clamp(1rem, 4vw, 1.5rem);
+    padding-block: 0.75rem;
+  }
+}

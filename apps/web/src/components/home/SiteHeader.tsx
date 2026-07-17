@@ -6,10 +6,10 @@ const navItems = [
   { key: "posts", label: "文章", href: "/posts" },
   { key: "projects", label: "项目", href: "/projects" },
   { key: "about", label: "关于", href: "/about" },
-  { key: undefined, label: "AI 问答", href: "/#ai" },
+  { key: "ai", label: "AI 问答", href: "/ai" },
 ] as const;
 
-export type NavigationKey = "home" | "posts" | "projects" | "about";
+export type NavigationKey = "home" | "posts" | "projects" | "about" | "ai";
 
 type SiteHeaderProps = Readonly<{
   activeItem?: NavigationKey;

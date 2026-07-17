@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 
+import { ChatProvider } from "@/components/ai/chat-provider";
+
 import "@/styles/globals.scss";
 
 export const metadata: Metadata = {
-  title: "Ting Lab — 记录技术与思考",
+  title: "Ting Lab - 记录技术与思考",
   description: "记录编码、设计、思考与实践的过程。",
 };
 
@@ -15,7 +17,9 @@ type RootLayoutProps = Readonly<{
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="zh-CN">
-      <body>{children}</body>
+      <body>
+        <ChatProvider>{children}</ChatProvider>
+      </body>
     </html>
   );
 }

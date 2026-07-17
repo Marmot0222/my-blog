@@ -41,6 +41,14 @@
   }
 }
 
+/* 桌面端 AI 侧栏折叠时收窄为 rail，主内容列扩展。
+   仅在 >48rem 生效，避免覆盖移动端单列布局。 */
+@media (min-width: 48.0625rem) {
+  .page:has([data-ai-collapsed="true"]) {
+    grid-template-columns: minmax(0, 1fr) minmax(3rem, 3.75rem);
+  }
+}
+
 @media (max-width: 48rem) {
   .page {
     grid-template-areas:

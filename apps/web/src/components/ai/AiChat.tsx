@@ -1,27 +1,35 @@
 "use client";
 
 import { useChat } from "@ai-sdk/react";
-import { DefaultChatTransport } from "ai";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import type { PublicRagSource } from "@ting-lab/retrieval";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { parseClientChatError } from "@/lib/chat/errors";
 import type { TingLabUIMessage } from "@/lib/chat/types";
 
 import { AiComposer } from "./AiComposer";
-import styles from "./AiChat.module.scss";
 import { AiMessage } from "./AiMessage";
+import { useSharedChat } from "./chat-provider";
 import { formatRagStatus, getMessageRagStatus, suggestedQuestions } from "./chat-ui";
+import styles from "./AiChat.module.scss";
 
-export function AiChat() {
-  const transport = useMemo(() => new DefaultChatTransport({ api: "/api/chat" }), []);
+export type AiChatProps = Readonly<{
+  mode: "compact" | "workspace";
+  onSourceOpen?: (source: PublicRagSource) => void;
+}>;
+
+export function AiChat({ mode, onSourceOpen }: AiChatProps) {
+  const chat = useSharedChat();
   const { messages, sendMessage, regenerate, stop, setMessages, status, error, clearError } =
-    useChat<TingLabUIMessage>({ transport, experimental_throttle: 60 });
+    useChat<TingLabUIMessage>({ chat, experimental_throttle: 60 });
   const [input, setInput] = useState("");
   const [isNearBottom, setIsNearBottom] = useState(true);
   const scrollRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const nearBottomRef = useRef(true);
+  const submittingRef = useRef(false);
   const isGenerating = status === "submitted" || status === "streaming";
+  const isStreaming = status === "streaming";
   const publicError = error ? parseClientChatError(error) : undefined;
   const latestRagStatus = [...messages].reverse().find((message) => message.role === "assistant");
 
@@ -45,8 +53,8 @@ export function AiChat() {
     const textarea = textareaRef.current;
     if (!textarea) return;
     textarea.style.height = "auto";
-    textarea.style.height = `${Math.min(textarea.scrollHeight, 128)}px`;
-  }, [input]);
+    textarea.style.height = `${Math.min(textarea.scrollHeight, mode === "workspace" ? 200 : 128)}px`;
+  }, [input, mode]);
 
   function handleScroll() {
     const container = scrollRef.current;
@@ -56,13 +64,20 @@ export function AiChat() {
     setIsNearBottom(nearBottom);
   }
 
-  function submitQuestion() {
-    const question = input.trim();
-    if (!question || isGenerating) return;
+  // 提交锁：点击与 Enter 共用唯一入口，submittingRef 保证同一事件循环内
+  // 双击或 Enter+点击只发一次；isGenerating 兜底防止流式期间重复提交。
+  function submitQuestion(questionInput?: string) {
+    const question = (questionInput ?? input).trim();
+    if (!question || submittingRef.current || isGenerating) {
+      return;
+    }
     setInput("");
     clearError();
     nearBottomRef.current = true;
-    void sendMessage({ text: question });
+    submittingRef.current = true;
+    void sendMessage({ text: question }).finally(() => {
+      submittingRef.current = false;
+    });
   }
 
   function clearConversation() {
@@ -71,24 +86,40 @@ export function AiChat() {
       setMessages([]);
       clearError();
       setInput("");
+      submittingRef.current = false;
     }
   }
 
   function retry() {
+    if (isGenerating) return;
     clearError();
     nearBottomRef.current = true;
     void regenerate();
   }
 
+  const ragStatusLabel = formatRagStatus(
+    latestRagStatus ? getMessageRagStatus(latestRagStatus) : undefined,
+  );
+
   return (
-    <div className={styles.chat}>
+    <div className={`${styles.chat} ${mode === "workspace" ? styles.workspace : styles.compact}`}>
       <div className={styles.toolbar}>
-        <span>
-          {formatRagStatus(latestRagStatus ? getMessageRagStatus(latestRagStatus) : undefined)}
-        </span>
-        <button type="button" onClick={clearConversation} disabled={messages.length === 0}>
-          清空会话
-        </button>
+        <span className={styles.ragStatus}>{ragStatusLabel}</span>
+        <div className={styles.toolbarActions}>
+          {isGenerating ? (
+            <button type="button" onClick={() => void stop()} aria-label="停止生成">
+              停止
+            </button>
+          ) : null}
+          <button
+            type="button"
+            onClick={clearConversation}
+            disabled={messages.length === 0}
+            aria-label="清空当前对话"
+          >
+            清空会话
+          </button>
+        </div>
       </div>
 
       <div
@@ -100,17 +131,20 @@ export function AiChat() {
       >
         {messages.length === 0 ? (
           <div className={styles.emptyState}>
-            <p>可以从这些问题开始：</p>
+            {mode === "workspace" ? (
+              <>
+                <p className={styles.eyebrow}>TING LAB / ASSISTANT</p>
+                <h2 className={styles.emptyTitle}>问问 AI</h2>
+                <p className={styles.emptyHint}>
+                  可以聊前端、编程与软件工程。回答可能会引用本站已索引的博客文章，并附上可验证的来源链接。
+                </p>
+              </>
+            ) : (
+              <p className={styles.emptyHint}>从下面的问题开始，或直接输入你想了解的内容。</p>
+            )}
             <div className={styles.suggestions}>
               {suggestedQuestions.map((question) => (
-                <button
-                  key={question}
-                  type="button"
-                  onClick={() => {
-                    setInput(question);
-                    textareaRef.current?.focus();
-                  }}
-                >
+                <button key={question} type="button" onClick={() => submitQuestion(question)}>
                   {question}
                 </button>
               ))}
@@ -121,7 +155,9 @@ export function AiChat() {
             <AiMessage
               key={message.id}
               message={message}
-              isStreaming={isGenerating && index === messages.length - 1}
+              mode={mode}
+              onSourceOpen={onSourceOpen}
+              isStreaming={isStreaming && index === messages.length - 1}
             />
           ))
         )}
@@ -146,12 +182,13 @@ export function AiChat() {
       ) : null}
 
       <AiComposer
+        mode={mode}
         value={input}
         disabled={!input.trim() || isGenerating}
         isGenerating={isGenerating}
         textareaRef={textareaRef}
         onChange={setInput}
-        onSubmit={submitQuestion}
+        onSubmit={() => submitQuestion()}
         onStop={() => void stop()}
       />
     </div>

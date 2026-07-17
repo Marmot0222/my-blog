@@ -6,6 +6,14 @@
   border-top: 1px solid var(--color-border);
 }
 
+.workspace {
+  --composer-font: 0.92rem;
+}
+
+.compact {
+  --composer-font: 0.8rem;
+}
+
 .inputWrap {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
@@ -32,7 +40,7 @@
     color: var(--color-text);
     background: transparent;
     font: inherit;
-    font-size: 0.8rem;
+    font-size: var(--composer-font, 0.8rem);
     line-height: 1.5;
 
     &::placeholder {
@@ -43,6 +51,16 @@
       cursor: not-allowed;
       opacity: 0.65;
     }
+  }
+}
+
+.workspace .inputWrap {
+  min-height: 3.75rem;
+  border-radius: var(--radius-md);
+
+  textarea {
+    max-height: 12.5rem;
+    padding: 0.85rem 0.95rem;
   }
 }
 

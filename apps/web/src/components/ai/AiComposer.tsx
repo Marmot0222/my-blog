@@ -3,6 +3,7 @@ import type { FormEvent, KeyboardEvent, RefObject } from "react";
 import styles from "./AiComposer.module.scss";
 
 type AiComposerProps = Readonly<{
+  mode: "compact" | "workspace";
   value: string;
   disabled: boolean;
   isGenerating: boolean;
@@ -22,6 +23,7 @@ function SendIcon() {
 }
 
 export function AiComposer({
+  mode,
   value,
   disabled,
   isGenerating,
@@ -43,7 +45,11 @@ export function AiComposer({
   }
 
   return (
-    <form className={styles.form} onSubmit={handleSubmit} aria-label="AI 对话输入">
+    <form
+      className={`${styles.form} ${mode === "workspace" ? styles.workspace : styles.compact}`}
+      onSubmit={handleSubmit}
+      aria-label="AI 对话输入"
+    >
       <div className={styles.inputWrap}>
         <label className={styles.srOnly} htmlFor="ai-question">
           输入问题

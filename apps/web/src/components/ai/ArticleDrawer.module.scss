@@ -1,0 +1,232 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  justify-content: flex-end;
+  background: rgb(24 28 39 / 38%);
+  backdrop-filter: blur(0.15rem);
+  animation: tinglab-overlay-in var(--duration-normal) var(--ease-out);
+}
+
+.dialog {
+  display: flex;
+  position: relative;
+  flex-direction: column;
+  width: min(42rem, 90vw);
+  max-width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-left: 1px solid var(--color-border-strong);
+  background: var(--color-canvas);
+  box-shadow: -1.5rem 0 4rem rgb(24 28 39 / 12%);
+  outline: none;
+  animation: tinglab-dialog-in var(--duration-normal) var(--ease-out);
+}
+
+.dialogHeader {
+  display: flex;
+  flex: none;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: clamp(1.25rem, 2.5vw, 1.75rem) clamp(1.25rem, 2.5vw, 1.75rem) 1rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.eyebrow {
+  color: var(--color-primary);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.title {
+  margin-top: 0.5rem;
+  font-family: var(--font-serif), "Noto Serif SC", "Songti SC", serif;
+  font-size: clamp(1.4rem, 2.4vw, 1.85rem);
+  font-weight: 650;
+  line-height: 1.3;
+  letter-spacing: -0.02em;
+  overflow-wrap: anywhere;
+}
+
+.closeButton {
+  flex: none;
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  padding-inline: 0.85rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  color: var(--color-text-secondary);
+  background: var(--color-surface);
+  font: inherit;
+  font-size: 0.74rem;
+  cursor: pointer;
+  transition:
+    color var(--duration-fast) ease,
+    border-color var(--duration-fast) ease;
+
+  &:hover {
+    color: var(--color-primary);
+    border-color: var(--color-primary);
+  }
+}
+
+.meta {
+  display: flex;
+  flex: none;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem 1.2rem;
+  padding: 0.85rem clamp(1.25rem, 2.5vw, 1.75rem);
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-text-tertiary);
+  font-size: 0.7rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  a {
+    display: inline-flex;
+    min-height: 1.85rem;
+    align-items: center;
+    padding: 0.25rem 0.6rem;
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+    color: var(--color-text-secondary);
+    font-size: 0.66rem;
+    text-decoration: none;
+    transition:
+      color var(--duration-fast) ease,
+      border-color var(--duration-fast) ease;
+
+    &:hover {
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+    }
+  }
+}
+
+.body {
+  display: block;
+  flex: 1;
+  min-height: 0;
+  padding: clamp(1.25rem, 2.5vw, 1.75rem);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.notFoundText {
+  margin-bottom: 1rem;
+  color: var(--color-text-secondary);
+  font-size: 0.9rem;
+  line-height: 1.7;
+}
+
+.dialogFooter {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding: 0.9rem clamp(1.25rem, 2.5vw, 1.75rem);
+  border-top: 1px solid var(--color-border);
+  background: rgb(255 255 255 / 50%);
+}
+
+.primaryAction {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  padding-inline: 1rem;
+  border: 1px solid var(--color-primary);
+  border-radius: var(--radius-sm);
+  color: var(--color-primary);
+  background: transparent;
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    color var(--duration-fast) ease,
+    background-color var(--duration-fast) ease;
+
+  &:hover {
+    color: var(--color-surface);
+    background: var(--color-primary);
+  }
+}
+
+.anchorHighlight {
+  border-radius: var(--radius-sm);
+  background: rgb(22 76 255 / 12%);
+  box-shadow: 0 0 0 0.4rem rgb(22 76 255 / 12%);
+  animation: tinglab-anchor-pulse 2s var(--ease-out);
+}
+
+@keyframes tinglab-overlay-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes tinglab-dialog-in {
+  from {
+    transform: translateX(1.5rem);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes tinglab-anchor-pulse {
+  0% {
+    background: rgb(22 76 255 / 24%);
+  }
+
+  70%,
+  100% {
+    background: rgb(22 76 255 / 0%);
+  }
+}
+
+@media (max-width: 48rem) {
+  .dialog {
+    width: 100%;
+    border-left: 0;
+  }
+
+  .closeButton {
+    min-width: 3rem;
+    min-height: 3rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .overlay,
+  .dialog,
+  .anchorHighlight {
+    animation: none;
+  }
+
+  .anchorHighlight {
+    background: rgb(22 76 255 / 16%);
+  }
+}
