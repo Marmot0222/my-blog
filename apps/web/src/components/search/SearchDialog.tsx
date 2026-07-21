@@ -143,7 +143,7 @@ export function SearchDialog({ open, onClose, returnFocusRef }: SearchDialogProp
             ref={inputRef}
             value={query}
             maxLength={120}
-            placeholder="搜索文章、笔记与话题…"
+            placeholder="搜索文章、项目与话题…"
             aria-label="搜索内容"
             role="combobox"
             aria-autocomplete="list"
@@ -191,7 +191,13 @@ export function SearchDialog({ open, onClose, returnFocusRef }: SearchDialogProp
                     onClick={onClose}
                   >
                     <span className={styles.resultMeta}>
-                      <span>{result.kind === "article" ? "文章" : "笔记"}</span>
+                      <span>
+                        {result.type === "project"
+                          ? "项目"
+                          : result.kind === "article"
+                            ? "文章"
+                            : "笔记"}
+                      </span>
                       <time dateTime={result.date}>{result.date}</time>
                     </span>
                     <span className={styles.resultTitle}>

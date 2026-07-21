@@ -1,0 +1,130 @@
+.page {
+  width: min(var(--page-max-width), calc(100% - (var(--page-padding) * 2)));
+  margin: 0 auto;
+  padding-block: clamp(3.5rem, 8vw, 7rem) clamp(4rem, 9vw, 8rem);
+}
+
+.intro {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(16rem, 0.8fr);
+  gap: clamp(2rem, 8vw, 8rem);
+  align-items: end;
+  max-width: 78rem;
+
+  h1 {
+    grid-column: 1;
+    max-width: 12ch;
+    margin-top: 1rem;
+    font-family: var(--font-serif), "Noto Serif SC", "Songti SC", serif;
+    font-size: clamp(3rem, 7vw, 6.8rem);
+    font-weight: 600;
+    line-height: 1.08;
+    letter-spacing: -0.055em;
+    overflow-wrap: anywhere;
+  }
+
+  > p:last-child {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    color: var(--color-text-secondary);
+    font-size: clamp(0.95rem, 1.4vw, 1.1rem);
+    line-height: 1.85;
+  }
+}
+
+.eyebrow {
+  color: var(--color-primary);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.projects {
+  margin-top: clamp(4rem, 10vw, 9rem);
+}
+
+.sectionHeading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 1rem;
+
+  h2 {
+    font-size: clamp(1.1rem, 2vw, 1.5rem);
+    font-weight: 650;
+  }
+
+  span {
+    color: var(--color-text-tertiary);
+    font-size: 0.68rem;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+.cta {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 2rem;
+  align-items: end;
+  margin-top: clamp(4rem, 10vw, 8rem);
+  padding-top: clamp(2.5rem, 5vw, 4rem);
+  border-top: 1px solid var(--color-border-strong);
+
+  h2 {
+    margin-top: 0.7rem;
+    font-family: var(--font-serif), "Noto Serif SC", "Songti SC", serif;
+    font-size: clamp(2rem, 4vw, 3.5rem);
+    font-weight: 600;
+    line-height: 1.2;
+    letter-spacing: -0.04em;
+  }
+
+  p:not(.eyebrow) {
+    margin-top: 1rem;
+    color: var(--color-text-secondary);
+    line-height: 1.75;
+  }
+}
+
+.ctaLinks {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.75rem 1.5rem;
+
+  a {
+    display: inline-flex;
+    min-height: 2.75rem;
+    align-items: center;
+    color: var(--color-text-secondary);
+    font-size: 0.78rem;
+    font-weight: 650;
+    transition: color var(--duration-fast) ease;
+  }
+
+  a:hover {
+    color: var(--color-primary);
+  }
+}
+
+@media (max-width: 48rem) {
+  .intro {
+    grid-template-columns: minmax(0, 1fr);
+
+    h1,
+    > p:last-child {
+      grid-column: 1;
+      grid-row: auto;
+    }
+  }
+
+  .cta {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .ctaLinks {
+    justify-content: flex-start;
+  }
+}

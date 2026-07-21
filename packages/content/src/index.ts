@@ -1,5 +1,11 @@
 export { createContentRepository, type ContentRepositoryOptions } from "./posts";
-export { postFrontMatterSchema, type PostFrontMatter } from "./schema";
+export {
+  postFrontMatterSchema,
+  projectFrontMatterSchema,
+  type PostFrontMatter,
+  type ProjectFrontMatter,
+} from "./schema";
+export { compareProjects } from "./projects";
 export { createContentSearchIndex, normalizeSearchText } from "./search";
 export { aggregateTags } from "./tags";
 export type {
@@ -9,6 +15,9 @@ export type {
   PostKind,
   PostMetadata,
   PostVisual,
+  Project,
+  ProjectMetadata,
+  ProjectStatus,
   SearchDocument,
   SearchOptions,
   SearchResult,

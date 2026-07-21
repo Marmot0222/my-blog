@@ -22,16 +22,38 @@ export type Post = Readonly<{
   content: string;
 }>;
 
+export type ProjectStatus = "active" | "maintained" | "archived" | "concept";
+
+export type ProjectMetadata = Readonly<{
+  slug: string;
+  title: string;
+  summary: string;
+  status: ProjectStatus;
+  featured: boolean;
+  order: number;
+  startedAt: string;
+  updatedAt: string;
+  role: string;
+  stack: string[];
+  cover?: string;
+  repository?: string;
+  demo?: string;
+  published: boolean;
+}>;
+
+export type Project = Readonly<{
+  metadata: ProjectMetadata;
+  content: string;
+}>;
+
 export type TagSummary = Readonly<{
   label: string;
   slug: string;
   count: number;
 }>;
 
-export type SearchDocument = Readonly<{
+type SearchDocumentBase = Readonly<{
   id: string;
-  type: "post";
-  kind: PostKind;
   title: string;
   description: string;
   excerpt: string;
@@ -42,6 +64,9 @@ export type SearchDocument = Readonly<{
   href: string;
   searchableText: string;
 }>;
+
+export type SearchDocument = SearchDocumentBase &
+  Readonly<{ type: "post"; kind: PostKind } | { type: "project"; kind: "project" }>;
 
 export type SearchResult = Omit<SearchDocument, "searchableText">;
 
@@ -62,6 +87,12 @@ export type ContentRepository = Readonly<{
   getAllPostSlugs(): string[];
   getAllTags(): TagSummary[];
   getPostsByTag(tagSlug: string): PostMetadata[];
+  getAllProjects(): ProjectMetadata[];
+  getPublishedProjects(): ProjectMetadata[];
+  getFeaturedProjects(): ProjectMetadata[];
+  getProjectBySlug(slug: string): Project | undefined;
+  getAllProjectSlugs(): string[];
   getSearchDocuments(): SearchDocument[];
   validate(): PostMetadata[];
+  validateProjects(): ProjectMetadata[];
 }>;

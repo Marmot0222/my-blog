@@ -9,7 +9,7 @@
   "scripts": {
     "dev": "turbo dev",
     "build": "turbo build",
-    "content:check": "pnpm --filter @ting-lab/content content:check ../../content/posts",
+    "content:check": "pnpm --filter @ting-lab/content content:check ../../content",
     "content:index": "pnpm --filter @ting-lab/retrieval content:index ../../content/posts",
     "content:search": "pnpm --filter @ting-lab/retrieval content:search",
     "db:up": "docker compose --env-file apps/web/.env.local -f compose.dev.yml up -d",

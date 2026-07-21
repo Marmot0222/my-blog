@@ -1,0 +1,47 @@
+---
+slug: ting-lab
+title: "Ting Lab"
+summary: "把技术写作、可检索知识与站内 AI 问答放进同一个可维护系统。"
+status: active
+featured: true
+order: 10
+startedAt: "2026-07"
+updatedAt: "2026-07-21"
+role: "独立设计与开发"
+stack:
+  - Next.js
+  - React
+  - TypeScript
+  - MDX
+  - PostgreSQL
+  - pgvector
+  - Docker
+repository: https://github.com/Marmot0222/my-blog
+demo: https://blog.wengtingxing.xyz
+published: true
+---
+
+## 为什么做这个项目
+
+技术笔记很容易停留在“写完就沉底”的状态。Ting Lab 尝试把写作、检索和提问放在同一条内容链路中：文章仍然以仓库内 MDX 为唯一事实来源，搜索和 AI 只负责帮助读者重新找到、组合与理解这些内容。
+
+## 核心能力
+
+- 使用 Next.js App Router 组合文章、项目、搜索和 AI 工作区。
+- 通过 PostgreSQL、pgvector 与增量索引为 RAG 提供可重建的检索层。
+- 使用 UI Message Stream 输出流式回答，并把可信文章来源归入同一条消息。
+- 使用 Docker Compose 与 Caddy 完成生产编排、HTTPS 和流式反向代理。
+
+## 关键技术决策
+
+内容层和检索层保持分离。MDX 可以独立构建和阅读；数据库不可用时，静态站点仍然成立。数据库中的文档与分块只是索引，可以从内容源重新生成。
+
+AI 对话在首页和独立工作区共享同一个客户端内核。一次提问对应一次请求、一次检索和至多一条助手消息，避免两个入口各自维护协议后逐渐分叉。
+
+## 问题与处理
+
+部署过程中曾遇到容器公网 DNS、Embedding 参数兼容与向量维度不一致。项目通过显式网络出口、配置预检、固定 `halfvec(2048)` Schema 和可重复的索引流程，把这些运行时问题变成可检查的工程约束。
+
+## 当前状态
+
+项目仍在持续维护。当前重点是让内容模型、搜索、主题、SEO、AI 来源阅读与部署流程形成清晰边界，而不是继续堆叠孤立功能。

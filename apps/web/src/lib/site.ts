@@ -16,6 +16,7 @@ export const siteConfig = Object.freeze({
   title: "Ting Lab — 记录技术，也让知识可以被提问",
   description: "记录编码、设计、思考与实践的过程。",
   author: "Weng Tingxing",
+  github: "https://github.com/Marmot0222",
   locale: "zh_CN",
   language: "zh-CN",
   origin: normalizeSiteOrigin(process.env.NEXT_PUBLIC_SITE_URL),

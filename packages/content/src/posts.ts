@@ -5,12 +5,14 @@ import matter from "gray-matter";
 import readingTime from "reading-time";
 
 import { postFrontMatterSchema } from "./schema";
+import { projectToSearchDocument, readProjectEntries } from "./projects";
 import { aggregateTags } from "./tags";
 import type { ContentRepository, Post, PostMetadata, SearchDocument } from "./types";
 import { comparePostsByDate, isSafeSlug, tagToSlug } from "./utils";
 
 export type ContentRepositoryOptions = Readonly<{
   postsDirectory: string;
+  projectsDirectory?: string;
 }>;
 
 function formatValidationError(filePath: string, error: unknown): Error {
@@ -74,6 +76,7 @@ function createExcerpt(content: string, fallback: string): string {
 
 export function createContentRepository({
   postsDirectory,
+  projectsDirectory,
 }: ContentRepositoryOptions): ContentRepository {
   function getPostFiles(): string[] {
     try {
@@ -111,6 +114,18 @@ export function createContentRepository({
     return getAllPosts().filter((post) => post.published);
   }
 
+  function getAllProjectEntries() {
+    return readProjectEntries(projectsDirectory);
+  }
+
+  function getAllProjects() {
+    return getAllProjectEntries().map((project) => project.metadata);
+  }
+
+  function getPublishedProjects() {
+    return getAllProjects().filter((project) => project.published);
+  }
+
   return {
     getAllPosts,
     getPublishedPosts,
@@ -126,26 +141,39 @@ export function createContentRepository({
     getAllTags: () => aggregateTags(getPublishedPosts()),
     getPostsByTag: (tagSlug) =>
       getPublishedPosts().filter((post) => post.tags.some((tag) => tagToSlug(tag) === tagSlug)),
+    getAllProjects,
+    getPublishedProjects,
+    getFeaturedProjects: () => getPublishedProjects().filter((project) => project.featured),
+    getProjectBySlug: (slug) => {
+      if (!isSafeSlug(slug)) return undefined;
+      return getAllProjectEntries().find((project) => project.metadata.slug === slug);
+    },
+    getAllProjectSlugs: () => getPublishedProjects().map((project) => project.slug),
     getSearchDocuments: () =>
-      getAllPostEntries()
-        .filter(({ metadata }) => metadata.published)
-        .map(({ metadata, content }): SearchDocument => ({
-          id: metadata.slug,
-          type: "post",
-          kind: metadata.kind,
-          title: metadata.title,
-          description: metadata.description,
-          excerpt: createExcerpt(content, metadata.description),
-          date: metadata.date,
-          updatedAt: metadata.updatedAt,
-          category: metadata.category,
-          tags: metadata.tags,
-          href: `/posts/${metadata.slug}`,
-          searchableText: toPlainText(content),
-        }))
-        .sort(
-          (left, right) => right.date.localeCompare(left.date) || left.id.localeCompare(right.id),
-        ),
+      [
+        ...getAllPostEntries()
+          .filter(({ metadata }) => metadata.published)
+          .map(({ metadata, content }): SearchDocument => ({
+            id: metadata.slug,
+            type: "post",
+            kind: metadata.kind,
+            title: metadata.title,
+            description: metadata.description,
+            excerpt: createExcerpt(content, metadata.description),
+            date: metadata.date,
+            updatedAt: metadata.updatedAt,
+            category: metadata.category,
+            tags: metadata.tags,
+            href: `/posts/${metadata.slug}`,
+            searchableText: toPlainText(content),
+          })),
+        ...getAllProjectEntries()
+          .filter(({ metadata }) => metadata.published)
+          .map(projectToSearchDocument),
+      ].sort(
+        (left, right) => right.date.localeCompare(left.date) || left.id.localeCompare(right.id),
+      ),
     validate: getAllPosts,
+    validateProjects: getAllProjects,
   };
 }

@@ -158,3 +158,49 @@ test("360px 下核心页面与移动搜索无横向溢出", async ({ page }) => 
   await expect(page.getByRole("dialog", { name: "搜索 Ting Lab" })).toBeVisible();
   await expectNoHorizontalOverflow(page);
 });
+
+test("项目导航、详情与公开外链行为正确", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("link", { name: "项目", exact: true }).click();
+  await expect(page).toHaveURL(/\/projects$/);
+  await expect(page.getByRole("heading", { name: "项目案例" })).toBeVisible();
+  await page.getByRole("link", { name: "查看案例" }).first().click();
+  await expect(page).toHaveURL(/\/projects\/ting-lab$/);
+  await expect(page.getByRole("heading", { name: "Ting Lab" })).toBeVisible();
+  const repository = page.getByRole("link", { name: /查看代码/ });
+  await expect(repository).toHaveAttribute("target", "_blank");
+  await expect(repository).toHaveAttribute("rel", /noopener/);
+  await page.getByRole("link", { name: "返回项目列表" }).click();
+  await page.getByRole("link", { name: "可配置 AI 对话流 Demo" }).first().click();
+  await expect(page.getByRole("link", { name: /查看代码/ })).toHaveCount(0);
+  await expect(page.getByRole("link", { name: /访问线上站点/ })).toHaveCount(0);
+});
+
+test("站内搜索标识项目并进入项目详情", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "搜索内容" }).click();
+  await page.getByRole("combobox", { name: "搜索内容" }).fill("组件注册表");
+  const result = page.getByRole("option").first();
+  await expect(result).toContainText("项目");
+  await expect(result).toContainText("可配置 AI 对话流 Demo");
+  await result.getByRole("link").click();
+  await expect(page).toHaveURL(/\/projects\/configurable-ai-dialogue-flow$/);
+});
+
+test("关于页在深色主题和窄屏下保持可读且无溢出", async ({ page }) => {
+  await page.setViewportSize({ width: 360, height: 800 });
+  await page.emulateMedia({ colorScheme: "dark" });
+  await page.goto("/");
+  await page.locator('summary[aria-label="导航菜单"]').click();
+  await page.getByRole("link", { name: "关于", exact: true }).click();
+  await expect(page).toHaveURL(/\/about$/);
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+  await expect(page.getByRole("heading", { name: "我在做什么" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "能力地图" })).toBeVisible();
+  await expect(page.getByRole("link", { name: /GitHub/ })).toBeVisible();
+  await expectNoHorizontalOverflow(page);
+  await page.goto("/projects");
+  await expectNoHorizontalOverflow(page);
+  await page.goto("/projects/configurable-ai-dialogue-flow");
+  await expectNoHorizontalOverflow(page);
+});

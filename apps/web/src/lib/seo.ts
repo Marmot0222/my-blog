@@ -1,4 +1,4 @@
-import type { PostMetadata, TagSummary } from "@ting-lab/content";
+import type { PostMetadata, ProjectMetadata, TagSummary } from "@ting-lab/content";
 import type { MetadataRoute } from "next";
 
 export function joinUrl(origin: string, pathname: string): string {
@@ -16,6 +16,7 @@ export function createRobots(origin: string): MetadataRoute.Robots {
 export function createSitemap(
   origin: string,
   posts: readonly PostMetadata[],
+  projects: readonly ProjectMetadata[],
   tags: readonly TagSummary[],
 ): MetadataRoute.Sitemap {
   const published = posts.filter((post) => post.published);
@@ -43,6 +44,14 @@ export function createSitemap(
       changeFrequency: "monthly" as const,
       priority: 0.8,
     })),
+    ...projects
+      .filter((project) => project.published)
+      .map((project) => ({
+        url: joinUrl(origin, `/projects/${project.slug}`),
+        lastModified: project.updatedAt,
+        changeFrequency: "monthly" as const,
+        priority: project.featured ? 0.8 : 0.7,
+      })),
     ...tags.map((tag) => ({
       url: joinUrl(origin, `/tags/${tag.slug}`),
       lastModified: latest,

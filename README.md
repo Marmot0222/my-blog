@@ -12,6 +12,7 @@ packages/retrieval/          AST 分块、Embedding、增量索引与 RAG
 packages/ai/                 Chat 模型配置、Provider 与安全错误边界
 packages/ui/                 轻量共享 UI 基础
 content/posts/               MDX 文章唯一内容源
+content/projects/            MDX 项目作品唯一内容源
 compose.dev.yml              本地 PostgreSQL + pgvector
 compose.prod.yml             VPS 完整生产栈（Web、pgvector、Caddy）
 deploy/Caddyfile             自动 HTTPS 与流式反向代理
@@ -35,6 +36,10 @@ pnpm dev
 Web 默认运行于 `http://localhost:3000`。`.env.local` 仅供本地使用，禁止提交真实 Key、数据库密码或连接字符串。
 
 页面支持浅色、深色和跟随系统三种主题；点击 Header 主题按钮切换。站内搜索可点击放大镜打开，也可在非输入区域按 `Ctrl/Cmd+K` 或 `/` 打开。RSS 地址为 `/feed.xml`。
+
+`/projects` 展示经过校验和确定性排序的公开项目，`/projects/[slug]` 提供可分享的项目案例正文；`/about` 说明作者的技术方向、工作方式和公开联系入口。项目也会进入站内搜索与 sitemap，但不会进入文章 RSS。
+
+新增项目时，在 `content/projects` 创建 MDX 文件，填写严格 Front Matter 和项目叙事；没有可靠公开地址时不要填写 `repository` 或 `demo`。完整字段、排序与公开边界见 [`docs/content-projects.md`](docs/content-projects.md)，完成后运行 `pnpm content:check`。
 
 ## Chat 与 Embedding
 

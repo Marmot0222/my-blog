@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import type { PostMetadata } from "@ting-lab/content";
+import type { PostMetadata, ProjectMetadata } from "@ting-lab/content";
 
 import { createRobots, createRss, createSitemap, escapeXml, serializeJsonLd } from "./seo";
 
@@ -22,6 +22,23 @@ function post(overrides: Partial<PostMetadata> = {}): PostMetadata {
   };
 }
 
+function project(overrides: Partial<ProjectMetadata> = {}): ProjectMetadata {
+  return {
+    slug: "ting-lab",
+    title: "Ting Lab",
+    summary: "项目摘要",
+    status: "active",
+    featured: true,
+    order: 10,
+    startedAt: "2026-07",
+    updatedAt: "2026-07-21",
+    role: "独立设计与开发",
+    stack: ["Next.js"],
+    published: true,
+    ...overrides,
+  };
+}
+
 test("robots 禁止 API 并输出规范 sitemap", () => {
   const robots = createRobots("https://example.com/");
   assert.deepEqual(robots.rules, { userAgent: "*", allow: "/", disallow: ["/api/"] });
@@ -32,6 +49,7 @@ test("sitemap 排除草稿、使用内容更新时间且 URL 无重复", () => {
   const sitemap = createSitemap(
     "https://example.com/",
     [post(), post({ slug: "draft", published: false })],
+    [project(), project({ slug: "draft-project", published: false })],
     [{ label: "React", slug: "react", count: 1 }],
   );
   assert.equal(
@@ -40,6 +58,14 @@ test("sitemap 排除草稿、使用内容更新时间且 URL 无重复", () => {
   );
   assert.equal(new Set(sitemap.map(({ url }) => url)).size, sitemap.length);
   assert.equal(sitemap.find(({ url }) => url.endsWith("/posts/hello"))?.lastModified, "2026-07-02");
+  assert.equal(
+    sitemap.find(({ url }) => url.endsWith("/projects/ting-lab"))?.lastModified,
+    "2026-07-21",
+  );
+  assert.equal(
+    sitemap.some(({ url }) => url.includes("draft-project")),
+    false,
+  );
 });
 
 test("RSS 转义特殊字符、支持中文空标签和 updatedAt，且只输出公开内容", () => {

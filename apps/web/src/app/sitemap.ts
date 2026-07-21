@@ -8,6 +8,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   return createSitemap(
     siteConfig.origin,
     contentRepository.getPublishedPosts(),
+    contentRepository.getPublishedProjects(),
     contentRepository.getAllTags(),
   );
 }

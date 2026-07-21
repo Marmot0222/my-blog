@@ -44,7 +44,7 @@ const languageLabelTransformer: ShikiTransformer = {
   },
 };
 
-export async function compilePostMdx(source: string) {
+export async function compileMdxContent(source: string) {
   const headings: TocHeading[] = [];
   const { content } = await compileMDX({
     source,
@@ -73,3 +73,5 @@ export async function compilePostMdx(source: string) {
     headings,
   };
 }
+
+export const compilePostMdx = compileMdxContent;
