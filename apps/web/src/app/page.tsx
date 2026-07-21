@@ -5,6 +5,8 @@ import { LatestNotes } from "@/components/home/LatestNotes";
 import { SiteHeader } from "@/components/home/SiteHeader";
 import { TopicTags } from "@/components/home/TopicTags";
 import { contentRepository } from "@/lib/content";
+import { serializeJsonLd } from "@/lib/seo";
+import { absoluteUrl, siteConfig } from "@/lib/site";
 
 import styles from "./page.module.scss";
 
@@ -15,6 +17,24 @@ export default function Home() {
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: serializeJsonLd({
+            "@context": "https://schema.org",
+            "@type": "Blog",
+            name: siteConfig.name,
+            description: siteConfig.description,
+            url: absoluteUrl("/"),
+            inLanguage: siteConfig.language,
+            author: {
+              "@type": "Person",
+              name: siteConfig.author,
+              url: absoluteUrl("/about"),
+            },
+          }),
+        }}
+      />
       <SiteHeader activeItem="home" />
       <main className={styles.page}>
         <HeroSection articles={featuredArticles} />
@@ -27,7 +47,9 @@ export default function Home() {
       </main>
       <footer className={styles.footer}>
         <span>A / EDITORIAL</span>
-        <span>TING LAB © 2026</span>
+        <span>
+          <a href="/feed.xml">RSS</a> · TING LAB © 2026
+        </span>
       </footer>
     </>
   );

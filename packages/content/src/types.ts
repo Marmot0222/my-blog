@@ -28,6 +28,31 @@ export type TagSummary = Readonly<{
   count: number;
 }>;
 
+export type SearchDocument = Readonly<{
+  id: string;
+  type: "post";
+  kind: PostKind;
+  title: string;
+  description: string;
+  excerpt: string;
+  date: string;
+  updatedAt?: string;
+  category: string;
+  tags: readonly string[];
+  href: string;
+  searchableText: string;
+}>;
+
+export type SearchResult = Omit<SearchDocument, "searchableText">;
+
+export type SearchOptions = Readonly<{
+  limit?: number;
+}>;
+
+export type ContentSearchIndex = Readonly<{
+  search(query: string, options?: SearchOptions): SearchResult[];
+}>;
+
 export type ContentRepository = Readonly<{
   getAllPosts(): PostMetadata[];
   getPublishedPosts(): PostMetadata[];
@@ -37,5 +62,6 @@ export type ContentRepository = Readonly<{
   getAllPostSlugs(): string[];
   getAllTags(): TagSummary[];
   getPostsByTag(tagSlug: string): PostMetadata[];
+  getSearchDocuments(): SearchDocument[];
   validate(): PostMetadata[];
 }>;

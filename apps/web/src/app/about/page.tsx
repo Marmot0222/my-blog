@@ -6,8 +6,10 @@ import { SiteHeader } from "@/components/home/SiteHeader";
 import styles from "../editorial-page.module.scss";
 
 export const metadata: Metadata = {
-  title: "关于 — Ting Lab",
+  title: "关于",
   description: "一名持续学习、记录与构建的前端开发者。",
+  alternates: { canonical: "/about" },
+  openGraph: { url: "/about", title: "关于" },
 };
 
 export default function AboutPage() {

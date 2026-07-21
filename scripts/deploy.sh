@@ -45,6 +45,11 @@ CURRENT_STAGE="检查运行环境"
 command -v docker >/dev/null || { echo "未找到 Docker。" >&2; exit 1; }
 docker info >/dev/null || { echo "Docker daemon 不可用。" >&2; exit 1; }
 docker compose version >/dev/null || { echo "需要 Docker Compose v2。" >&2; exit 1; }
+COMPOSE_VERSION="$(docker compose version --short | sed 's/^v//')"
+if [[ "$(printf '%s\n' "2.33.1" "$COMPOSE_VERSION" | sort -V | head -n 1)" != "2.33.1" ]]; then
+  echo "需要 Docker Compose 2.33.1+（当前 $COMPOSE_VERSION），以支持 gw_priority。" >&2
+  exit 1
+fi
 [[ -f "$ENV_FILE" ]] || { echo "缺少 $ENV_FILE；请从 .env.production.example 复制并填写。" >&2; exit 1; }
 bash scripts/validate-production-env.sh "$ENV_FILE"
 

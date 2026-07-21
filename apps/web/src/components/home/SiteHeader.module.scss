@@ -3,7 +3,7 @@
   z-index: 10;
   height: var(--header-height);
   border-bottom: 1px solid var(--color-border);
-  background: rgb(247 246 242 / 92%);
+  background: var(--color-header);
   backdrop-filter: blur(1rem);
 }
 
@@ -84,24 +84,18 @@
     stroke-linecap: round;
     stroke-width: 1.6;
   }
-
-  &:disabled {
-    color: var(--color-text-tertiary);
-    cursor: not-allowed;
-    opacity: 0.58;
-  }
 }
 
 .themeButton {
   border-radius: 50%;
-  background: #ededea;
+  background: var(--color-control);
   transition:
     color var(--duration-fast) ease,
     background-color var(--duration-fast) ease;
 
   &:not(:disabled):hover {
     color: var(--color-primary);
-    background: #e5e7ee;
+    background: var(--color-control-hover);
   }
 }
 
@@ -166,7 +160,7 @@
   padding: 1rem var(--page-padding) 1.5rem;
   border-bottom: 1px solid var(--color-border);
   background: var(--color-canvas);
-  box-shadow: 0 1rem 2rem rgb(20 22 26 / 7%);
+  box-shadow: var(--shadow-menu);
 
   > a {
     min-height: 3rem;
@@ -197,12 +191,6 @@
     color: var(--color-text);
     background: transparent;
 
-    &:disabled {
-      color: var(--color-text-tertiary);
-      cursor: not-allowed;
-      opacity: 0.62;
-    }
-
     svg {
       width: 1rem;
       fill: none;
@@ -210,6 +198,10 @@
       stroke-width: 1.6;
     }
   }
+}
+
+.mobileThemeButton {
+  width: 100%;
 }
 
 @media (max-width: 48rem) {

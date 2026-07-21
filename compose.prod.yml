@@ -1,5 +1,11 @@
 name: ting-lab
 
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
 services:
   db:
     image: pgvector/pgvector:0.8.2-pg16-bookworm
@@ -10,7 +16,8 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
-      - backend
+      backend: {}
+    logging: *default-logging
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
       interval: 5s
@@ -32,7 +39,8 @@ services:
       db:
         condition: service_healthy
     networks:
-      - backend
+      backend: {}
+    logging: *default-logging
     restart: "no"
 
   indexer:
@@ -57,9 +65,11 @@ services:
       migrate:
         condition: service_completed_successfully
     networks:
-      - backend
-      # 索引任务需要访问外部 Embedding API；frontend 提供非 internal 的出口。
-      - frontend
+      backend: {}
+      # frontend 的 gw_priority 明确默认公网出口，backend 仅负责内部数据库通信。
+      frontend:
+        gw_priority: 1
+    logging: *default-logging
     restart: "no"
 
   app:
@@ -80,8 +90,10 @@ services:
       migrate:
         condition: service_completed_successfully
     networks:
-      - frontend
-      - backend
+      frontend:
+        gw_priority: 1
+      backend: {}
+    logging: *default-logging
     healthcheck:
       test:
         [
@@ -114,7 +126,8 @@ services:
       app:
         condition: service_healthy
     networks:
-      - frontend
+      frontend: {}
+    logging: *default-logging
     restart: unless-stopped
     stop_grace_period: 30s
 

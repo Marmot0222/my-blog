@@ -8,8 +8,10 @@ import { contentRepository } from "@/lib/content";
 import styles from "../editorial-page.module.scss";
 
 export const metadata: Metadata = {
-  title: "文章 — Ting Lab",
+  title: "文章",
   description: "关于前端工程、系统设计与 AI 应用的长期记录。",
+  alternates: { canonical: "/posts" },
+  openGraph: { url: "/posts", title: "文章" },
 };
 
 export default function PostsPage() {

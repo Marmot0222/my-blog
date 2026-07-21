@@ -8,6 +8,8 @@ import { SiteHeader } from "@/components/home/SiteHeader";
 import { compilePostMdx } from "@/components/mdx/MdxContent";
 import { contentRepository } from "@/lib/content";
 import { formatFullDate } from "@/lib/format-date";
+import { serializeJsonLd } from "@/lib/seo";
+import { absoluteUrl, siteConfig } from "@/lib/site";
 
 import styles from "./page.module.scss";
 
@@ -26,24 +28,33 @@ export async function generateMetadata({ params }: PostPageProps): Promise<Metad
   const post = contentRepository.getPostBySlug(slug);
 
   if (!post?.metadata.published) {
-    return { title: "内容未找到 — Ting Lab" };
+    return { title: "内容未找到", robots: { index: false, follow: false } };
   }
 
   const { metadata } = post;
 
   return {
-    title: `${metadata.title} — Ting Lab`,
+    title: metadata.title,
     description: metadata.description,
     authors: [{ name: "Ting Lab" }],
     keywords: metadata.tags,
+    alternates: { canonical: `/posts/${metadata.slug}` },
     openGraph: {
       type: "article",
+      url: `/posts/${metadata.slug}`,
       title: metadata.title,
       description: metadata.description,
       publishedTime: metadata.date,
       modifiedTime: metadata.updatedAt,
       authors: ["Ting Lab"],
       tags: metadata.tags,
+      images: ["/opengraph-image"],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: metadata.title,
+      description: metadata.description,
+      images: ["/opengraph-image"],
     },
   };
 }
@@ -61,6 +72,24 @@ export default async function PostPage({ params }: PostPageProps) {
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: serializeJsonLd({
+            "@context": "https://schema.org",
+            "@type": "BlogPosting",
+            headline: metadata.title,
+            description: metadata.description,
+            url: absoluteUrl(`/posts/${metadata.slug}`),
+            datePublished: metadata.date,
+            dateModified: metadata.updatedAt ?? metadata.date,
+            inLanguage: siteConfig.language,
+            author: { "@type": "Person", name: siteConfig.author },
+            publisher: { "@type": "Organization", name: siteConfig.name },
+            keywords: metadata.tags,
+          }),
+        }}
+      />
       <SiteHeader activeItem="posts" />
       <main className={styles.page}>
         <article>

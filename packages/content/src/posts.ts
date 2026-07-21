@@ -6,7 +6,7 @@ import readingTime from "reading-time";
 
 import { postFrontMatterSchema } from "./schema";
 import { aggregateTags } from "./tags";
-import type { ContentRepository, Post, PostMetadata } from "./types";
+import type { ContentRepository, Post, PostMetadata, SearchDocument } from "./types";
 import { comparePostsByDate, isSafeSlug, tagToSlug } from "./utils";
 
 export type ContentRepositoryOptions = Readonly<{
@@ -52,6 +52,24 @@ function parsePostFile(filePath: string): Post {
   } catch (error) {
     throw formatValidationError(filePath, error);
   }
+}
+
+function toPlainText(markdown: string): string {
+  return markdown
+    .replace(/```[\s\S]*?```/g, " ")
+    .replace(/<[^>]*>/g, " ")
+    .replace(/!\[([^\]]*)\]\([^)]*\)/g, "$1")
+    .replace(/\[([^\]]+)\]\([^)]*\)/g, "$1")
+    .replaceAll("[", " ")
+    .replaceAll("]", " ")
+    .replace(/[`*_>#~|{}()-]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function createExcerpt(content: string, fallback: string): string {
+  const plainText = toPlainText(content) || fallback;
+  return plainText.length > 180 ? `${plainText.slice(0, 179).trimEnd()}…` : plainText;
 }
 
 export function createContentRepository({
@@ -108,6 +126,26 @@ export function createContentRepository({
     getAllTags: () => aggregateTags(getPublishedPosts()),
     getPostsByTag: (tagSlug) =>
       getPublishedPosts().filter((post) => post.tags.some((tag) => tagToSlug(tag) === tagSlug)),
+    getSearchDocuments: () =>
+      getAllPostEntries()
+        .filter(({ metadata }) => metadata.published)
+        .map(({ metadata, content }): SearchDocument => ({
+          id: metadata.slug,
+          type: "post",
+          kind: metadata.kind,
+          title: metadata.title,
+          description: metadata.description,
+          excerpt: createExcerpt(content, metadata.description),
+          date: metadata.date,
+          updatedAt: metadata.updatedAt,
+          category: metadata.category,
+          tags: metadata.tags,
+          href: `/posts/${metadata.slug}`,
+          searchableText: toPlainText(content),
+        }))
+        .sort(
+          (left, right) => right.date.localeCompare(left.date) || left.id.localeCompare(right.id),
+        ),
     validate: getAllPosts,
   };
 }

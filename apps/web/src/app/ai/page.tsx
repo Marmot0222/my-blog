@@ -8,8 +8,10 @@ import { compilePostMdx, type TocHeading } from "@/components/mdx/MdxContent";
 import { contentRepository } from "@/lib/content";
 
 export const metadata: Metadata = {
-  title: "AI 问答 - Ting Lab",
+  title: "AI 问答",
   description: "与 Ting Lab 的 AI 助手对话，回答会引用本站已索引的博客文章作为来源。",
+  alternates: { canonical: "/ai" },
+  openGraph: { url: "/ai", title: "AI 问答" },
 };
 
 export const dynamic = "force-dynamic";

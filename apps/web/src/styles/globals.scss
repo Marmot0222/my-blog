@@ -13,6 +13,13 @@ body {
   background: var(--color-canvas);
 }
 
+html,
+body {
+  transition:
+    color var(--duration-normal) ease,
+    background-color var(--duration-normal) ease;
+}
+
 ::selection {
   color: var(--color-surface);
   background: var(--color-primary);

@@ -55,7 +55,14 @@ export async function compilePostMdx(source: string) {
         remarkPlugins: [remarkGfm, createHeadingCollector(headings)],
         rehypePlugins: [
           rehypeSlug,
-          [rehypeShiki, { theme: "github-dark-default", transformers: [languageLabelTransformer] }],
+          [
+            rehypeShiki,
+            {
+              themes: { light: "github-light-default", dark: "github-dark-default" },
+              defaultColor: false,
+              transformers: [languageLabelTransformer],
+            },
+          ],
         ],
       },
     },

@@ -7,7 +7,7 @@
     "build": "next build",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "test": "tsx --test src/app/api/health/route.test.ts src/app/api/chat/route.test.ts src/lib/chat/validation.test.ts src/lib/chat/rate-limit.test.ts src/lib/chat/errors.test.ts src/lib/chat/rag.test.ts"
+    "test": "tsx --test src/app/api/health/route.test.ts src/app/api/chat/route.test.ts src/app/api/search/route.test.ts src/app/feed.xml/route.test.ts src/lib/chat/validation.test.ts src/lib/chat/rate-limit.test.ts src/lib/chat/errors.test.ts src/lib/chat/rag.test.ts src/lib/site.test.ts src/lib/seo.test.ts"
   },
   "dependencies": {
     "@ai-sdk/react": "^3.0.230",
@@ -38,6 +38,7 @@
     "@types/react": "^19.1.9",
     "@types/react-dom": "^19.1.7",
     "eslint": "^9.29.0",
+    "fast-xml-parser": "^5.10.1",
     "sass": "^1.89.2",
     "tsx": "^4.20.3",
     "typescript": "^5.8.3"

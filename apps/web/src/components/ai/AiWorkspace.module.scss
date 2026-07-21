@@ -18,7 +18,7 @@
   height: var(--header-height);
   padding-inline: var(--page-padding);
   border-bottom: 1px solid var(--color-border);
-  background: rgb(247 246 242 / 92%);
+  background: var(--color-header);
   backdrop-filter: blur(1rem);
 }
 

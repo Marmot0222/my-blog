@@ -2,6 +2,8 @@ node_modules/
 .pnpm-store/
 .turbo/
 .next/
+playwright-report/
+test-results/
 out/
 dist/
 coverage/

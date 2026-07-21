@@ -23,12 +23,14 @@ export async function generateMetadata({ params }: TagPageProps): Promise<Metada
   const topic = contentRepository.getAllTags().find((candidate) => candidate.slug === tag);
 
   if (!topic) {
-    return { title: "话题未找到 — Ting Lab" };
+    return { title: "话题未找到", robots: { index: false, follow: false } };
   }
 
   return {
-    title: `${topic.label} — Ting Lab`,
+    title: topic.label,
     description: `Ting Lab 中与 ${topic.label} 相关的内容。`,
+    alternates: { canonical: `/tags/${topic.slug}` },
+    openGraph: { url: `/tags/${topic.slug}`, title: `# ${topic.label}` },
   };
 }
 

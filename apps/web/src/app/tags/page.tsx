@@ -7,8 +7,10 @@ import { contentRepository } from "@/lib/content";
 import styles from "../editorial-page.module.scss";
 
 export const metadata: Metadata = {
-  title: "热门话题 — Ting Lab",
+  title: "热门话题",
   description: "浏览 Ting Lab 关注的技术话题。",
+  alternates: { canonical: "/tags" },
+  openGraph: { url: "/tags", title: "热门话题" },
 };
 
 export default function TagsPage() {

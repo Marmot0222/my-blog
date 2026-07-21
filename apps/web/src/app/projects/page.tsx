@@ -6,8 +6,10 @@ import { SiteHeader } from "@/components/home/SiteHeader";
 import styles from "../editorial-page.module.scss";
 
 export const metadata: Metadata = {
-  title: "项目 — Ting Lab",
+  title: "项目",
   description: "正在构建和持续维护的实验性项目。",
+  alternates: { canonical: "/projects" },
+  openGraph: { url: "/projects", title: "项目" },
 };
 
 export default function ProjectsPage() {

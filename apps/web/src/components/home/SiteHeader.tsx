@@ -1,5 +1,7 @@
 import Link from "next/link";
 
+import { HeaderInteractive } from "@/components/navigation/HeaderInteractive";
+
 import styles from "./SiteHeader.module.scss";
 
 const navItems = [
@@ -14,24 +16,6 @@ export type NavigationKey = "home" | "posts" | "projects" | "about" | "ai";
 type SiteHeaderProps = Readonly<{
   activeItem?: NavigationKey;
 }>;
-
-function SearchIcon() {
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden="true">
-      <circle cx="11" cy="11" r="6.5" />
-      <path d="m16 16 4 4" />
-    </svg>
-  );
-}
-
-function SunIcon() {
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden="true">
-      <circle cx="12" cy="12" r="3.5" />
-      <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" />
-    </svg>
-  );
-}
 
 export function SiteHeader({ activeItem }: SiteHeaderProps) {
   const activeNavigationItem = activeItem === "home" ? "posts" : activeItem;
@@ -56,55 +40,7 @@ export function SiteHeader({ activeItem }: SiteHeaderProps) {
           ))}
         </nav>
 
-        <div className={styles.actions}>
-          <button
-            className={styles.iconButton}
-            type="button"
-            aria-label="搜索文章（功能开发中）"
-            title="功能开发中"
-            disabled
-          >
-            <SearchIcon />
-          </button>
-          <span className={styles.divider} aria-hidden="true" />
-          <button
-            className={styles.themeButton}
-            type="button"
-            aria-label="切换主题（功能开发中）"
-            title="功能开发中"
-            disabled
-          >
-            <SunIcon />
-          </button>
-        </div>
-
-        <details className={styles.mobileMenu}>
-          <summary aria-label="导航菜单">
-            <span className={styles.menuIcon} aria-hidden="true">
-              <i />
-              <i />
-            </span>
-          </summary>
-          <nav className={styles.mobileNav} aria-label="移动端导航">
-            {navItems.map((item) => (
-              <Link
-                key={item.label}
-                href={item.href}
-                aria-current={item.key === activeNavigationItem ? "page" : undefined}
-              >
-                {item.label}
-              </Link>
-            ))}
-            <div className={styles.mobileActions}>
-              <button type="button" aria-label="搜索文章（功能开发中）" title="功能开发中" disabled>
-                <SearchIcon /> 搜索
-              </button>
-              <button type="button" aria-label="切换主题（功能开发中）" title="功能开发中" disabled>
-                <SunIcon /> 主题
-              </button>
-            </div>
-          </nav>
-        </details>
+        <HeaderInteractive activeItem={activeNavigationItem} />
       </div>
     </header>
   );
