@@ -24,3 +24,4 @@ export type {
   TagSummary,
 } from "./types";
 export { isSafeSlug, tagToSlug } from "./utils";
+export { queryPosts, relatedPosts, POSTS_PAGE_SIZE, type PostQuery } from "./queries";

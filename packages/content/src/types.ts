@@ -81,6 +81,10 @@ export type ContentSearchIndex = Readonly<{
 export type ContentRepository = Readonly<{
   getAllPosts(): PostMetadata[];
   getPublishedPosts(): PostMetadata[];
+  queryPosts(
+    query?: import("./queries").PostQuery,
+  ): ReturnType<typeof import("./queries").queryPosts>;
+  getRelatedPosts(slug: string): PostMetadata[];
   getFeaturedPosts(): PostMetadata[];
   getLatestNotes(): PostMetadata[];
   getPostBySlug(slug: string): Post | undefined;

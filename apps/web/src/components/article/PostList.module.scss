@@ -8,7 +8,8 @@
   padding-block: clamp(1.75rem, 4vw, 3rem);
   border-bottom: 1px solid var(--color-border);
 
-  h2 {
+  h2,
+  h3 {
     max-width: 28ch;
     margin-top: 0.8rem;
     font-family: var(--font-serif), "Noto Serif SC", "Songti SC", serif;
@@ -18,7 +19,8 @@
     overflow-wrap: anywhere;
   }
 
-  h2 a {
+  h2 a,
+  h3 a {
     text-decoration-color: transparent;
     text-underline-offset: 0.18em;
     transition:
@@ -26,7 +28,8 @@
       text-decoration-color var(--duration-fast) ease;
   }
 
-  h2 a:hover {
+  h2 a:hover,
+  h3 a:hover {
     color: var(--color-primary);
     text-decoration-color: currentcolor;
   }

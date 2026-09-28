@@ -4,6 +4,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { ArticleToc } from "@/components/article/ArticleToc";
+import { PostList } from "@/components/article/PostList";
 import { SiteHeader } from "@/components/home/SiteHeader";
 import { compilePostMdx } from "@/components/mdx/MdxContent";
 import { contentRepository } from "@/lib/content";
@@ -69,6 +70,7 @@ export default async function PostPage({ params }: PostPageProps) {
 
   const { metadata, content } = post;
   const compiled = await compilePostMdx(content);
+  const related = contentRepository.getRelatedPosts(slug);
 
   return (
     <>
@@ -126,6 +128,12 @@ export default async function PostPage({ params }: PostPageProps) {
             <Link href="/posts">← 返回文章列表</Link>
           </footer>
         </article>
+        {related.length ? (
+          <section className={styles.related} aria-labelledby="related-heading">
+            <h2 id="related-heading">相关阅读</h2>
+            <PostList posts={related} headingLevel={3} />
+          </section>
+        ) : null}
       </main>
     </>
   );

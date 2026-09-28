@@ -41,6 +41,12 @@ Web 默认运行于 `http://localhost:3000`。`.env.local` 仅供本地使用，
 
 新增项目时，在 `content/projects` 创建 MDX 文件，填写严格 Front Matter 和项目叙事；没有可靠公开地址时不要填写 `repository` 或 `demo`。完整字段、排序与公开边界见 [`docs/content-projects.md`](docs/content-projects.md)，完成后运行 `pnpm content:check`。
 
+## 内容创作与阅读
+
+使用 `pnpm content:new -- --kind article --slug my-first-post --title "我的第一篇文章"` 创建未发布草稿，短笔记使用 `--kind note`。开发时显式设置 `CONTENT_PREVIEW=1` 后运行 `pnpm dev`，在 `/preview/posts/<slug>` 预览；生产始终拒绝预览入口。
+
+`/posts` 支持文章/笔记、标签筛选与每页 5 篇的 URL 分页，详情提供最多 3 篇相关阅读。创建、校验、发布、取消发布和索引失败处理见 [内容工作流](docs/content-workflow.md)，后续范围见 [产品路线](docs/product-roadmap.md)。
+
 ## Chat 与 Embedding
 
 Chat 和 Embedding 完全独立，可以使用不同供应商：

@@ -105,6 +105,15 @@ UI Message Stream 协议不变量（实现于 `apps/web/src/lib/chat/stream.ts`�
 - E2E 使用根目录 `playwright.config.ts` 与 `e2e/`；fake AI 只能通过浏览器路由拦截提供 UI Message Stream，不得增加生产测试后门或访问真实 AI/数据库。
 - `compose.prod.yml` 要求 Docker Compose 2.33.1+。app/indexer 同时连接 backend/frontend 时，frontend 必须保持最高 `gw_priority` 作为确定性公网出口；backend 保持 internal，db/migrate 不获得公网入口。所有服务保留 json-file 日志轮转。
 
+## 内容创作与阅读闭环
+
+- `pnpm content:new -- --kind article|note --slug <slug> --title <title>` 调用 content 包 CLI，固定写 `content/posts`，默认草稿，独占写入禁止覆盖；Windows 保留文件名也拒绝。复用 Front Matter schema 与 YAML 序列化。
+- `ContentRepository.queryPosts` 负责公开内容组合筛选与分页，每页 5 篇，日期倒序、slug 升序。`/posts?kind=note&tag=react&page=2` 使用标签 slug；非法 kind 回全部，未知标签空结果，无效页码回 1，超界夹到末页。GET 表单切换条件重置分页；重复参数取首值。
+- 带查询参数的归档 noindex/follow，canonical 固定 `/posts`，sitemap 不列组合 URL；保留 `/tags`。
+- `getRelatedPosts` 共同标签每项 2 分、同分类 1 分，日期/slug 打破同分，排除自身、草稿、重复和零分，最多 3 篇。
+- 只有 `NODE_ENV=development` 且 `CONTENT_PREVIEW=1` 开放 `/preview/posts/[slug]`，复用 MDX 编译与目录。生产始终 404，不修改公开读取边界；静态参数、搜索、RSS、sitemap、RAG 不包含草稿。
+- `packages/content/src/workflow.test.ts` 用临时目录测试 CLI/查询；Web 预览边界测试及 `e2e/content-workflow.spec.ts` 覆盖生产隔离、URL 恢复、阅读流程。完整发布操作见 `docs/content-workflow.md`。
+
 ## 必须执行的验证命令
 
 提交仓库级变更前必须全部执行：

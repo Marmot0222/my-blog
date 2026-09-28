@@ -8,9 +8,15 @@ import styles from "./PostList.module.scss";
 type PostListProps = Readonly<{
   posts: readonly PostMetadata[];
   emptyMessage?: string;
+  headingLevel?: 2 | 3;
 }>;
 
-export function PostList({ posts, emptyMessage = "暂无已发布内容。" }: PostListProps) {
+export function PostList({
+  posts,
+  emptyMessage = "暂无已发布内容。",
+  headingLevel = 2,
+}: PostListProps) {
+  const Heading = headingLevel === 3 ? "h3" : "h2";
   if (posts.length === 0) {
     return <p className={styles.empty}>{emptyMessage}</p>;
   }
@@ -26,9 +32,9 @@ export function PostList({ posts, emptyMessage = "暂无已发布内容。" }: P
               <time dateTime={post.date}>{formatFullDate(post.date)}</time>
               <span>{post.readingTime}</span>
             </div>
-            <h2>
+            <Heading>
               <Link href={`/posts/${post.slug}`}>{post.title}</Link>
-            </h2>
+            </Heading>
             <p>{post.description}</p>
             <ul className={styles.tags} aria-label={`${post.title} 的标签`}>
               {post.tags.map((tag) => (

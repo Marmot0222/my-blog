@@ -36,6 +36,9 @@ export function tagToSlug(label: string): string {
   return fallback;
 }
 
-export function comparePostsByDate<T extends { date: string }>(left: T, right: T): number {
-  return right.date.localeCompare(left.date);
+export function comparePostsByDate<T extends { date: string; slug: string }>(
+  left: T,
+  right: T,
+): number {
+  return right.date.localeCompare(left.date) || left.slug.localeCompare(right.slug);
 }

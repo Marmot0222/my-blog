@@ -23,7 +23,8 @@
     "lint": "turbo lint",
     "typecheck": "turbo typecheck",
     "test": "turbo test",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "content:new": "pnpm --filter @ting-lab/content content:new"
   },
   "devDependencies": {
     "@playwright/test": "^1.61.1",

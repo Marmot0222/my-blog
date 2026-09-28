@@ -1,7 +1,10 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import { mkdtempSync, writeFileSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import path from "node:path";
 
-import type { Post } from "@ting-lab/content";
+import { createContentRepository, type Post } from "@ting-lab/content";
 
 import { createDocumentChecksum } from "./checksum";
 import { createIndexPlan } from "./indexer";
@@ -30,6 +33,30 @@ const post: Post = {
   },
   content: "content",
 };
+
+test("仓库中的草稿不进入检索输入，旧草稿索引规划删除", () => {
+  const directory = mkdtempSync(path.join(tmpdir(), "ting-index-draft-"));
+  try {
+    writeFileSync(
+      path.join(directory, "draft.mdx"),
+      `---\ntitle: Draft\ndescription: Draft\ndate: "2026-09-01"\ntags: [React]\ncategory: Test\npublished: false\nkind: article\n---\nDraft body`,
+    );
+    const repository = createContentRepository({ postsDirectory: directory });
+    const input = repository
+      .getPublishedPosts()
+      .map((item) => repository.getPostBySlug(item.slug))
+      .filter((item): item is Post => Boolean(item));
+    const plan = createIndexPlan(
+      input,
+      [{ id: "draft-id", slug: "draft", contentChecksum: "old", isPublished: true }],
+      embedding,
+    );
+    assert.deepEqual(plan.items, []);
+    assert.deepEqual(plan.deleteSlugs, ["draft"]);
+  } finally {
+    rmSync(directory, { recursive: true, force: true });
+  }
+});
 
 test("未变化文档跳过 Embedding，并规划删除失效文档", () => {
   const checksum = createDocumentChecksum(post, embedding);

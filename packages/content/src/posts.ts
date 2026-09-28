@@ -7,6 +7,7 @@ import readingTime from "reading-time";
 import { postFrontMatterSchema } from "./schema";
 import { projectToSearchDocument, readProjectEntries } from "./projects";
 import { aggregateTags } from "./tags";
+import { queryPosts, relatedPosts } from "./queries";
 import type { ContentRepository, Post, PostMetadata, SearchDocument } from "./types";
 import { comparePostsByDate, isSafeSlug, tagToSlug } from "./utils";
 
@@ -129,6 +130,8 @@ export function createContentRepository({
   return {
     getAllPosts,
     getPublishedPosts,
+    queryPosts: (query) => queryPosts(getPublishedPosts(), query),
+    getRelatedPosts: (slug) => relatedPosts(getPublishedPosts(), slug),
     getFeaturedPosts: () => getPublishedPosts().filter((post) => post.featured),
     getLatestNotes: () => getPublishedPosts().filter((post) => post.kind === "note"),
     getPostBySlug: (slug) => {
