@@ -100,10 +100,10 @@ git clone https://github.com/Marmot0222/my-blog.git ting-lab
 cd ting-lab
 cp .env.production.example .env.production
 # 编辑 .env.production，填入域名、强数据库密码及真实 Chat/Embedding 配置
-./scripts/deploy.sh
+bash scripts/deploy.sh --init
 ```
 
-首次上线必须先完成 [后台指南的切换步骤](docs/admin.md#首次生产切换顺序)：备份、migration、导入 dry-run/apply、核对、初始化管理员和主密钥，再启用 database 模式与 worker。`deploy:prod` 不代替首次初始化。普通部署预检、构建、迁移并启动 app/worker/Caddy；database 模式不自动导入、不覆盖后台文章、不重复入队。file 模式保留增量 indexer 与显式 `SKIP_CONTENT_INDEX`。Caddy 证书仍保存在命名 volume。
+首次启用后台时，填好生产配置与主密钥后运行 `bash scripts/deploy.sh --init`：自动备份、migration、导入 dry-run/apply、初始化管理员，再启动 app/worker/Caddy；终端提示输入两次后台密码。重跑保留已有管理员密码与会话，导入冲突会停止，不覆盖后台编辑。详见 [后台指南](docs/admin.md#首次生产切换顺序)。以后普通更新使用 `bash scripts/deploy.sh` 或 `pnpm deploy:prod`，不导入、不初始化、不重复入队。file 模式保留增量 indexer 与显式 `SKIP_CONTENT_INDEX`。Caddy 证书仍保存在命名 volume。
 
 常用运维命令均显式读取生产 env：
 

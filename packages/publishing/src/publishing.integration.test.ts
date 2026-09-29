@@ -178,9 +178,20 @@ const url = process.env.TEST_DATABASE_URL;
         reclaimed.id,
       ]);
       assert.equal(await store.retry(reclaimed.article_id), 1);
-      await store.setPassword(await hashPassword("fixture-password-never-production"));
+      await runtime.pool.query("DELETE FROM admin_credentials WHERE id=1");
+      assert.equal(
+        await store.setPassword(await hashPassword("fixture-password-never-production"), true),
+        true,
+      );
       const sid = sessionHash(randomUUID());
       await store.createSession(sid, new Date(Date.now() + 60000));
+      assert.equal(await store.sessionValid(sid), true);
+      const originalHash = await store.credentials();
+      assert.equal(
+        await store.setPassword(await hashPassword("another-fixture-password"), true),
+        false,
+      );
+      assert.equal(await store.credentials(), originalHash);
       assert.equal(await store.sessionValid(sid), true);
       await store.revokeSession(sid);
       assert.equal(await store.sessionValid(sid), false);

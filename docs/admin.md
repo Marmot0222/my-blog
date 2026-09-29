@@ -64,16 +64,21 @@ Compose worker 非 root、自动重启，连接 internal backend 和具有最高
 
 ## 首次生产切换顺序
 
-1. 备份现有数据库及仓库内容；记录基线和所有公开 slug/checksum。
-2. 构建兼容新镜像并应用正式 migration；不启动写入，不清索引或业务表。
-3. 用新 tools 镜像运行 import dry-run，再显式 apply，核对文章数、草稿数、slug/checksum。为 apply 准备独立主密钥以冻结 Embedding；之后完成管理员初始化。
-4. 设置 `CONTENT_SOURCE=database`、独立主密钥/会话密钥、管理员密码和固定 HTTPS ADMIN_ORIGIN，冻结独立 Embedding。
-5. 启动 app，验证公开入口和后台，确认文件没有再次被当作文章源；然后启动 worker 消费导入/发布产生的任务。
-6. 检查索引状态、HTTPS、流式回答和日志脱敏，保存完整数据库与独立主密钥备份。
+服务器同步最新代码后，只需修改根目录 `.env.production`，补齐 `CONTENT_SOURCE=database`、固定 HTTPS `ADMIN_ORIGIN`、独立会话密钥/主密钥及 `AI_ALLOWED_HOSTS`，核对 Chat/Embedding 配置。主密钥只生成一次，后续更新保留。然后执行：
+
+```bash
+bash scripts/deploy.sh --init
+```
+
+脚本自动执行生产预检 → 构建 → 启动数据库 → 备份 → migration → 文章导入 dry-run → apply → 初始化管理员 → 启动 app/worker/Caddy → HTTPS 健康检查。没有管理员时，终端提示输入两次后台密码（12–256 字符）；自动化环境可安全注入 `ADMIN_PASSWORD`，不要把密码写进命令参数。已有管理员不会重新设置密码或撤销会话。
+
+备份在 `backups/before-admin-XXXXXXXX/`，包括数据库、仓库内容和 `.env.production`，使用私有权限创建。它包含秘密配置，应安全保管并另行备份主密钥。备份失败不会执行 migration；导入校验或冲突失败不会继续切换应用。中途失败修正后可重跑 `--init`，相同导入跳过，不覆盖后台编辑。显式 `--init` 即授权导入，不再额外逐条确认。
+
+完成后访问 `/admin/login`，核对文章数、公开 slug、索引状态及模型配置。脚本不会生成/轮换主密钥，不清库、不恢复备份，也不自动回滚。
 
 容器命令使用 `docker compose --env-file .env.production -f compose.prod.yml run --rm migrate` 应用迁移；工具命令用 `run --rm --entrypoint pnpm indexer --filter @ting-lab/publishing exec tsx src/cli.ts import`（加 `--apply` 才写入）。初始化密码通过 `--env ADMIN_PASSWORD` 转发已安全注入的环境值，不能把值写在参数中。
 
-普通 `pnpm deploy:prod` 只部署代码、迁移并监督 worker，database 模式 indexer 不自动导入或重复入队。新文章无需部署。禁止 `down -v`、清库或自动回滚。回退旧程序不等于数据回退；后台产生的新内容必须先备份/导出，不能直接切回 Git 文件宣称无损。
+普通 `bash scripts/deploy.sh` 或 `pnpm deploy:prod` 只部署代码、迁移并监督 worker，不执行首次备份/导入/密码初始化；database 模式 indexer 不重复入队。新文章无需部署。禁止 `down -v`、清库或自动回滚。回退旧程序不等于数据回退；后台产生的新内容必须先备份/导出，不能直接切回 Git 文件宣称无损。
 
 ## 验证与备份
 

@@ -245,13 +245,17 @@ export function createPublishingStore(runtime: DatabaseRuntime = createDatabase(
         )
       ).rows[0]?.password_hash;
     },
-    async setPassword(hash: string) {
-      await transaction(async (client) => {
-        await client.query(
-          "INSERT INTO admin_credentials(id,password_hash) VALUES(1,$1) ON CONFLICT(id) DO UPDATE SET password_hash=$1,updated_at=now()",
+    async setPassword(hash: string, onlyIfMissing = false) {
+      return transaction(async (client) => {
+        const result = await client.query(
+          onlyIfMissing
+            ? "INSERT INTO admin_credentials(id,password_hash) VALUES(1,$1) ON CONFLICT(id) DO NOTHING"
+            : "INSERT INTO admin_credentials(id,password_hash) VALUES(1,$1) ON CONFLICT(id) DO UPDATE SET password_hash=$1,updated_at=now()",
           [hash],
         );
+        if (result.rowCount === 0) return false;
         await client.query("DELETE FROM admin_sessions");
+        return true;
       });
     },
     async createSession(idHash: string, expires: Date) {

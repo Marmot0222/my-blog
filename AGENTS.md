@@ -176,6 +176,8 @@ pnpm deploy:prod
 
 `pnpm deploy:prod` 与 `./scripts/deploy.sh` 等价。真实部署必须使用未提交的 `.env.production`；禁止把示例占位符用于上线。
 
+首次启用后台使用 `bash scripts/deploy.sh --init`，显式执行独立备份、migration、导入 dry-run/apply 和仅缺失时的管理员初始化。普通部署不得自动导入或重置密码。初始化重跑保留已有凭据与会话，导入冲突停止；回归使用 `bash scripts/deploy.test.sh` 的隔离 mock，不访问生产。
+
 ## 禁止事项
 
 - 禁止引入 Nx、Tailwind、CMS、Redis 或完整 UI 组件库。

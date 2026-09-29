@@ -40,9 +40,12 @@ try {
   } else if (command === "password") {
     if (!process.env.ADMIN_PASSWORD)
       throw new Error("请通过 ADMIN_PASSWORD 安全注入密码，不接受命令行密码参数");
-    await createPublishingStore().setPassword(await hashPassword(process.env.ADMIN_PASSWORD));
+    const updated = await createPublishingStore().setPassword(
+      await hashPassword(process.env.ADMIN_PASSWORD),
+      args.includes("--if-missing"),
+    );
     delete process.env.ADMIN_PASSWORD;
-    console.info("管理员密码已更新，旧会话已撤销。");
+    console.info(updated ? "管理员密码已更新，旧会话已撤销。" : "管理员已存在，保留密码和会话。");
   } else if (command === "freeze-embedding") {
     await freezeEmbedding(true);
     console.info("Embedding 配置已冻结。");
