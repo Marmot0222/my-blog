@@ -14,7 +14,7 @@ test("shared Dialog containing Select preserves outer lock and long-page positio
       import React from "react";
       import {createRoot} from "react-dom/client";
       import {Dialog,DialogTrigger,DialogContent,DialogTitle,Select,SelectTrigger,SelectValue,SelectContent,SelectItem} from "@ting-lab/ui";
-      createRoot(document.getElementById('root')).render(<><header>Background header</header><main style={{height:3000,paddingTop:600}}><Dialog><DialogTrigger>Open dialog</DialogTrigger><DialogContent aria-describedby={undefined}><DialogTitle>Nested fixture</DialogTitle><Select defaultValue="a"><SelectTrigger aria-label="Nested choice"><SelectValue/></SelectTrigger><SelectContent><SelectItem value="a">Alpha</SelectItem><SelectItem value="b">Beta</SelectItem></SelectContent></Select></DialogContent></Dialog></main></>);
+      createRoot(document.getElementById('root')).render(<><header>Background header</header><main style={{height:3000,paddingTop:600}}><Dialog><DialogTrigger>Open dialog</DialogTrigger><DialogContent aria-describedby={undefined}><DialogTitle>Nested fixture</DialogTitle><Select defaultValue="a"><SelectTrigger aria-label="Nested choice"><SelectValue/></SelectTrigger><SelectContent><SelectItem value="a">Alpha</SelectItem><SelectItem value="b">Beta</SelectItem>{Array.from({length:35},(_,i)=><SelectItem key={i} value={'long-'+i}>Long menu option {i} with a descriptive label</SelectItem>)}</SelectContent></Select></DialogContent></Dialog></main></>);
     `,
     },
     bundle: true,
@@ -56,7 +56,15 @@ test("shared Dialog containing Select preserves outer lock and long-page positio
   const scroll = await page.evaluate(() => scrollY);
   await page.getByRole("button", { name: "Open dialog" }).click();
   await page.getByRole("combobox", { name: "Nested choice" }).click();
+  const viewport = page.locator("[data-radix-select-viewport]");
+  await expect
+    .poll(() => viewport.evaluate((el) => getComputedStyle(el).scrollbarWidth))
+    .not.toBe("none");
+  await page.keyboard.press("End");
+  await expect(page.getByRole("option").last()).toBeFocused();
+  expect(await viewport.evaluate((el) => el.scrollTop)).toBeGreaterThan(0);
   await page.keyboard.press("Escape");
+  await expect(page.getByRole("combobox", { name: "Nested choice" })).toBeFocused();
   await expect(page.getByRole("dialog")).toBeVisible();
   expect(await page.evaluate(() => getComputedStyle(document.body).overflow)).toBe("hidden");
   const during = await page.locator("main").boundingBox();

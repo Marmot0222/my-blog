@@ -26,7 +26,9 @@ export default defineConfig({
       },
     },
     ...(process.env.CROSS_BROWSER
-      ? [{ name: "firefox", use: { ...devices["Desktop Firefox"] } }]
+      ? // Patched Firefox headless forces scrollbar-width:none, even on plain
+        // overflow:auto elements. Headed mode validates real native scrollbars.
+        [{ name: "firefox", use: { ...devices["Desktop Firefox"], headless: false } }]
       : []),
   ],
   webServer: {

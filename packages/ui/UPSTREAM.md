@@ -11,3 +11,5 @@
 这是本地维护的源码适配版，不支持官方 CLI 无审查覆盖升级。新增组件须继续记录来源、保留许可证并验证键盘、焦点、portal 和浅深主题。
 
 第十二轮补充：DropdownMenu 沿用同一固定上游 registry 的 dropdown-menu.tsx 结构，使用 Radix Root/Trigger/Portal/Content/RadioGroup/RadioItem；样式沿用 SCSS Token。Sheet 是共享 Dialog 的侧边布局适配，保留相同焦点隔离和 Portal，不另造锁滚动。Dialog 的 ModalLayer 仅提供菜单层级上下文。Button 默认 type=button，asChild 用于导航且调用点不传 disabled。
+
+第十三轮本地扩展：控件统一 44px 外框 token；Button 补齐 ghost/pressed/disabled 反馈。RadioGroup 和公开导航复用轻量 useSelectionIndicator，仅测量装饰几何，保留 Radix 单选行为；pendingValue 独立表达尚未提交的意图。DialogContent motion=dialog/left/right 只控制方向，CSS data-state 动画由 Radix Presence 保留退出。浮层使用 transform-origin 和独立 translate/scale，不覆盖 Popper 定位。SelectViewport 覆盖上游默认隐藏滚动条的规则，让长列表可以原生拖动。没有引入额外组件或动效框架。

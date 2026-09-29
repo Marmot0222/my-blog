@@ -203,3 +203,14 @@ pnpm deploy:prod
 - 导出在列表工具栏确认，校验附件和 ting-lab-content-v1 后发起下载，错误响应不得下载。状态文案不能声称文件已写入磁盘。
 - 后台 E2E 使用 pnpm test:admin，globalSetup 仅允许本机 *_test 数据库，恢复测试密码并清理测试登录限速；禁止生产连接。截图与 trace 不记录秘密。
 - 跨浏览器回归设置 CROSS_BROWSER=1 后运行 pnpm test:e2e（需安装 Firefox；非默认缓存用 PLAYWRIGHT_BROWSERS_PATH）。前后台套件分开输出；冷启动 Markdown 预览断言允许初始化耗时，不跳过实际页面验证。
+
+## 第十三轮视觉与动效约束
+
+- 公共 SiteHeader 通过 root layout 的 PublicHeader slot 跨路由保持挂载，后台使用 AdminShell。页面保持 Server Component，ChatProvider 不因导航或抽屉变化重建。
+- 桌面导航条按独立 label 测量；导航/分段装饰元素均 aria-hidden、pointer-events:none。只在选择、尺寸和字体变化时测量，不每帧测量；首次直接定位，导航已完成状态以 URL 为准。
+- 控件外框使用 --control-height；不要把分段外层 padding 再叠加到目标高度。主按钮文字使用 --color-on-primary。
+- 动效使用 --duration-fast/normal/exit 与 --ease-out；禁止 transition:all、全站页面入场或 AI token 动画。hover 限悬停设备；reduced-motion 禁用位移/缩放。
+- Dialog/Sheet/文章抽屉统一 Radix Portal/Presence/锁滚动。退出不要用外层条件渲染立即卸载；direction 使用 DialogContent motion，避免覆盖定位 transform。恢复焦点使用 preventScroll。
+- 滚动条保持原生和平台宽度，只对真实滚动区设样式。SelectViewport 必须保留长列表可拖动滚动条；forced-colors 优先默认；禁止根 gutter 或第二份滚动条补偿。
+- 视觉验收需保留实际截图及录屏/连续帧，说明环境与缩放方式；历史基线不得被回归测试覆盖，临时产物写 test-results。
+- CROSS_BROWSER=1 的 Firefox 使用 headed 模式实测原生滚动条（Linux CI 需显示服务/Xvfb）；当前 Playwright Firefox headless 会强制隐藏滚动条，不能把该环境冒充覆盖式平台验收。

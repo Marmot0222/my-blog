@@ -5,7 +5,7 @@ async function login(page: Page) {
   await page.getByLabel("管理员密码").fill(process.env.ADMIN_PASSWORD!);
   await page.getByRole("button", { name: "登录", exact: true }).click();
   await expect(page).toHaveURL(/\/admin$/);
-  await mkdir("docs/round-12/screenshots", { recursive: true });
+  await mkdir("test-results/round12/screenshots", { recursive: true });
 }
 test("45 isolated articles: filters, pagination, export and mobile shell", async ({ page }) => {
   await login(page);
@@ -42,7 +42,10 @@ test("45 isolated articles: filters, pagination, export and mobile shell", async
   await page.getByRole("button", { name: "筛选", exact: true }).click();
   await expect(page.locator("main li")).toHaveCount(45);
   await page.setViewportSize({ width: 1440, height: 900 });
-  await page.screenshot({ path: "docs/round-12/screenshots/admin-list.png" });
+  await page.screenshot({
+    animations: "disabled",
+    path: "test-results/round12/screenshots/admin-list.png",
+  });
   for (const width of [320, 375, 768, 1440]) {
     await page.setViewportSize({ width, height: 900 });
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
@@ -50,16 +53,25 @@ test("45 isolated articles: filters, pagination, export and mobile shell", async
     );
   }
   await page.getByRole("button", { name: "导出内容", exact: true }).click();
-  await page.screenshot({ path: "docs/round-12/screenshots/export-dialog.png" });
+  await page.screenshot({
+    animations: "disabled",
+    path: "test-results/round12/screenshots/export-dialog.png",
+  });
   const download = page.waitForEvent("download");
   await page.getByRole("button", { name: "确认导出" }).click();
   expect((await download).suggestedFilename()).toMatch(/^ting-lab-content-.*\.json$/);
   await expect(page.getByRole("status")).toContainText("已发起下载");
   await page.keyboard.press("Escape");
   await page.setViewportSize({ width: 375, height: 812 });
-  await page.screenshot({ path: "docs/round-12/screenshots/admin-list-mobile.png" });
+  await page.screenshot({
+    animations: "disabled",
+    path: "test-results/round12/screenshots/admin-list-mobile.png",
+  });
   await page.getByRole("button", { name: "管理菜单" }).click();
-  await page.screenshot({ path: "docs/round-12/screenshots/admin-sheet-mobile.png" });
+  await page.screenshot({
+    animations: "disabled",
+    path: "test-results/round12/screenshots/admin-sheet-mobile.png",
+  });
   await page.getByRole("dialog").getByRole("link", { name: "模型配置" }).click();
   await expect(page.getByRole("dialog")).toBeHidden();
 });
@@ -114,7 +126,10 @@ test("failed save preserves input and model tests preserve dirty chat", async ({
   await expect(page.getByRole("status")).toContainText("其他页面更新");
   await expect(page.getByLabel("标题", { exact: true })).toHaveValue("Keep this title");
   await expect(page.getByLabel("标签（逗号分隔）")).toHaveValue("中文，标签，中文");
-  await page.screenshot({ path: "docs/round-12/screenshots/editor.png" });
+  await page.screenshot({
+    animations: "disabled",
+    path: "test-results/round12/screenshots/editor.png",
+  });
   await page.getByRole("link", { name: "模型配置", exact: true }).click();
   await expect(page.getByRole("dialog")).toContainText("有未保存的修改");
   await page.getByRole("button", { name: "继续编辑" }).click();
@@ -134,5 +149,8 @@ test("failed save preserves input and model tests preserve dirty chat", async ({
     await expect(page.getByRole("status").last()).toContainText("连接成功");
     await expect(page.getByLabel("模型", { exact: true })).toHaveValue("unsaved-chat-model");
   }
-  await page.screenshot({ path: "docs/round-12/screenshots/model-settings.png" });
+  await page.screenshot({
+    animations: "disabled",
+    path: "test-results/round12/screenshots/model-settings.png",
+  });
 });

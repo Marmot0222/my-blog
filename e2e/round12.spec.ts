@@ -37,17 +37,17 @@ test("navigation, portal bounds and scroll compensation", async ({ page }, info)
     expect(Math.abs(before[key].x - during[key].x)).toBeLessThanOrEqual(1);
     expect(Math.abs(before[key].width - during[key].width)).toBeLessThanOrEqual(1);
   }
-  await mkdir("docs/round-12/screenshots", { recursive: true });
-  await page.screenshot({ path: "docs/round-12/screenshots/posts-select.png" });
+  await mkdir("test-results/round12/screenshots", { recursive: true });
+  await page.screenshot({ path: "test-results/round12/screenshots/posts-select.png" });
   await page.keyboard.press("Escape");
   await page.getByRole("button", { name: "搜索内容", exact: true }).click();
   const overlay = await page.locator('[data-slot="dialog-overlay"]').boundingBox();
   expect(overlay).toEqual({ x: 0, y: 0, width: 1440, height: 900 });
-  await page.screenshot({ path: "docs/round-12/screenshots/search-desktop.png" });
+  await page.screenshot({ path: "test-results/round12/screenshots/search-desktop.png" });
   await page.keyboard.press("Escape");
   await expect(page.getByRole("button", { name: "搜索内容", exact: true })).toBeFocused();
   await writeFile(
-    `docs/round-12/geometry-${info.project.name}.json`,
+    `test-results/round12/geometry-${info.project.name}.json`,
     JSON.stringify({ before, during, after: await geometry(page) }, null, 2),
   );
   await info.attach("geometry", {
@@ -56,7 +56,7 @@ test("navigation, portal bounds and scroll compensation", async ({ page }, info)
   });
   await page.goto("/");
   await page.getByRole("button", { name: "搜索内容", exact: true }).click();
-  await page.screenshot({ path: "docs/round-12/screenshots/search-home.png" });
+  await page.screenshot({ path: "test-results/round12/screenshots/search-home.png" });
 });
 
 test("search invalidates results immediately and ignores composing Enter", async ({ page }) => {
@@ -78,11 +78,11 @@ test("search invalidates results immediately and ignores composing Enter", async
 test("mobile search restores visible focus and theme persists", async ({ page }) => {
   await page.setViewportSize({ width: 375, height: 812 });
   await page.goto("/");
-  await page.getByLabel("导航菜单").click();
+  await page.getByRole("button", { name: "导航菜单", exact: true }).click();
   await page.getByRole("button", { name: "搜索", exact: true }).click();
   await page.keyboard.press("Escape");
-  await expect(page.getByLabel("导航菜单")).toBeFocused();
-  await page.getByLabel("导航菜单").click();
+  await expect(page.getByRole("button", { name: "导航菜单", exact: true })).toBeFocused();
+  await page.getByRole("button", { name: "导航菜单", exact: true }).click();
   await page
     .getByRole("button", { name: /主题：/ })
     .last()
@@ -92,7 +92,7 @@ test("mobile search restores visible focus and theme persists", async ({ page })
   await page.reload();
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
   await page.keyboard.press("Control+k");
-  await page.screenshot({ path: "docs/round-12/screenshots/search-dark-mobile.png" });
+  await page.screenshot({ path: "test-results/round12/screenshots/search-dark-mobile.png" });
 });
 
 test("storage unavailable still supports synchronized theme controls", async ({ page }) => {
