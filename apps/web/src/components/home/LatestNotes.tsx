@@ -36,7 +36,7 @@ export function LatestNotes({ notes }: LatestNotesProps) {
         ))}
       </ul>
       {notes.length === 0 ? <p className={styles.empty}>暂无笔记。</p> : null}
-      <Link className={styles.more} href="/posts">
+      <Link className={styles.more} href="/posts?kind=note">
         查看全部笔记 <span aria-hidden="true">→</span>
       </Link>
     </div>

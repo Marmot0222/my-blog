@@ -8,7 +8,7 @@ Ting Lab 是一个用于沉淀文章、项目与实验性数字产品的个人�
 
 - `apps/web`：唯一的 Next.js App Router Web 应用与页面组合层。
 - `packages/*`：可复用领域能力、共享 UI 与工具配置；不得放页面路由。
-- `content/posts`：文章源文件目录。
+- `content/posts`：file 模式文章源、首次导入与开发 fixture；database 模式文章唯一权威源是 PostgreSQL。
 - `content/projects`：项目源文件目录。
 - 根目录：workspace、Turborepo、统一命令和仓库级文档。
 - `compose.prod.yml` 与 `deploy/`：VPS 生产服务编排、HTTPS 和反向代理配置。
@@ -22,6 +22,7 @@ Ting Lab 是一个用于沉淀文章、项目与实验性数字产品的个人�
 - `@ting-lab/database`：数据库客户端、schema、迁移和持久化访问边界。
 - `@ting-lab/ai`：模型供应商适配、提示词与生成调用边界。
 - `@ting-lab/retrieval`：切分、索引、检索和 RAG 编排边界。
+- `@ting-lab/publishing`：服务端异步内容适配、发布配置、秘密生命周期、持久任务 worker 与管理 CLI；组合 content/database/ai/retrieval，不依赖 web。
 - `@ting-lab/typescript-config`：共享 TypeScript 严格模式配置。
 - `@ting-lab/eslint-config`：共享 ESLint flat config。
 
@@ -29,6 +30,7 @@ Ting Lab 是一个用于沉淀文章、项目与实验性数字产品的个人�
 
 - `apps/web` 可以依赖所有业务包与 `@ting-lab/ui`，负责最终组合。
 - `@ting-lab/retrieval` 可以依赖 `@ting-lab/content`、`@ting-lab/database`、`@ting-lab/ai`。
+- `@ting-lab/publishing` 可以依赖 content/database/ai/retrieval；这些包不得反向依赖 publishing。
 - `@ting-lab/content`、`@ting-lab/database`、`@ting-lab/ai` 默认彼此独立；确有需要时通过类型明确的公共 API 协作。
 - `@ting-lab/ui` 不得依赖业务包或 `apps/web`。
 - 所有 TypeScript workspace 可以依赖共享 TypeScript 与 ESLint 配置。
@@ -47,6 +49,7 @@ Ting Lab 是一个用于沉淀文章、项目与实验性数字产品的个人�
 
 - 组件局部样式使用 `*.module.scss`；仅 reset、主题 token 与真正全局规则进入全局 SCSS。
 - 不引入 Tailwind、CSS-in-JS 或完整 UI 组件库。
+- 按需维护 shadcn/ui Radix 源码的 SCSS Modules 适配版，保留 `packages/ui/LICENSE.shadcn.md`、`UPSTREAM.md` 来源和版本；不用官方 CLI 覆盖本地适配，不混用 Base UI。
 - 优先使用 CSS 自定义属性承载颜色、间距、字号与动效 token，避免散落魔法值。
 - 响应式设计从窄屏开始，避免固定页面宽度与不必要的绝对定位。
 - 动效必须服务于层级或反馈，并尊重 `prefers-reduced-motion`。
@@ -54,7 +57,7 @@ Ting Lab 是一个用于沉淀文章、项目与实验性数字产品的个人�
 
 ## 内容、数据库、AI、RAG 的边界
 
-- 内容源只进入 `content/posts` 与 `content/projects`；解析和校验只在 `@ting-lab/content`。
+- `CONTENT_SOURCE=file|database` 显式选择文章源，默认 file 演示且禁用后台写入；database 故障禁止回退仓库文件。项目继续只从 `content/projects` 读取，解析和校验属于 content。
 - `content/projects` 是项目唯一事实来源。项目 Front Matter 使用严格 Schema 校验 `slug`、状态、顺序、年月/日期、技术栈、可选 HTTP(S) URL 与发布状态；未知字段、重复 slug/技术项均失败。`published: false` 不得进入公开列表、详情静态参数、搜索或 sitemap。
 - 项目只通过 `ContentRepository` 的 `getPublishedProjects`、`getFeaturedProjects`、`getProjectBySlug`、`getAllProjectSlugs` 等公共 API 读取；排序依次为 featured、order、updatedAt、slug。Web 禁止直接扫描 `content/projects` 或跨包导入读取器。
 - `/projects`、`/projects/[slug]`、`/about` 均为 Server Component。项目业务组件位于 `apps/web/src/components/projects`，路由样式就近放置；项目正文复用 `compileMdxContent`，禁止创建第二套 MDX 解析与高亮流程。
@@ -65,7 +68,15 @@ Ting Lab 是一个用于沉淀文章、项目与实验性数字产品的个人�
 - AI 配置只能在真实请求或显式配置检查时解析；AI 未配置不能阻塞静态博客构建与阅读。
 - AI 测试必须使用配置 fixture、fake model 或自有边界，不得访问真实模型 API。
 - 向量化、索引、检索与上下文编排只在 `@ting-lab/retrieval`；它通过公共 API 组合 content、database 与 ai。
-- MDX 是文章唯一事实来源；PostgreSQL 中的文档和分块仅是可删除、可重建的检索索引。
+- database 模式中 articles/article_revisions 是文章权威数据；管理员、会话、配置和发布任务同样必须备份。只有 documents/document_chunks 是派生索引。
+- 公开文章统一通过 `getContentRepository` 异步请求快照读取：首页、详情、标签、搜索、RSS、sitemap、SEO 和 AI 抽屉均须使用公开修订。禁止永久内存索引、构建期数据库连接和旧页面缓存导致撤稿泄露。
+- 保存草稿仅创建 working revision；发布原子切换 published revision 并入队。稳定 UUID、唯一安全 slug、乐观锁和发布后 slug 只读不可绕过；软删除恢复不能自动发布。
+- 正文与管理员预览共用安全 Markdown 校验及 format:md 编译，不执行 HTML、JSX、MDX 导入或表达式。禁止服务器任意抓取远端图片。
+- 所有后台页面、API、预览、导出、索引重试和配置入口均服务端鉴权。写 API 必须验证固定 ADMIN_ORIGIN、JSON schema 和请求体上限；后台 no-store/noindex；禁止用隐藏菜单代替授权。
+- iron-session Cookie 必须 HttpOnly/SameSite、生产 Secure，并查数据库撤销与过期状态。密码只通过安全环境注入 CLI，使用 scrypt；重置撤销旧会话。不得增加默认密码或公开注册。
+- Chat 已激活完整 DB profile 优先于完整 env，不逐字段混用、不在 DB 故障时回退。Embedding 空间首次冻结，后台只允许独立 Key 替换。API Key 用 AES-256-GCM 存储，主密钥与会话密钥分离；任何读接口、props、日志和内容导出不得包含明文或密文。
+- 连接测试和真实模型调用共用 HTTPS 主机批准列表、连接时 DNS 公网地址检查和禁止重定向的出站边界。AI 浏览器错误只从 `@ting-lab/ai/errors` 公共入口导入，禁止导入服务端网络能力。
+- 发布任务采用 PostgreSQL outbox/lease/有限重试，worker 受 Compose 监督。旧 lease、旧公开 revision 和不同 embedding fingerprint 不能覆盖当前索引。送入模型的片段必须先校验当前公开 revision 与 fingerprint。
 - 数据库 Schema 变化必须创建并提交 SQL migration，不允许用 `drizzle-kit push` 代替 migration。
 - Embedding 列固定为 `halfvec(2048)`；改变维度或存储类型必须新增 migration，不能在运行时改变列定义。
 - 内容索引必须增量、幂等；checksum 未变化时禁止重复调用 Embedding。
@@ -96,7 +107,7 @@ UI Message Stream 协议不变量（实现于 `apps/web/src/lib/chat/stream.ts`�
 ## 搜索、主题与站点发现
 
 - 公开搜索文档、确定性评分与安全摘要属于 `@ting-lab/content`；搜索采用规范化后的 AND 语义，标题、标签、分类、描述、正文依次降权，稳定同分排序。只允许已发布内容进入索引。
-- `apps/web/src/lib/search.ts` 在服务端模块初始化时创建只读本地索引；`GET /api/search?q=` 只负责校验和序列化，不接数据库、Embedding 或 RAG，也不得返回内部全文字段。
+- `apps/web/src/lib/search.ts` 从请求级内容快照创建本地全文索引；`GET /api/search?q=` 不调用 Embedding/RAG，不返回内部全文字段，响应 no-store，源不可用返回受控 503。
 - 搜索弹层位于 `apps/web/src/components/search`，Header 的客户端交互位于 `components/navigation`。必须保留 200ms debounce、AbortController、旧请求保护、焦点圈定/归还、Escape、方向键与 Enter 操作；高亮必须输出 React 文本节点，禁止 `dangerouslySetInnerHTML`。
 - 主题只允许 `light`/`dark`/`system`；默认 system。`apps/web/src/lib/theme.ts` 是存储 Key、解析与首屏初始化脚本的单一来源。初始化脚本必须在 hydration 前设置 `<html data-theme>` 和 `color-scheme`；仅 system 状态监听媒体查询。
 - 所有核心表面和文本颜色使用 `apps/web/src/styles/tokens.scss` 的语义 Token。Shiki 同时生成 light/dark 变量；不得用反色滤镜破坏代码语义色。
@@ -171,7 +182,7 @@ pnpm deploy:prod
 - 禁止在没有明确需求时提前实现博客、数据库、AI 或 RAG 业务。
 - 禁止跨 package 的 `src` 深路径导入、循环依赖和 `apps` 反向依赖。
 - 禁止提交密钥、`.env`、生成目录、缓存或 `node_modules`。
-- 禁止把数据库改成文章主数据源、每次索引清空全库，或把模型生成的链接显示为博客来源。
+- 禁止把向量表充当文章主表、每次索引清空全库、部署自动覆盖后台编辑，或把模型生成的链接显示为博客来源。
 - 禁止绕过 lint、类型检查或 production build 来交付变更。
 - 禁止用客户端组件替代本可由 Server Component 完成的实现。
 - 禁止在 AI 对话渲染层按相邻消息、文本或索引粗暴去重来掩盖协议错误；必须修复消息产生根因。

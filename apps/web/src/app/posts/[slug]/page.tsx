@@ -7,7 +7,7 @@ import { ArticleToc } from "@/components/article/ArticleToc";
 import { PostList } from "@/components/article/PostList";
 import { SiteHeader } from "@/components/home/SiteHeader";
 import { compilePostMdx } from "@/components/mdx/MdxContent";
-import { contentRepository } from "@/lib/content";
+import { getContentRepository } from "@/lib/content";
 import { formatFullDate } from "@/lib/format-date";
 import { serializeJsonLd } from "@/lib/seo";
 import { absoluteUrl, siteConfig } from "@/lib/site";
@@ -18,13 +18,11 @@ type PostPageProps = Readonly<{
   params: Promise<{ slug: string }>;
 }>;
 
-export const dynamicParams = false;
-
-export function generateStaticParams() {
-  return contentRepository.getAllPostSlugs().map((slug) => ({ slug }));
-}
+export const dynamicParams = true;
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: PostPageProps): Promise<Metadata> {
+  const contentRepository = await getContentRepository();
   const { slug } = await params;
   const post = contentRepository.getPostBySlug(slug);
 
@@ -61,6 +59,7 @@ export async function generateMetadata({ params }: PostPageProps): Promise<Metad
 }
 
 export default async function PostPage({ params }: PostPageProps) {
+  const contentRepository = await getContentRepository();
   const { slug } = await params;
   const post = contentRepository.getPostBySlug(slug);
 

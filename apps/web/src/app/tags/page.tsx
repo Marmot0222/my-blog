@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { SiteHeader } from "@/components/home/SiteHeader";
-import { contentRepository } from "@/lib/content";
+import { getContentRepository } from "@/lib/content";
 
 import styles from "../editorial-page.module.scss";
 
@@ -13,7 +13,9 @@ export const metadata: Metadata = {
   openGraph: { url: "/tags", title: "热门话题" },
 };
 
-export default function TagsPage() {
+export const dynamic = "force-dynamic";
+export default async function TagsPage() {
+  const contentRepository = await getContentRepository();
   const topics = contentRepository.getAllTags();
 
   return (

@@ -14,6 +14,7 @@ import { comparePostsByDate, isSafeSlug, tagToSlug } from "./utils";
 export type ContentRepositoryOptions = Readonly<{
   postsDirectory: string;
   projectsDirectory?: string;
+  postEntries?: readonly Post[];
 }>;
 
 function formatValidationError(filePath: string, error: unknown): Error {
@@ -78,6 +79,7 @@ function createExcerpt(content: string, fallback: string): string {
 export function createContentRepository({
   postsDirectory,
   projectsDirectory,
+  postEntries,
 }: ContentRepositoryOptions): ContentRepository {
   function getPostFiles(): string[] {
     try {
@@ -91,6 +93,7 @@ export function createContentRepository({
   }
 
   function getAllPostEntries(): Post[] {
+    if (postEntries) return [...postEntries];
     const entries = getPostFiles().map(parsePostFile);
     const slugs = new Set<string>();
 

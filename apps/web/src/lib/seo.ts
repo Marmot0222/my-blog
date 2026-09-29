@@ -7,7 +7,7 @@ export function joinUrl(origin: string, pathname: string): string {
 
 export function createRobots(origin: string): MetadataRoute.Robots {
   return {
-    rules: { userAgent: "*", allow: "/", disallow: ["/api/"] },
+    rules: { userAgent: "*", allow: "/", disallow: ["/api/", "/admin/", "/preview/"] },
     sitemap: joinUrl(origin, "/sitemap.xml"),
     host: origin,
   };

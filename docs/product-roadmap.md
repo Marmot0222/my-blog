@@ -2,7 +2,11 @@
 
 ## 当前能力
 
-MDX 文章和笔记、项目案例、关于页、本地搜索、主题、SEO/RSS、共享 AI 会话与文章抽屉、增量 RAG 索引，以及 Docker/Caddy 部署、备份和验证流程。
+文章/笔记双模式（离线 file、生产 database）、项目案例、关于页、本地搜索、主题、SEO/RSS、共享 AI 会话与文章抽屉，以及发布任务、Docker/Caddy 和备份流程。
+
+## 第十一轮：筛选与单管理员后台
+
+shadcn/Radix 的 SCSS 适配筛选、URL 即时条件；单管理员登录、working/published 修订、预览、发布/撤稿、软删除恢复、导入导出；独立 Chat profile 与加密 Key、冻结 Embedding 空间、受监督索引 worker。实际验收状态见 `docs/round-11/`，不等同于已经部署生产。
 
 ## 第十轮：内容创作与阅读闭环
 
@@ -16,4 +20,4 @@ MDX 文章和笔记、项目案例、关于页、本地搜索、主题、SEO/RSS
 
 ## 暂缓
 
-技术雷达、GitHub Trending、外部 RSS/Hacker News 聚合与定时采集明确暂缓，不自动进入下一轮。CMS、账户、评论、点赞、阅读量、邮件订阅、云端多会话、Agent 工具调用、模型选择器及框架迁移均不在本轮范围。
+技术雷达、GitHub Trending、外部 RSS/Hacker News 聚合、通用 CMS、公开注册/多人角色、评论点赞、阅读量、邮件订阅、云端多会话、Agent 工具调用、访客模型选择器及框架迁移均暂缓。本轮管理员账户和后台模型配置是明确例外，不扩展为多用户平台。

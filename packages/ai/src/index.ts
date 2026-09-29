@@ -17,3 +17,10 @@ export function createAiRuntime(env: NodeJS.ProcessEnv = process.env): AiRuntime
     systemPrompt: TING_LAB_SYSTEM_PROMPT,
   };
 }
+export {
+  createGuardedFetch,
+  approvedProviderUrl,
+  assertPublicAddress,
+  OutboundRejected,
+} from "./outbound";
+export { testAiConnection } from "./connection-test";

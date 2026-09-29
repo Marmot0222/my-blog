@@ -33,3 +33,5 @@ try {
 } finally {
   await database.close();
 }
+if (process.env.CONTENT_SOURCE === "database")
+  throw new Error("database 模式请使用根目录 pnpm content:search，检索必须校验公开修订");

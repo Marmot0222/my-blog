@@ -2,6 +2,8 @@ import { fileURLToPath } from "node:url";
 import { createPostDraft } from "./new-post";
 
 try {
+  if (process.env.CONTENT_SOURCE === "database")
+    throw new Error("database 模式请访问 /admin/posts/new 新建草稿；文件不会同步到数据库。");
   const target = createPostDraft(
     fileURLToPath(new URL("../../../content/posts/", import.meta.url)),
     process.argv.slice(2),

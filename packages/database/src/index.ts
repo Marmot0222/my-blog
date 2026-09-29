@@ -19,3 +19,12 @@ export type {
   IndexedDocument,
   TingLabDatabase,
 } from "./types";
+export {
+  createPublishingStore,
+  PublishingConflict,
+  type ArticleRecord,
+  type RevisionInput,
+} from "./publishing";
+export { createTaskStore, taskSource, type PublishingTask } from "./tasks";
+export { createProfileStore, type StoredProfile } from "./profiles";
+export { checkPublishingHealth } from "./health";

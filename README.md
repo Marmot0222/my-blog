@@ -1,6 +1,6 @@
 # Ting Lab
 
-Ting Lab 是一个基于 pnpm workspace、Turborepo 和 Next.js App Router 的个人技术博客。文章以仓库内 MDX 为唯一事实来源；PostgreSQL + pgvector 仅保存可重建的检索索引，首页 AI 面板通过服务端 RAG 返回带可信博客来源的流式回答。
+Ting Lab 是一个基于 pnpm workspace、Turborepo 和 Next.js App Router 的个人实验室。`CONTENT_SOURCE=database` 时 PostgreSQL 是文章/笔记的唯一权威源，提供单管理员编辑发布与模型配置；`file` 保留离线 MDX 演示。项目继续从仓库读取。AI 通过服务端 RAG 返回可信文章来源。
 
 ## 项目结构
 
@@ -11,7 +11,8 @@ packages/database/           Drizzle Schema、migration 和 pgvector 查询
 packages/retrieval/          AST 分块、Embedding、增量索引与 RAG
 packages/ai/                 Chat 模型配置、Provider 与安全错误边界
 packages/ui/                 轻量共享 UI 基础
-content/posts/               MDX 文章唯一内容源
+packages/publishing/         异步文章适配、配置服务、发布任务与管理 CLI
+content/posts/               file 模式文章源、首次导入与 fixture
 content/projects/            MDX 项目作品唯一内容源
 compose.dev.yml              本地 PostgreSQL + pgvector
 compose.prod.yml             VPS 完整生产栈（Web、pgvector、Caddy）
@@ -21,7 +22,7 @@ scripts/                     生产预检、部署与数据库备份
 
 ## 本地启动
 
-需要 Node.js 20+、pnpm 9；启用知识库还需要 Docker Compose。
+需要 Node.js 22.9+、pnpm 9；启用后台或知识库还需要 PostgreSQL/pgvector，可使用 Docker Compose。仅浏览演示可直接 `pnpm install`、`pnpm dev`，不需要数据库或模型。
 
 ```powershell
 pnpm install
@@ -43,7 +44,9 @@ Web 默认运行于 `http://localhost:3000`。`.env.local` 仅供本地使用，
 
 ## 内容创作与阅读
 
-使用 `pnpm content:new -- --kind article --slug my-first-post --title "我的第一篇文章"` 创建未发布草稿，短笔记使用 `--kind note`。开发时显式设置 `CONTENT_PREVIEW=1` 后运行 `pnpm dev`，在 `/preview/posts/<slug>` 预览；生产始终拒绝预览入口。
+database 模式访问 `/admin/login`，在后台新建草稿、预览、发布、撤稿和恢复；保存草稿不改变线上版本。初始化、首次导入、主密钥和运维步骤见 [后台指南](docs/admin.md)。项目不由后台管理。
+
+file 模式使用 `pnpm content:new -- --kind article --slug my-first-post --title "我的第一篇文章"` 创建草稿，短笔记使用 `--kind note`。显式设置 `CONTENT_PREVIEW=1` 后 `pnpm dev`，访问 `/preview/posts/<slug>`；该旧开发入口在生产始终 404，管理员预览另有鉴权。
 
 `/posts` 支持文章/笔记、标签筛选与每页 5 篇的 URL 分页，详情提供最多 3 篇相关阅读。创建、校验、发布、取消发布和索引失败处理见 [内容工作流](docs/content-workflow.md)，后续范围见 [产品路线](docs/product-roadmap.md)。
 
@@ -57,7 +60,7 @@ Chat 和 Embedding 完全独立，可以使用不同供应商：
 - `EMBEDDING_API_KEY` 未设置时，会按 Embedding provider 安全复用对应服务端 Key。
 - `EMBEDDING_DIMENSIONS` 固定为 `2048`；使用 `halfvec` 保留 HNSW 索引，修改维度必须新增 migration。
 
-没有数据库或 Embedding 配置时，静态博客仍能构建和浏览，Chat 会降级为通用回答，并明确显示本次未使用博客知识库。
+file 模式没有数据库也能构建和阅读；database 模式构建不连接数据库，但运行时文章读取依赖数据库，故障不回退文件。Embedding 不可用时 Chat 可降级，明确显示未使用知识库。Chat 激活配置完整覆盖 env；Embedding 首次冻结，后台只能替换独立 Key，详见后台指南。
 
 AI 对话有两个入口，共享同一会话：首页右侧可收起的 AI 侧栏，以及导航中“AI 问答”指向的 `/ai` 全页面工作区。一次提问只产生一条助手回答；RAG 命中的关联文章会作为来源展示，点击后在 `/ai` 右侧抽屉打开正文（复用文章渲染），不离开对话。架构与流协议约束见 `AGENTS.md` 与 `docs/ai-chat.md`。
 
@@ -69,16 +72,16 @@ pnpm db:down                # 停止服务，不删除 volume
 pnpm db:generate            # 根据 Schema 生成新 migration
 pnpm db:migrate             # 应用已提交 migration
 pnpm db:check               # 检查 PostgreSQL 与 pgvector
-pnpm content:index          # 增量索引已发布 MDX
+pnpm content:index          # file: 增量索引；database: 公开修订入队
 pnpm content:index -- --dry-run
 pnpm content:search -- "Next.js 并发渲染是什么？"
 ```
 
-索引通过文章内容、检索相关 Front Matter、分块算法版本及 Embedding 配置计算 checksum。内容未变化时跳过 Embedding；删除或取消发布的文章会从索引中清理。需要完整重建时，应先人工清理 `documents` 表，再运行 `pnpm content:index`；MDX 文件始终是可恢复索引的唯一来源。
+索引通过内容、检索元数据、分块算法和 Embedding 配置计算 checksum，未变化时跳过 Embedding。database 模式发布在事务中入队，worker 按 revision/fingerprint 写入；撤稿即时失去检索资格，随后清理索引。仅 `documents`/`document_chunks` 可重建，文章、修订和配置不可当作缓存删除。不要为了重试清库。
 
 Schema 变化必须通过 `pnpm db:generate` 生成并审查 migration，不使用 `drizzle-kit push` 代替部署 migration。
 
-向量维度 migration 只清理 PostgreSQL 中可由 MDX 重建的 `documents`/`document_chunks` 检索索引，不会修改 `content/posts`；同一次生产部署必须继续执行 indexer 完成重建。当前 schema 使用 `halfvec(2048)`，以兼容方舟原生 2048 维输出和 pgvector 的 HNSW 维度限制。
+旧向量维度 migration 仅涉及派生索引。新增业务 migration `0004_publishing.sql` 建立独立文章/修订/会话/配置/outbox 表，不覆盖现有文章文件。当前向量仍为 `halfvec(2048)`，更换模型空间必须受控重建，不能直接复用同维旧索引。
 
 ## VPS 生产部署
 
@@ -100,7 +103,7 @@ cp .env.production.example .env.production
 ./scripts/deploy.sh
 ```
 
-部署脚本会严格预检配置，构建锁定依赖的镜像，等待数据库健康，依次执行 migration 和增量索引，再启动应用与 Caddy 并通过公网 HTTPS 健康检查。必须显式使用 `SKIP_CONTENT_INDEX=1` 才会跳过索引；正常重复部署不会删除 volume，checksum 未变化的内容不会重复生成 embedding。Caddy 会自动申请并续期证书，其 data/config 保存在命名 volume。
+首次上线必须先完成 [后台指南的切换步骤](docs/admin.md#首次生产切换顺序)：备份、migration、导入 dry-run/apply、核对、初始化管理员和主密钥，再启用 database 模式与 worker。`deploy:prod` 不代替首次初始化。普通部署预检、构建、迁移并启动 app/worker/Caddy；database 模式不自动导入、不覆盖后台文章、不重复入队。file 模式保留增量 indexer 与显式 `SKIP_CONTENT_INDEX`。Caddy 证书仍保存在命名 volume。
 
 常用运维命令均显式读取生产 env：
 
@@ -118,7 +121,7 @@ BACKUP_RETENTION=14 ./scripts/backup-db.sh
 
 ### 数据库恢复（人工确认）
 
-恢复会覆盖目标数据，必须先停止写入、确认目标 Compose 项目与数据库名，并先运行 `./scripts/backup-db.sh` 保存当前状态。确认无误后，再由运维人员执行类似命令：
+数据库现包含不可由 Git 重建的文章、修订、管理员和配置密文。主密钥必须单独备份。先在新建隔离数据库演练恢复并核对公开修订/checksum；正式恢复前停止 app/worker 写入，确认目标并保存当前备份，再由运维执行恢复。不要直接向正在服务的数据库导入：
 
 ```bash
 gunzip -c backups/ting-lab-YYYYMMDDTHHMMSSZ.sql.gz | \

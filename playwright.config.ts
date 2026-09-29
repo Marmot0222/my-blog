@@ -5,7 +5,9 @@ export default defineConfig({
   fullyParallel: false,
   forbidOnly: Boolean(process.env.CI),
   retries: process.env.CI ? 2 : 0,
-  workers: process.env.CI ? 1 : undefined,
+  // Content-boundary tests create/remove a real fixture in the shared content
+  // directory; serialize files so request-time readers never race that teardown.
+  workers: 1,
   reporter: process.env.CI ? [["github"], ["html", { open: "never" }]] : "list",
   timeout: 30_000,
   expect: { timeout: 7_000 },

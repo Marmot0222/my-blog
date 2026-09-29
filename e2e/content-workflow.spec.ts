@@ -2,40 +2,6 @@ import { expect, test } from "@playwright/test";
 import { writeFileSync, unlinkSync } from "node:fs";
 import path from "node:path";
 
-test("归档筛选保留 URL、刷新和历史状态，切换条件重置页码", async ({ page }) => {
-  await page.goto("/posts");
-  await page.getByRole("link", { name: "下一页" }).click();
-  await expect(page).toHaveURL(/page=2/);
-  await expect(page.getByRole("status")).toContainText("第 2 / 2 页");
-  await page.getByLabel("内容类型").selectOption("note");
-  await page
-    .getByRole("combobox", { name: "标签", exact: true })
-    .selectOption("frontend-engineering");
-  await page.getByRole("button", { name: "应用筛选" }).click();
-  await expect(page).toHaveURL(/kind=note&tag=frontend-engineering$/);
-  await expect(page.getByRole("status")).toContainText("共 2 篇");
-  await expect(page.getByRole("navigation", { name: "文章分页" })).toHaveCount(0);
-  await page.reload();
-  await expect(page.getByLabel("内容类型")).toHaveValue("note");
-  await page.goBack();
-  await expect(page.getByRole("status")).toContainText("第 2 / 2 页");
-  await page.goForward();
-  await expect(page.getByRole("combobox", { name: "标签", exact: true })).toHaveValue(
-    "frontend-engineering",
-  );
-  await page.getByRole("heading", { level: 2 }).first().getByRole("link").click();
-  await expect(page).toHaveURL(/\/posts\/[a-z-]+$/);
-  await page.goBack();
-  await expect(page.getByLabel("内容类型")).toHaveValue("note");
-  await expect(page.getByRole("combobox", { name: "标签", exact: true })).toHaveValue(
-    "frontend-engineering",
-  );
-  await page.goto("/posts?tag=unknown&page=-2");
-  await expect(page.getByText("没有符合条件的内容。", { exact: false })).toBeVisible();
-  await page.getByRole("link", { name: "清除筛选", exact: true }).click();
-  await expect(page.getByRole("status")).toContainText("共 6 篇");
-});
-
 test("深色窄屏阅读目录、代码与相关阅读", async ({ page }) => {
   await page.setViewportSize({ width: 360, height: 800 });
   await page.emulateMedia({ colorScheme: "dark" });

@@ -57,6 +57,9 @@ test("搜索支持快捷键、键盘导航、空结果与旧请求取消", async
   await page.keyboard.press("ArrowUp");
   await page.keyboard.press("Enter");
   await expect(page).toHaveURL(/\/posts\/nextjs-concurrent-rendering$/);
+  await expect(
+    page.getByRole("heading", { level: 1, name: "理解 Next.js 15 的并发渲染机制" }),
+  ).toBeVisible();
 
   await page.keyboard.press("/");
   await input.fill("绝对不存在的内容 xyz");

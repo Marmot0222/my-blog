@@ -39,9 +39,17 @@ require_value() {
   [[ -n "${ENV_VALUES[$key]:-}" ]] || errors+=("缺少必填字段: $key")
 }
 
-for key in DOMAIN POSTGRES_DB POSTGRES_USER POSTGRES_PASSWORD DATABASE_URL AI_PROVIDER AI_MODEL EMBEDDING_PROVIDER EMBEDDING_MODEL EMBEDDING_DIMENSIONS TRUST_PROXY NEXT_PUBLIC_SITE_URL SKIP_CONTENT_INDEX; do
+for key in DOMAIN POSTGRES_DB POSTGRES_USER POSTGRES_PASSWORD DATABASE_URL CONTENT_SOURCE TRUST_PROXY NEXT_PUBLIC_SITE_URL SKIP_CONTENT_INDEX AI_ALLOWED_HOSTS; do
   require_value "$key"
 done
+
+case "${ENV_VALUES[CONTENT_SOURCE]:-}" in
+  database)
+    for key in ADMIN_ORIGIN ADMIN_SESSION_SECRET CONFIG_MASTER_KEY CONFIG_KEY_VERSION; do require_value "$key"; done
+    ;;
+  file) ;;
+  *) errors+=("CONTENT_SOURCE 必须是 file 或 database") ;;
+esac
 
 case "${ENV_VALUES[AI_PROVIDER]:-}" in
   openai) require_value OPENAI_API_KEY ;;
@@ -72,7 +80,7 @@ case "${ENV_VALUES[EMBEDDING_PROVIDER]:-}" in
   *) errors+=("EMBEDDING_PROVIDER 必须是 openai 或 openai-compatible") ;;
 esac
 
-[[ "${ENV_VALUES[EMBEDDING_DIMENSIONS]:-}" == "2048" ]] || errors+=("EMBEDDING_DIMENSIONS 必须为 2048")
+[[ -z "${ENV_VALUES[EMBEDDING_DIMENSIONS]:-}" || "${ENV_VALUES[EMBEDDING_DIMENSIONS]:-}" == "2048" ]] || errors+=("EMBEDDING_DIMENSIONS 必须为 2048")
 [[ "${ENV_VALUES[TRUST_PROXY]:-}" == "true" ]] || errors+=("生产环境 TRUST_PROXY 必须为 true")
 [[ "${ENV_VALUES[SKIP_CONTENT_INDEX]:-}" =~ ^[01]$ ]] || errors+=("SKIP_CONTENT_INDEX 必须为 0 或 1")
 
@@ -92,6 +100,15 @@ if (( CONFIG_ONLY == 0 )); then
   expected_database_url="postgresql://${ENV_VALUES[POSTGRES_USER]:-}:$password@db:5432/${ENV_VALUES[POSTGRES_DB]:-}"
   [[ "${ENV_VALUES[DATABASE_URL]:-}" == "$expected_database_url" ]] || errors+=("DATABASE_URL 与 POSTGRES_USER/POSTGRES_PASSWORD/POSTGRES_DB 不一致")
   [[ "${ENV_VALUES[NEXT_PUBLIC_SITE_URL]:-}" == "https://$domain" ]] || errors+=("NEXT_PUBLIC_SITE_URL 必须等于 https://DOMAIN")
+  if [[ "${ENV_VALUES[CONTENT_SOURCE]:-}" == "database" ]]; then
+    [[ "${ENV_VALUES[ADMIN_ORIGIN]:-}" == "https://$domain" ]] || errors+=("ADMIN_ORIGIN 必须等于 https://DOMAIN")
+    session_secret="${ENV_VALUES[ADMIN_SESSION_SECRET]:-}"
+    master_secret="${ENV_VALUES[CONFIG_MASTER_KEY]:-}"
+    (( ${#session_secret} >= 32 )) && [[ "$session_secret" != *replace* ]] || errors+=("ADMIN_SESSION_SECRET 需独立生成且至少 32 字符")
+    [[ "$master_secret" != "$session_secret" ]] || errors+=("主密钥不能复用会话密钥")
+    master_bytes=$(printf '%s' "$master_secret" | base64 --decode 2>/dev/null | wc -c) || master_bytes=0
+    [[ "$master_bytes" -eq 32 ]] || errors+=("CONFIG_MASTER_KEY 必须是 32 字节的 Base64 编码")
+  fi
 
   for key in OPENAI_API_KEY OPENAI_COMPATIBLE_API_KEY GOOGLE_GENERATIVE_AI_API_KEY EMBEDDING_API_KEY; do
     value="${ENV_VALUES[$key]:-}"

@@ -1,5 +1,6 @@
 import { createOpenAI } from "@ai-sdk/openai";
 import { EMBEDDING_DIMENSIONS } from "@ting-lab/database";
+import { createGuardedFetch } from "@ting-lab/ai";
 import { embed, embedMany } from "ai";
 
 import type { EmbeddingConfig, EmbeddingService } from "./types";
@@ -55,11 +56,15 @@ export function createEmbeddingProviderOptions(
     : undefined;
 }
 
-export function createEmbeddingService(config: EmbeddingConfig): EmbeddingService {
+export function createEmbeddingService(
+  config: EmbeddingConfig,
+  abortSignal?: AbortSignal,
+): EmbeddingService {
   const provider = createOpenAI({
     apiKey: config.apiKey,
     baseURL: config.baseURL,
     name: `embedding-${config.provider}`,
+    fetch: createGuardedFetch(config.baseURL ?? "https://api.openai.com/v1"),
   });
   const model = provider.embeddingModel(config.model);
   const providerOptions = createEmbeddingProviderOptions(config);
@@ -71,7 +76,14 @@ export function createEmbeddingService(config: EmbeddingConfig): EmbeddingServic
         const batch = values.slice(offset, offset + config.batchSize);
         const startedAt = Date.now();
         const result = await retry(
-          () => embedMany({ model, values: [...batch], maxRetries: 0, providerOptions }),
+          () =>
+            embedMany({
+              model,
+              values: [...batch],
+              maxRetries: 0,
+              providerOptions,
+              abortSignal: abortSignal ?? AbortSignal.timeout(45_000),
+            }),
           config.maxRetries,
         );
         validateEmbeddings(result.embeddings, batch.length);
@@ -84,7 +96,14 @@ export function createEmbeddingService(config: EmbeddingConfig): EmbeddingServic
     },
     async embedOne(value) {
       const result = await retry(
-        () => embed({ model, value, maxRetries: 0, providerOptions }),
+        () =>
+          embed({
+            model,
+            value,
+            maxRetries: 0,
+            providerOptions,
+            abortSignal: abortSignal ?? AbortSignal.timeout(45_000),
+          }),
         config.maxRetries,
       );
       validateEmbeddings([result.embedding], 1);

@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import { PostFilters } from "@/components/article/PostFilters";
 import { PostList } from "@/components/article/PostList";
 import { SiteHeader } from "@/components/home/SiteHeader";
-import { contentRepository } from "@/lib/content";
+import { getContentRepository } from "@/lib/content";
 
 import styles from "../editorial-page.module.scss";
 import archive from "./page.module.scss";
@@ -26,6 +27,7 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
 }
 
 export default async function PostsPage({ searchParams }: Props) {
+  const contentRepository = await getContentRepository();
   const params = await searchParams;
   const result = contentRepository.queryPosts({
     kind: first(params.kind),
@@ -49,34 +51,7 @@ export default async function PostsPage({ searchParams }: Props) {
         <p className={styles.eyebrow}>Archive / Posts</p>
         <h1 className={styles.title}>文章</h1>
         <p className={styles.description}>关于前端工程、系统设计与 AI 应用的长期记录。</p>
-        <form action="/posts" method="get" className={archive.filters}>
-          <label>
-            内容类型
-            <select name="kind" defaultValue={result.kind ?? ""} key={result.kind ?? "all"}>
-              <option value="">全部</option>
-              <option value="article">文章</option>
-              <option value="note">笔记</option>
-            </select>
-          </label>
-          <label>
-            标签
-            <select name="tag" defaultValue={result.tag ?? ""} key={result.tag ?? "all"}>
-              <option value="">全部标签</option>
-              {result.tag && !selectedTag ? <option value={result.tag}>未知标签</option> : null}
-              {tags.map((tag) => (
-                <option value={tag.slug} key={tag.slug}>
-                  {tag.label}
-                </option>
-              ))}
-            </select>
-          </label>
-          <button type="submit" className={styles.secondaryLink}>
-            应用筛选
-          </button>
-          <Link href="/posts" className={styles.secondaryLink}>
-            清除筛选
-          </Link>
-        </form>
+        <PostFilters tags={tags} />
         <p className={archive.status} role="status">
           {result.kind === "article" ? "文章" : result.kind === "note" ? "笔记" : "全部内容"} ·{" "}
           {selectedTag?.label ?? (result.tag ? "未知标签" : "全部标签")} · 共 {result.total} 篇 · 第{" "}

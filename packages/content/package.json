@@ -14,13 +14,17 @@
     "content:check": "tsx src/check.ts",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "test": "tsx --test src/posts.test.ts src/projects.test.ts src/search.test.ts src/workflow.test.ts",
+    "test": "tsx --test src/posts.test.ts src/projects.test.ts src/search.test.ts src/workflow.test.ts src/markdown.test.ts",
     "content:new": "tsx src/new.ts"
   },
   "dependencies": {
     "gray-matter": "^4.0.3",
     "reading-time": "^1.5.0",
-    "zod": "^3.25.76"
+    "zod": "^3.25.76",
+    "unified": "^11.0.5",
+    "remark-parse": "^11.0.0",
+    "remark-gfm": "^4.0.1",
+    "unist-util-visit": "^5.0.0"
   },
   "devDependencies": {
     "@ting-lab/eslint-config": "workspace:*",

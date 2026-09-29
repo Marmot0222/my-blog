@@ -58,7 +58,7 @@ export APP_VERSION="$COMMIT_SHA"
 echo "开始部署 Ting Lab，版本: $COMMIT_SHA"
 
 CURRENT_STAGE="构建生产镜像"
-"${COMPOSE[@]}" build app migrate indexer
+"${COMPOSE[@]}" build app migrate indexer worker
 
 CURRENT_STAGE="启动数据库"
 "${COMPOSE[@]}" up -d db
@@ -71,7 +71,7 @@ CURRENT_STAGE="执行增量内容索引"
 "${COMPOSE[@]}" run --rm indexer
 
 CURRENT_STAGE="启动应用与 HTTPS 代理"
-"${COMPOSE[@]}" up -d app caddy
+"${COMPOSE[@]}" up -d app caddy worker
 wait_for_healthy app 60
 
 CURRENT_STAGE="HTTPS 冒烟检查"

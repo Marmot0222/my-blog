@@ -23,6 +23,7 @@ RUN pnpm --filter @ting-lab/web build
 
 FROM builder AS tools
 ENV NODE_ENV=production
+USER node
 CMD ["pnpm", "--help"]
 
 FROM node:22-bookworm-slim AS web-runner

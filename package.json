@@ -4,14 +4,14 @@
   "private": true,
   "packageManager": "pnpm@9.15.9",
   "engines": {
-    "node": ">=20.0.0"
+    "node": ">=22.9.0"
   },
   "scripts": {
     "dev": "turbo dev",
     "build": "turbo build",
     "content:check": "pnpm --filter @ting-lab/content content:check ../../content",
-    "content:index": "pnpm --filter @ting-lab/retrieval content:index ../../content/posts",
-    "content:search": "pnpm --filter @ting-lab/retrieval content:search",
+    "content:index": "pnpm --filter @ting-lab/publishing exec tsx --env-file-if-exists=../../apps/web/.env.local src/cli.ts index",
+    "content:search": "pnpm --filter @ting-lab/publishing exec tsx --env-file-if-exists=../../apps/web/.env.local src/cli.ts search",
     "db:up": "docker compose --env-file apps/web/.env.local -f compose.dev.yml up -d",
     "db:down": "docker compose --env-file apps/web/.env.local -f compose.dev.yml down",
     "db:generate": "pnpm --filter @ting-lab/database db:generate",
@@ -24,7 +24,12 @@
     "typecheck": "turbo typecheck",
     "test": "turbo test",
     "test:e2e": "playwright test",
-    "content:new": "pnpm --filter @ting-lab/content content:new"
+    "content:new": "pnpm --filter @ting-lab/content content:new",
+    "content:import": "pnpm --filter @ting-lab/publishing exec tsx --env-file-if-exists=../../apps/web/.env.local src/cli.ts import",
+    "admin:password": "pnpm --filter @ting-lab/publishing exec tsx --env-file-if-exists=../../apps/web/.env.local src/cli.ts password",
+    "admin:secrets": "pnpm --filter @ting-lab/publishing exec tsx src/cli.ts secrets",
+    "worker": "pnpm --filter @ting-lab/publishing exec tsx --env-file-if-exists=../../apps/web/.env.local src/worker.ts",
+    "test:admin": "playwright test --config playwright.admin.config.ts"
   },
   "devDependencies": {
     "@playwright/test": "^1.61.1",

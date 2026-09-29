@@ -1,4 +1,4 @@
-import { normalizeAiError, type PublicAiError } from "@ting-lab/ai";
+import { normalizeAiError, type PublicAiError } from "@ting-lab/ai/errors";
 
 export type ChatErrorCode =
   | "INVALID_REQUEST"

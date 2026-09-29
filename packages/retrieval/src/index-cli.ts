@@ -8,6 +8,8 @@ import { createEmbeddingService } from "./embedding";
 import { indexPublishedPosts } from "./indexer";
 
 const args = process.argv.slice(2).filter((argument) => argument !== "--");
+if (process.env.CONTENT_SOURCE === "database")
+  throw new Error("database 模式请使用根目录 pnpm content:index，禁止文件索引覆盖数据库文章");
 const postsDirectory = path.resolve(
   args.find((argument) => !argument.startsWith("--")) ?? "content/posts",
 );

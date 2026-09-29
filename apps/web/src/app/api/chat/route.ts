@@ -1,4 +1,4 @@
-import { createAiRuntime } from "@ting-lab/ai";
+import { createPublishingAiRuntime } from "@ting-lab/publishing";
 
 import { chatErrorResponse, toPublicChatError } from "@/lib/chat/errors";
 import { chatRateLimiter, getClientRateLimitKey } from "@/lib/chat/rate-limit";
@@ -34,7 +34,7 @@ export async function POST(request: Request): Promise<Response> {
 
   try {
     const chat = await validateChatRequest(body);
-    const runtimeConfig = createAiRuntime();
+    const runtimeConfig = await createPublishingAiRuntime();
     return await handleChatRequest(chat, runtimeConfig, request.signal);
   } catch (error) {
     const publicError = toPublicChatError(error);

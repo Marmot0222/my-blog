@@ -4,13 +4,15 @@ import { HeroSection } from "@/components/home/HeroSection";
 import { LatestNotes } from "@/components/home/LatestNotes";
 import { SiteHeader } from "@/components/home/SiteHeader";
 import { TopicTags } from "@/components/home/TopicTags";
-import { contentRepository } from "@/lib/content";
+import { getContentRepository } from "@/lib/content";
 import { serializeJsonLd } from "@/lib/seo";
 import { absoluteUrl, siteConfig } from "@/lib/site";
 
 import styles from "./page.module.scss";
 
-export default function Home() {
+export const dynamic = "force-dynamic";
+export default async function Home() {
+  const contentRepository = await getContentRepository();
   const featuredArticles = contentRepository.getFeaturedPosts().slice(0, 3);
   const latestNotes = contentRepository.getLatestNotes().slice(0, 3);
   const topics = contentRepository.getAllTags().slice(0, 8);

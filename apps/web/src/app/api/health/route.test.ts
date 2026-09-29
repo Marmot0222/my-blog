@@ -22,7 +22,7 @@ test("健康信息只返回稳定且非敏感的运行字段", async () => {
   });
   assert.doesNotMatch(JSON.stringify(payload), /secret/);
 
-  const response = GET();
+  const response = await GET();
   assert.equal(response.status, 200);
   assert.equal(response.headers.get("cache-control"), "no-store");
 });

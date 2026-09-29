@@ -41,7 +41,11 @@ function project(overrides: Partial<ProjectMetadata> = {}): ProjectMetadata {
 
 test("robots 禁止 API 并输出规范 sitemap", () => {
   const robots = createRobots("https://example.com/");
-  assert.deepEqual(robots.rules, { userAgent: "*", allow: "/", disallow: ["/api/"] });
+  assert.deepEqual(robots.rules, {
+    userAgent: "*",
+    allow: "/",
+    disallow: ["/api/", "/admin/", "/preview/"],
+  });
   assert.equal(robots.sitemap, "https://example.com/sitemap.xml");
 });
 

@@ -13,7 +13,19 @@ const nextConfig = {
     "@ting-lab/database",
     "@ting-lab/ai",
     "@ting-lab/retrieval",
+    "@ting-lab/publishing",
   ],
+  async headers() {
+    return [
+      {
+        source: "/admin/:path*",
+        headers: [
+          { key: "Cache-Control", value: "private, no-store, max-age=0" },
+          { key: "X-Robots-Tag", value: "noindex, nofollow" },
+        ],
+      },
+    ];
+  },
 };
 
 export default nextConfig;

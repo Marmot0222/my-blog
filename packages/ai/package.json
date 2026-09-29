@@ -7,19 +7,25 @@
     ".": {
       "types": "./src/index.ts",
       "default": "./src/index.ts"
+    },
+    "./errors": {
+      "types": "./src/public-errors.ts",
+      "default": "./src/public-errors.ts"
     }
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "test": "tsx --test src/ai.test.ts"
+    "test": "tsx --test src/ai.test.ts src/outbound.test.ts"
   },
   "dependencies": {
     "@ai-sdk/google": "^3.0.94",
     "@ai-sdk/openai": "^3.0.85",
     "ai": "^6.0.228",
-    "zod": "^3.25.76"
+    "zod": "^3.25.76",
+    "undici": "^7.16.0",
+    "ipaddr.js": "^2.2.0"
   },
   "devDependencies": {
     "@ting-lab/eslint-config": "workspace:*",

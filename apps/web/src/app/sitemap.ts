@@ -1,10 +1,12 @@
 import type { MetadataRoute } from "next";
 
-import { contentRepository } from "@/lib/content";
+import { getContentRepository } from "@/lib/content";
 import { createSitemap } from "@/lib/seo";
 import { siteConfig } from "@/lib/site";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export const dynamic = "force-dynamic";
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const contentRepository = await getContentRepository();
   return createSitemap(
     siteConfig.origin,
     contentRepository.getPublishedPosts(),

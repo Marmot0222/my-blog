@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 
 import { PostList } from "@/components/article/PostList";
 import { SiteHeader } from "@/components/home/SiteHeader";
-import { contentRepository } from "@/lib/content";
+import { getContentRepository } from "@/lib/content";
 
 import styles from "../../editorial-page.module.scss";
 
@@ -12,13 +12,11 @@ type TagPageProps = Readonly<{
   params: Promise<{ tag: string }>;
 }>;
 
-export const dynamicParams = false;
-
-export function generateStaticParams() {
-  return contentRepository.getAllTags().map(({ slug }) => ({ tag: slug }));
-}
+export const dynamicParams = true;
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: TagPageProps): Promise<Metadata> {
+  const contentRepository = await getContentRepository();
   const { tag } = await params;
   const topic = contentRepository.getAllTags().find((candidate) => candidate.slug === tag);
 
@@ -35,6 +33,7 @@ export async function generateMetadata({ params }: TagPageProps): Promise<Metada
 }
 
 export default async function TagPage({ params }: TagPageProps) {
+  const contentRepository = await getContentRepository();
   const { tag } = await params;
   const topic = contentRepository.getAllTags().find((candidate) => candidate.slug === tag);
 

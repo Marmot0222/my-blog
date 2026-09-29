@@ -5,7 +5,7 @@ import { tagToSlug } from "@ting-lab/content";
 
 import { AiWorkspace, type DrawerPost } from "@/components/ai/AiWorkspace";
 import { compilePostMdx, type TocHeading } from "@/components/mdx/MdxContent";
-import { contentRepository } from "@/lib/content";
+import { getContentRepository } from "@/lib/content";
 
 export const metadata: Metadata = {
   title: "AI 问答",
@@ -26,6 +26,7 @@ export default async function AiPage({ searchParams }: AiPageProps) {
   let drawerStatus: "ok" | "not_found" = "ok";
 
   if (slug) {
+    const contentRepository = await getContentRepository();
     const post = contentRepository.getPostBySlug(slug);
     if (!post?.metadata.published) {
       drawerStatus = "not_found";

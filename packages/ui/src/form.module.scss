@@ -1,0 +1,81 @@
+.button,
+.input {
+  font: inherit;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  min-height: 2.75rem;
+  padding: 0.65rem 0.9rem;
+  &:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 3px;
+  }
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: var(--color-primary);
+  color: var(--color-surface);
+  cursor: pointer;
+  text-decoration: none;
+  &[data-variant="outline"] {
+    background: var(--color-surface);
+    color: var(--color-text);
+  }
+  &[data-variant="destructive"] {
+    background: var(--color-danger-surface);
+    color: var(--color-danger);
+    border-color: var(--color-danger-border);
+  }
+}
+.input {
+  width: 100%;
+  min-width: 0;
+  background: var(--color-surface);
+  color: var(--color-text);
+  &[aria-invalid="true"] {
+    border-color: var(--color-danger);
+  }
+}
+textarea.input {
+  resize: vertical;
+  min-height: 7rem;
+}
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: var(--color-overlay);
+}
+.dialog {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 110;
+  width: min(36rem, calc(100vw - 2rem));
+  max-height: 85dvh;
+  overflow: auto;
+  background: var(--color-surface);
+  color: var(--color-text);
+  padding: 2rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-dialog);
+}
+.close {
+  position: absolute;
+  right: 0.5rem;
+  top: 0.5rem;
+  width: 2.75rem;
+  height: 2.75rem;
+  background: transparent;
+  color: var(--color-text);
+  border: 0;
+  cursor: pointer;
+}

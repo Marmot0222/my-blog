@@ -1,4 +1,5 @@
 import rehypeShiki from "@shikijs/rehype";
+import { validateMarkdown } from "@ting-lab/content";
 import GithubSlugger from "github-slugger";
 import type { Heading, Root as MdastRoot } from "mdast";
 import { toString } from "mdast-util-to-string";
@@ -45,6 +46,7 @@ const languageLabelTransformer: ShikiTransformer = {
 };
 
 export async function compileMdxContent(source: string) {
+  validateMarkdown(source);
   const headings: TocHeading[] = [];
   const { content } = await compileMDX({
     source,

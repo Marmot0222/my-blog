@@ -1,5 +1,7 @@
 import { createContentSearchIndex } from "@ting-lab/content";
 
-import { contentRepository } from "./content";
+import { getContentRepository } from "./content";
 
-export const siteSearchIndex = createContentSearchIndex(contentRepository.getSearchDocuments());
+export async function getSiteSearchIndex() {
+  return createContentSearchIndex((await getContentRepository()).getSearchDocuments());
+}

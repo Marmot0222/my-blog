@@ -1,0 +1,33 @@
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1rem;
+  margin-block: 2rem 1rem;
+}
+.tag {
+  width: 12.5rem;
+  max-width: 100%;
+}
+.reset {
+  min-height: 2.75rem;
+  padding: 0.5rem;
+  border: 0;
+  background: transparent;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.8rem;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+.pending {
+  color: var(--color-text-secondary);
+  font-size: 0.75rem;
+}
+@media (max-width: 30rem) {
+  .tag {
+    flex-basis: 100%;
+    width: 100%;
+  }
+}

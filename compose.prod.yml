@@ -58,7 +58,11 @@ services:
           echo "SKIP_CONTENT_INDEX=1，已明确跳过内容索引。"
           exit 0
         fi
-        pnpm --filter @ting-lab/retrieval exec tsx src/index-cli.ts ../../content/posts
+        if [ "$${CONTENT_SOURCE:-file}" = "database" ]; then
+          echo "database 模式：普通部署不导入或重复入队；发布任务由 worker 消费。"
+          exit 0
+        fi
+        pnpm --filter @ting-lab/publishing exec tsx src/cli.ts index
     depends_on:
       db:
         condition: service_healthy
@@ -71,6 +75,40 @@ services:
         gw_priority: 1
     logging: *default-logging
     restart: "no"
+
+  worker:
+    build:
+      context: .
+      target: tools
+    env_file:
+      - path: .env.production
+        required: false
+    command: ["pnpm", "--filter", "@ting-lab/publishing", "exec", "tsx", "src/worker.ts"]
+    init: true
+    depends_on:
+      db:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+    networks:
+      backend: {}
+      frontend:
+        gw_priority: 1
+    logging: *default-logging
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "const fs=require('fs');if(Date.now()-Number(fs.readFileSync('/tmp/ting-lab-worker-health','utf8'))>300000)process.exit(1)",
+        ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    restart: unless-stopped
+    stop_grace_period: 210s
 
   app:
     build:
