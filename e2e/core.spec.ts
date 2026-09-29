@@ -28,7 +28,8 @@ async function expectNoHorizontalOverflow(page: Page) {
         width: innerWidth,
       })),
     )
-    .toEqual({ documentWidth: 360, width: 360 });
+    .toMatchObject({ width: 360 });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 }
 
 test("首页 AI 面板折叠偏好持久化", async ({ page }) => {
@@ -94,13 +95,13 @@ test("主题支持 light/dark/system 并在刷新前完成初始化", async ({ p
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
 
   await page.getByRole("button", { name: /主题：/ }).click();
-  await page.getByRole("radio", { name: "浅色" }).click();
+  await page.getByRole("menuitemradio", { name: "浅色" }).click();
   await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
   await page.reload();
   await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
 
   await page.getByRole("button", { name: /主题：/ }).click();
-  await page.getByRole("radio", { name: "跟随系统" }).click();
+  await page.getByRole("menuitemradio", { name: "跟随系统" }).click();
   await page.reload();
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
   await expect(page.locator("html")).toHaveAttribute("data-theme-preference", "system");
@@ -125,7 +126,12 @@ test("fake AI 一次提交只产生一轮回答，共享到工作区并可打开
   await expect(page.getByText("并发渲染让 React 可以中断并恢复非紧急更新。")).toHaveCount(1);
   expect(postCount).toBe(1);
 
-  await page.getByRole("link", { name: "进入完整 AI 页面" }).click();
+  await page.getByRole("button", { name: "搜索内容", exact: true }).click();
+  await page.getByRole("combobox", { name: "搜索内容" }).fill("Next.js");
+  await expect(page.getByRole("option").first()).toBeVisible();
+  await page.getByRole("combobox", { name: "搜索内容" }).press("Enter");
+  await expect(page).toHaveURL(/\/posts\//);
+  await page.getByRole("link", { name: "AI 问答", exact: true }).first().click();
   await expect(page).toHaveURL(/\/ai$/);
   await expect(page.getByText("什么是并发渲染？")).toBeVisible();
   await page.waitForLoadState("networkidle");
@@ -156,7 +162,7 @@ test("360px 下核心页面与移动搜索无横向溢出", async ({ page }) => 
     await expectNoHorizontalOverflow(page);
   }
   await page.goto("/");
-  await page.locator('summary[aria-label="导航菜单"]').click();
+  await page.getByRole("button", { name: "导航菜单" }).click();
   await page.getByRole("button", { name: "搜索" }).click();
   await expect(page.getByRole("dialog", { name: "搜索 Ting Lab" })).toBeVisible();
   await expectNoHorizontalOverflow(page);
@@ -186,7 +192,7 @@ test("站内搜索标识项目并进入项目详情", async ({ page }) => {
   const result = page.getByRole("option").first();
   await expect(result).toContainText("项目");
   await expect(result).toContainText("可配置 AI 对话流 Demo");
-  await result.getByRole("link").click();
+  await result.getByRole("button").click();
   await expect(page).toHaveURL(/\/projects\/configurable-ai-dialogue-flow$/);
 });
 
@@ -194,7 +200,7 @@ test("关于页在深色主题和窄屏下保持可读且无溢出", async ({ pa
   await page.setViewportSize({ width: 360, height: 800 });
   await page.emulateMedia({ colorScheme: "dark" });
   await page.goto("/");
-  await page.locator('summary[aria-label="导航菜单"]').click();
+  await page.getByRole("button", { name: "导航菜单" }).click();
   await page.getByRole("link", { name: "关于", exact: true }).click();
   await expect(page).toHaveURL(/\/about$/);
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");

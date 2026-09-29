@@ -1,8 +1,10 @@
 "use client";
 
 // SCSS adaptation of shadcn/ui new-york-v4/select. See ../UPSTREAM.md.
-import type { ComponentProps } from "react";
+import { useContext, type ComponentProps } from "react";
+import { ModalLayer } from "./layer";
 import * as Primitive from "@radix-ui/react-select";
+import { Icon } from "./icon";
 import styles from "./controls.module.scss";
 
 export const Select = Primitive.Root;
@@ -19,7 +21,9 @@ export function SelectTrigger({
       {...props}
     >
       {children}
-      <Primitive.Icon aria-hidden="true">⌄</Primitive.Icon>
+      <Primitive.Icon aria-hidden="true">
+        <Icon name="down" />
+      </Primitive.Icon>
     </Primitive.Trigger>
   );
 }
@@ -28,18 +32,24 @@ export function SelectContent({
   className = "",
   ...props
 }: ComponentProps<typeof Primitive.Content>) {
+  const modal = useContext(ModalLayer);
   return (
     <Primitive.Portal>
       <Primitive.Content
+        style={{ zIndex: modal ? "var(--z-modal-menu)" : "var(--z-menu)" }}
         data-slot="select-content"
         position="popper"
         sideOffset={5}
         className={`${styles.selectContent} ${className}`}
         {...props}
       >
-        <Primitive.ScrollUpButton className={styles.scrollButton}>⌃</Primitive.ScrollUpButton>
+        <Primitive.ScrollUpButton className={styles.scrollButton}>
+          <Icon name="up" />
+        </Primitive.ScrollUpButton>
         <Primitive.Viewport className={styles.viewport}>{children}</Primitive.Viewport>
-        <Primitive.ScrollDownButton className={styles.scrollButton}>⌄</Primitive.ScrollDownButton>
+        <Primitive.ScrollDownButton className={styles.scrollButton}>
+          <Icon name="down" />
+        </Primitive.ScrollDownButton>
       </Primitive.Content>
     </Primitive.Portal>
   );
@@ -56,7 +66,9 @@ export function SelectItem({
       {...props}
     >
       <Primitive.ItemText>{children}</Primitive.ItemText>
-      <Primitive.ItemIndicator className={styles.indicator}>✓</Primitive.ItemIndicator>
+      <Primitive.ItemIndicator className={styles.indicator}>
+        <Icon name="check" />
+      </Primitive.ItemIndicator>
     </Primitive.Item>
   );
 }

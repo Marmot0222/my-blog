@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 
+import { ThemeProvider } from "@/components/theme/ThemeProvider";
 import { ChatProvider } from "@/components/ai/chat-provider";
 import { themeInitScript } from "@/lib/theme";
 import { siteConfig } from "@/lib/site";
@@ -49,7 +50,9 @@ export default function RootLayout({ children }: RootLayoutProps) {
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
       </head>
       <body>
-        <ChatProvider>{children}</ChatProvider>
+        <ThemeProvider>
+          <ChatProvider>{children}</ChatProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

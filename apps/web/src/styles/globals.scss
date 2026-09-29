@@ -3,12 +3,10 @@
 @use "./typography";
 
 html {
-  overflow-x: clip;
   background: var(--color-canvas);
 }
 
 body {
-  overflow-x: clip;
   color: var(--color-text);
   background: var(--color-canvas);
 }

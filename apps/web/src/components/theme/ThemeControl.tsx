@@ -1,10 +1,17 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import type { ReactNode } from "react";
+import { useTheme } from "./ThemeProvider";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 
-import { resolveTheme, THEME_STORAGE_KEY, type ThemePreference } from "@/lib/theme";
+import { type ThemePreference } from "@/lib/theme";
 
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+} from "@ting-lab/ui";
 import styles from "./ThemeControl.module.scss";
 
 const options: readonly { value: ThemePreference; label: string }[] = [
@@ -19,82 +26,55 @@ type ThemeControlProps = Readonly<{
 }>;
 
 export function ThemeControl({ className, children }: ThemeControlProps) {
-  const [preference, setPreference] = useState<ThemePreference>("system");
+  const { preference, choose } = useTheme();
   const [open, setOpen] = useState(false);
-  const wrapperRef = useRef<HTMLDivElement>(null);
-
+  const switching = useRef(false);
   useEffect(() => {
-    const stored = window.localStorage.getItem(THEME_STORAGE_KEY);
-    setPreference(stored === "light" || stored === "dark" ? stored : "system");
+    const close = () => {
+      switching.current = true;
+      setOpen(false);
+    };
+    window.addEventListener("tinglab:open-search", close);
+    return () => window.removeEventListener("tinglab:open-search", close);
   }, []);
-
-  useEffect(() => {
-    const media = window.matchMedia("(prefers-color-scheme: dark)");
-    const apply = () => {
-      const resolved = resolveTheme(preference, media.matches);
-      document.documentElement.dataset.theme = resolved;
-      document.documentElement.dataset.themePreference = preference;
-      document.documentElement.style.colorScheme = resolved;
-    };
-    apply();
-    if (preference === "system") media.addEventListener("change", apply);
-    return () => media.removeEventListener("change", apply);
-  }, [preference]);
-
-  useEffect(() => {
-    if (!open) return;
-    const close = (event: MouseEvent) => {
-      if (!wrapperRef.current?.contains(event.target as Node)) setOpen(false);
-    };
-    const escape = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setOpen(false);
-    };
-    document.addEventListener("mousedown", close);
-    document.addEventListener("keydown", escape);
-    return () => {
-      document.removeEventListener("mousedown", close);
-      document.removeEventListener("keydown", escape);
-    };
-  }, [open]);
-
-  function choose(value: ThemePreference) {
-    setPreference(value);
-    if (value === "system") window.localStorage.removeItem(THEME_STORAGE_KEY);
-    else window.localStorage.setItem(THEME_STORAGE_KEY, value);
-    setOpen(false);
-  }
-
   const label = options.find(({ value }) => value === preference)?.label ?? "跟随系统";
 
   return (
-    <div className={styles.wrapper} ref={wrapperRef}>
-      <button
-        className={className}
-        type="button"
-        aria-label={`主题：${label}`}
-        aria-haspopup="menu"
-        aria-expanded={open}
-        onClick={() => setOpen((current) => !current)}
+    <DropdownMenu
+      open={open}
+      onOpenChange={(value) => {
+        switching.current = false;
+        setOpen(value);
+      }}
+    >
+      <DropdownMenuTrigger asChild>
+        <button className={className} type="button" aria-label={`主题：${label}`}>
+          {children}
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent
+        aria-label="选择主题"
+        onCloseAutoFocus={(event) => {
+          if (switching.current) event.preventDefault();
+        }}
       >
-        {children}
-      </button>
-      {open ? (
-        <div className={styles.menu} role="radiogroup" aria-label="选择主题">
+        <DropdownMenuRadioGroup
+          value={preference}
+          onValueChange={(value) => {
+            if (value === "light" || value === "dark" || value === "system") choose(value);
+          }}
+        >
           {options.map((option) => (
-            <button
+            <DropdownMenuRadioItem
               className={styles.option}
-              type="button"
-              role="radio"
-              aria-checked={preference === option.value}
+              value={option.value}
               key={option.value}
-              onClick={() => choose(option.value)}
             >
-              <span className={styles.indicator} aria-hidden="true" />
               {option.label}
-            </button>
+            </DropdownMenuRadioItem>
           ))}
-        </div>
-      ) : null}
-    </div>
+        </DropdownMenuRadioGroup>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }

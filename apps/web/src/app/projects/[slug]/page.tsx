@@ -42,7 +42,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: serializeJsonLd(createProjectJsonLd(metadata)) }}
       />
-      <SiteHeader activeItem="projects" />
+      <SiteHeader />
       <main className={styles.page}>
         <article>
           <header className={styles.header}>

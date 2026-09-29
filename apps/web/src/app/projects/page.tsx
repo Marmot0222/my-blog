@@ -25,7 +25,7 @@ export default function ProjectsPage() {
 
   return (
     <>
-      <SiteHeader activeItem="projects" />
+      <SiteHeader />
       <main className={styles.page}>
         <header className={styles.intro}>
           <p className={styles.eyebrow}>Selected / Projects</p>

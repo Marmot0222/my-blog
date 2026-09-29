@@ -49,7 +49,7 @@ textarea.input {
 .overlay {
   position: fixed;
   inset: 0;
-  z-index: 100;
+  z-index: var(--z-overlay);
   background: var(--color-overlay);
 }
 .dialog {
@@ -57,7 +57,7 @@ textarea.input {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  z-index: 110;
+  z-index: var(--z-dialog);
   width: min(36rem, calc(100vw - 2rem));
   max-height: 85dvh;
   overflow: auto;

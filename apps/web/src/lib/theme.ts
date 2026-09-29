@@ -2,10 +2,15 @@ export const THEME_STORAGE_KEY = "tinglab:theme";
 
 export type ThemePreference = "light" | "dark" | "system";
 
+export function parseThemePreference(value: string | null | undefined): ThemePreference {
+  return value === "light" || value === "dark" ? value : "system";
+}
+
 export const themeInitScript = `(() => {
   try {
     const key = ${JSON.stringify(THEME_STORAGE_KEY)};
-    const stored = localStorage.getItem(key);
+    let stored = null;
+    try { stored = localStorage.getItem(key); } catch {}
     const preference = stored === "light" || stored === "dark" ? stored : "system";
     const resolved = preference === "system"
       ? (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")

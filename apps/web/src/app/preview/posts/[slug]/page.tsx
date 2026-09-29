@@ -22,7 +22,7 @@ export default async function PreviewPost({
   const compiled = await compilePostMdx(post.content);
   return (
     <>
-      <SiteHeader activeItem="posts" />
+      <SiteHeader />
       <main className={styles.page}>
         <article>
           <header className={styles.header}>

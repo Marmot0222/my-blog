@@ -3,6 +3,8 @@ import { useRef, type ComponentProps } from "react";
 import { Slot } from "@radix-ui/react-slot";
 import * as LabelPrimitive from "@radix-ui/react-label";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
+import { ModalLayer } from "./layer";
+import { Icon } from "./icon";
 import styles from "./form.module.scss";
 
 export function Button({
@@ -41,14 +43,15 @@ export const DialogClose = DialogPrimitive.Close;
 export function DialogContent({
   children,
   className = "",
+  hideClose = false,
   onOpenAutoFocus,
   onCloseAutoFocus,
   ...props
-}: ComponentProps<typeof DialogPrimitive.Content>) {
+}: ComponentProps<typeof DialogPrimitive.Content> & { hideClose?: boolean }) {
   const previousFocus = useRef<HTMLElement | null>(null);
   return (
     <DialogPrimitive.Portal>
-      <DialogPrimitive.Overlay className={styles.overlay} />
+      <DialogPrimitive.Overlay data-slot="dialog-overlay" className={styles.overlay} />
       <DialogPrimitive.Content
         className={`${styles.dialog} ${className}`}
         {...props}
@@ -65,10 +68,12 @@ export function DialogContent({
           }
         }}
       >
-        {children}
-        <DialogPrimitive.Close className={styles.close} aria-label="关闭">
-          ×
-        </DialogPrimitive.Close>
+        <ModalLayer.Provider value={true}>{children}</ModalLayer.Provider>
+        {!hideClose && (
+          <DialogPrimitive.Close className={styles.close} aria-label="关闭">
+            <Icon name="close" />
+          </DialogPrimitive.Close>
+        )}
       </DialogPrimitive.Content>
     </DialogPrimitive.Portal>
   );

@@ -37,7 +37,7 @@ export default async function Home() {
           }),
         }}
       />
-      <SiteHeader activeItem="home" />
+      <SiteHeader />
       <main className={styles.page}>
         <HeroSection articles={featuredArticles} />
         <FeaturedArticles articles={featuredArticles} />

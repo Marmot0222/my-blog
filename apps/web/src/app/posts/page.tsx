@@ -46,7 +46,7 @@ export default async function PostsPage({ searchParams }: Props) {
 
   return (
     <>
-      <SiteHeader activeItem="posts" />
+      <SiteHeader />
       <main className={styles.page}>
         <p className={styles.eyebrow}>Archive / Posts</p>
         <h1 className={styles.title}>文章</h1>
@@ -71,9 +71,20 @@ export default async function PostsPage({ searchParams }: Props) {
             ) : (
               <span>已是首页</span>
             )}
-            <span aria-current="page">
-              第 {result.page} / {result.pageCount} 页
-            </span>
+            {Array.from({ length: result.pageCount }, (_, index) => index + 1)
+              .filter(
+                (page) =>
+                  page === 1 || page === result.pageCount || Math.abs(page - result.page) <= 1,
+              )
+              .map((page) => (
+                <Link
+                  key={page}
+                  href={href(page)}
+                  aria-current={page === result.page ? "page" : undefined}
+                >
+                  {page}
+                </Link>
+              ))}
             {result.page < result.pageCount ? (
               <Link href={href(result.page + 1)}>下一页 →</Link>
             ) : (

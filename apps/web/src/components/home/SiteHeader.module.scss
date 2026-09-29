@@ -24,7 +24,7 @@
 
 .desktopNav {
   display: flex;
-  align-self: stretch;
+  align-self: center;
   gap: clamp(1.5rem, 3vw, 3.5rem);
   margin-left: clamp(3rem, 7vw, 7.5rem);
 }
@@ -51,7 +51,7 @@
 .activeLink::after {
   position: absolute;
   right: 0;
-  bottom: -1px;
+  bottom: -0.45rem;
   left: 0;
   height: 2px;
   background: var(--color-primary);
@@ -217,4 +217,24 @@
   .mobileMenu {
     display: block;
   }
+}
+
+.mobileSheet.mobileSheet {
+  top: 0;
+  left: auto;
+  right: 0;
+  transform: none;
+  width: min(22rem, 90vw);
+  height: 100dvh;
+  max-height: 100dvh;
+  border-radius: 0;
+}
+.mobileSheet .mobileNav {
+  position: static;
+  box-shadow: none;
+  padding: 1rem 0;
+  border: 0;
+}
+.mobileSheet .mobileNav a[aria-current] {
+  color: var(--color-primary);
 }

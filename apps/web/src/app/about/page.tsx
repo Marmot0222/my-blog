@@ -58,7 +58,7 @@ export default function AboutPage() {
           }),
         }}
       />
-      <SiteHeader activeItem="about" />
+      <SiteHeader />
       <main className={styles.page}>
         <header className={styles.intro}>
           <p className={styles.eyebrow}>Profile / About</p>

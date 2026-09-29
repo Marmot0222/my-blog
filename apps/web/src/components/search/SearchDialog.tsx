@@ -1,7 +1,8 @@
 "use client";
 
 import type { SearchResult } from "@ting-lab/content";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { Dialog, DialogContent, DialogTitle } from "@ting-lab/ui";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import type { KeyboardEvent, RefObject } from "react";
 
@@ -38,7 +39,8 @@ export function SearchDialog({ open, onClose, returnFocusRef }: SearchDialogProp
   const [status, setStatus] = useState<"idle" | "loading" | "ready" | "error">("idle");
   const [activeIndex, setActiveIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
-  const dialogRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
+  const [retry, setRetry] = useState(0);
   const listId = useId();
   const requestId = useRef(0);
 
@@ -49,7 +51,7 @@ export function SearchDialog({ open, onClose, returnFocusRef }: SearchDialogProp
       const response = await fetch(`/api/search?q=${encodeURIComponent(value)}`, { signal });
       if (!response.ok) throw new Error("search_failed");
       const data = (await response.json()) as SearchResponse;
-      if (currentRequest !== requestId.current) return;
+      if (signal.aborted || currentRequest !== requestId.current) return;
       setResults(data.results);
       setActiveIndex(0);
       setStatus("ready");
@@ -61,18 +63,7 @@ export function SearchDialog({ open, onClose, returnFocusRef }: SearchDialogProp
 
   useEffect(() => {
     if (!open) return;
-    const returnFocus = returnFocusRef.current;
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    window.setTimeout(() => inputRef.current?.focus(), 0);
-    return () => {
-      document.body.style.overflow = previousOverflow;
-      returnFocus?.focus();
-    };
-  }, [open, returnFocusRef]);
-
-  useEffect(() => {
-    if (!open) return;
+    setResults([]);
     const value = query.trim();
     if (!value) {
       requestId.current += 1;
@@ -80,21 +71,23 @@ export function SearchDialog({ open, onClose, returnFocusRef }: SearchDialogProp
       setStatus("idle");
       return;
     }
+    setStatus("loading");
     const controller = new AbortController();
     const timeout = window.setTimeout(() => void runSearch(value, controller.signal), 200);
     return () => {
       window.clearTimeout(timeout);
+      requestId.current += 1;
       controller.abort();
     };
-  }, [open, query, runSearch]);
+  }, [open, query, runSearch, retry]);
 
-  if (!open) return null;
+  useEffect(() => {
+    document.getElementById(`${listId}-${activeIndex}`)?.scrollIntoView({ block: "nearest" });
+  }, [activeIndex, listId]);
 
-  function handleKeyDown(event: KeyboardEvent<HTMLDivElement>) {
-    if (event.key === "Escape") {
-      event.preventDefault();
-      onClose();
-    } else if (event.key === "ArrowDown" && results.length) {
+  function handleKeyDown(event: KeyboardEvent<HTMLInputElement>) {
+    if (event.nativeEvent.isComposing || event.keyCode === 229 || status !== "ready") return;
+    if (event.key === "ArrowDown" && results.length) {
       event.preventDefault();
       setActiveIndex((current) => (current + 1) % results.length);
     } else if (event.key === "ArrowUp" && results.length) {
@@ -102,37 +95,32 @@ export function SearchDialog({ open, onClose, returnFocusRef }: SearchDialogProp
       setActiveIndex((current) => (current - 1 + results.length) % results.length);
     } else if (event.key === "Enter" && results[activeIndex]) {
       event.preventDefault();
-      window.location.assign(results[activeIndex].href);
-    } else if (event.key === "Tab") {
-      const focusable = dialogRef.current?.querySelectorAll<HTMLElement>(
-        'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])',
-      );
-      if (!focusable?.length) return;
-      const first = focusable[0];
-      const last = focusable[focusable.length - 1];
-      if (event.shiftKey && document.activeElement === first) {
-        event.preventDefault();
-        last?.focus();
-      } else if (!event.shiftKey && document.activeElement === last) {
-        event.preventDefault();
-        first?.focus();
-      }
+      onClose();
+      router.push(results[activeIndex].href);
     }
   }
 
   return (
-    <div
-      className={styles.backdrop}
-      onMouseDown={(event) => event.target === event.currentTarget && onClose()}
+    <Dialog
+      open={open}
+      onOpenChange={(value) => {
+        if (!value) onClose();
+      }}
     >
-      <div
+      <DialogContent
+        hideClose
         className={styles.dialog}
-        role="dialog"
-        aria-modal="true"
-        aria-label="搜索 Ting Lab"
-        ref={dialogRef}
-        onKeyDown={handleKeyDown}
+        aria-describedby={undefined}
+        onOpenAutoFocus={(event) => {
+          event.preventDefault();
+          inputRef.current?.focus();
+        }}
+        onCloseAutoFocus={(event) => {
+          event.preventDefault();
+          returnFocusRef.current?.focus();
+        }}
       >
+        <DialogTitle className={styles.srOnly}>搜索 Ting Lab</DialogTitle>
         <div className={styles.header}>
           <svg className={styles.searchIcon} viewBox="0 0 24 24" aria-hidden="true">
             <circle cx="11" cy="11" r="6.5" />
@@ -150,7 +138,13 @@ export function SearchDialog({ open, onClose, returnFocusRef }: SearchDialogProp
             aria-controls={listId}
             aria-expanded={results.length > 0}
             aria-activedescendant={results[activeIndex] ? `${listId}-${activeIndex}` : undefined}
-            onChange={(event) => setQuery(event.target.value)}
+            onKeyDown={handleKeyDown}
+            onChange={(event) => {
+              requestId.current += 1;
+              setResults([]);
+              setStatus(event.target.value.trim() ? "loading" : "idle");
+              setQuery(event.target.value);
+            }}
           />
           <button className={styles.close} type="button" aria-label="关闭搜索" onClick={onClose}>
             <svg className={styles.closeIcon} viewBox="0 0 24 24" aria-hidden="true">
@@ -166,10 +160,7 @@ export function SearchDialog({ open, onClose, returnFocusRef }: SearchDialogProp
               <div>
                 搜索暂时不可用。
                 <br />
-                <button
-                  type="button"
-                  onClick={() => void runSearch(query.trim(), new AbortController().signal)}
-                >
+                <button type="button" onClick={() => setRetry((value) => value + 1)}>
                   重试
                 </button>
               </div>
@@ -181,14 +172,22 @@ export function SearchDialog({ open, onClose, returnFocusRef }: SearchDialogProp
           {results.length > 0 ? (
             <ul className={styles.results} id={listId} role="listbox">
               {results.map((result, index) => (
-                <li key={result.id} role="option" aria-selected={index === activeIndex}>
-                  <Link
+                <li
+                  key={result.id}
+                  role="option"
+                  id={`${listId}-${index}`}
+                  aria-selected={index === activeIndex}
+                >
+                  <button
+                    type="button"
+                    tabIndex={-1}
                     className={styles.result}
-                    id={`${listId}-${index}`}
-                    href={result.href}
                     data-active={index === activeIndex}
                     onMouseEnter={() => setActiveIndex(index)}
-                    onClick={onClose}
+                    onClick={() => {
+                      onClose();
+                      router.push(result.href);
+                    }}
                   >
                     <span className={styles.resultMeta}>
                       <span>
@@ -206,14 +205,14 @@ export function SearchDialog({ open, onClose, returnFocusRef }: SearchDialogProp
                     <span className={styles.resultExcerpt}>
                       <Highlight text={result.description || result.excerpt} query={query} />
                     </span>
-                  </Link>
+                  </button>
                 </li>
               ))}
             </ul>
           ) : null}
         </div>
         <div className={styles.footer}>↑↓ 选择 · Enter 打开 · Esc 关闭</div>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }

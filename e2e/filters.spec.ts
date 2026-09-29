@@ -1,6 +1,7 @@
 import { expect, test } from "@playwright/test";
 
 test("即时筛选、干净 URL、分页与历史恢复", async ({ page }) => {
+  test.setTimeout(45000);
   await page.goto("/posts");
   await expect(page.getByRole("button", { name: "重置" })).toHaveCount(0);
   await page.getByRole("link", { name: "下一页" }).click();
@@ -11,16 +12,22 @@ test("即时筛选、干净 URL、分页与历史恢复", async ({ page }) => {
   await page.getByRole("option", { name: "前端工程", exact: true }).click();
   await expect(page).toHaveURL(/kind=note&tag=frontend-engineering$/);
   await expect(page.getByRole("status")).toContainText("共 2 篇");
-  await page.reload();
+  await page.waitForLoadState("networkidle");
+  // Native reload preserves history in Firefox; its automation reload command
+  // adds a duplicate entry after pushState in this browser build.
+  await Promise.all([page.waitForNavigation(), page.evaluate(() => location.reload())]);
+  await page.waitForLoadState("networkidle");
   await expect(page.getByRole("radio", { name: "笔记", exact: true })).toBeChecked();
   await expect(page.getByRole("combobox", { name: "标签" })).toContainText("前端工程");
   await page.goBack();
   await expect(page).toHaveURL(/\/posts\?kind=note$/);
   await expect(page.getByRole("combobox", { name: "标签" })).toContainText("全部标签");
   await page.goForward();
+  await page.waitForLoadState("networkidle");
   await expect(page.getByRole("combobox", { name: "标签" })).toContainText("前端工程");
   await page.getByRole("heading", { level: 2 }).first().getByRole("link").click();
-  await expect(page).toHaveURL(/\/posts\/[^/?]+$/);
+  // Cold server-side Markdown/highlighter initialization can exceed seven seconds.
+  await expect(page).toHaveURL(/\/posts\/[^/?]+$/, { timeout: 20000 });
   await expect(page.getByRole("heading", { level: 1, name: "为什么我放弃了 Redux" })).toBeVisible();
   await page.goBack();
   await expect(page).toHaveURL(/kind=note&tag=frontend-engineering$/);

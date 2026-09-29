@@ -12,3 +12,11 @@ export {
   DialogClose,
   DialogContent,
 } from "./form";
+
+export {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+} from "./menu";

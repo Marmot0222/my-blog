@@ -1,19 +1,15 @@
 "use client";
 
 import Link from "next/link";
+import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@ting-lab/ui";
+import { usePathname } from "next/navigation";
+import { navItems, navigationCurrent } from "@/lib/navigation";
 import { useEffect, useRef, useState } from "react";
 
 import { SearchDialog } from "@/components/search/SearchDialog";
 import { ThemeControl } from "@/components/theme/ThemeControl";
 
 import styles from "../home/SiteHeader.module.scss";
-
-const navItems = [
-  { key: "posts", label: "文章", href: "/posts" },
-  { key: "projects", label: "项目", href: "/projects" },
-  { key: "about", label: "关于", href: "/about" },
-  { key: "ai", label: "AI 问答", href: "/ai" },
-] as const;
 
 function SearchIcon() {
   return (
@@ -33,16 +29,22 @@ function ThemeIcon() {
   );
 }
 
-type HeaderInteractiveProps = Readonly<{ activeItem?: string }>;
-
-export function HeaderInteractive({ activeItem }: HeaderInteractiveProps) {
+export function HeaderInteractive() {
+  const pathname = usePathname();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuTriggerRef = useRef<HTMLButtonElement>(null);
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [pathname]);
   const [searchOpen, setSearchOpen] = useState(false);
   const searchButtonRef = useRef<HTMLButtonElement>(null);
   const mobileSearchButtonRef = useRef<HTMLButtonElement>(null);
   const returnFocusRef = useRef<HTMLElement | null>(null);
 
   function openSearch(source: HTMLElement | null) {
+    window.dispatchEvent(new Event("tinglab:open-search"));
     returnFocusRef.current = source;
+    setMenuOpen(false);
     setSearchOpen(true);
   }
 
@@ -56,7 +58,11 @@ export function HeaderInteractive({ activeItem }: HeaderInteractiveProps) {
           ["INPUT", "TEXTAREA", "SELECT"].includes(event.target.tagName));
       if ((command || slash) && !editable) {
         event.preventDefault();
-        openSearch(searchButtonRef.current ?? mobileSearchButtonRef.current);
+        openSearch(
+          searchButtonRef.current?.getClientRects().length
+            ? searchButtonRef.current
+            : menuTriggerRef.current,
+        );
       }
     }
     window.addEventListener("keydown", handleShortcut);
@@ -82,37 +88,56 @@ export function HeaderInteractive({ activeItem }: HeaderInteractiveProps) {
         </ThemeControl>
       </div>
 
-      <details className={styles.mobileMenu}>
-        <summary aria-label="导航菜单">
-          <span className={styles.menuIcon} aria-hidden="true">
-            <i />
-            <i />
-          </span>
-        </summary>
-        <nav className={styles.mobileNav} aria-label="移动端导航">
-          {navItems.map((item) => (
-            <Link
-              key={item.label}
-              href={item.href}
-              aria-current={item.key === activeItem ? "page" : undefined}
-            >
-              {item.label}
-            </Link>
-          ))}
-          <div className={styles.mobileActions}>
+      <div className={styles.mobileMenu}>
+        <Dialog open={menuOpen} onOpenChange={setMenuOpen}>
+          <DialogTrigger asChild>
             <button
-              ref={mobileSearchButtonRef}
               type="button"
-              onClick={() => openSearch(mobileSearchButtonRef.current)}
+              className={styles.iconButton}
+              aria-label="导航菜单"
+              ref={menuTriggerRef}
             >
-              <SearchIcon /> 搜索
+              <span className={styles.menuIcon} aria-hidden="true">
+                <i />
+                <i />
+              </span>
             </button>
-            <ThemeControl className={styles.mobileThemeButton}>
-              <ThemeIcon /> 主题
-            </ThemeControl>
-          </div>
-        </nav>
-      </details>
+          </DialogTrigger>
+          <DialogContent
+            className={styles.mobileSheet}
+            aria-describedby={undefined}
+            onCloseAutoFocus={(event) => {
+              if (searchOpen) event.preventDefault();
+            }}
+          >
+            <DialogTitle>导航菜单</DialogTitle>
+            <nav className={styles.mobileNav} aria-label="移动端导航">
+              {navItems.map((item) => (
+                <Link
+                  key={item.label}
+                  href={item.href}
+                  onClick={() => setMenuOpen(false)}
+                  aria-current={navigationCurrent(pathname, item.href)}
+                >
+                  {item.label}
+                </Link>
+              ))}
+              <div className={styles.mobileActions}>
+                <button
+                  ref={mobileSearchButtonRef}
+                  type="button"
+                  onClick={() => openSearch(menuTriggerRef.current)}
+                >
+                  <SearchIcon /> 搜索
+                </button>
+                <ThemeControl className={styles.mobileThemeButton}>
+                  <ThemeIcon /> 主题
+                </ThemeControl>
+              </div>
+            </nav>
+          </DialogContent>
+        </Dialog>
+      </div>
       <SearchDialog
         open={searchOpen}
         onClose={() => setSearchOpen(false)}

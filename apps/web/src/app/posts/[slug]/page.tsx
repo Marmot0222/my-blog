@@ -91,7 +91,7 @@ export default async function PostPage({ params }: PostPageProps) {
           }),
         }}
       />
-      <SiteHeader activeItem="posts" />
+      <SiteHeader />
       <main className={styles.page}>
         <article>
           <header className={styles.header}>

@@ -21,14 +21,18 @@ export default defineConfig({
       name: "chromium",
       use: {
         ...devices["Desktop Chrome"],
+        launchOptions: { ignoreDefaultArgs: ["--hide-scrollbars"] },
         ...(process.env.CI ? {} : { channel: "chrome" as const }),
       },
     },
+    ...(process.env.CROSS_BROWSER
+      ? [{ name: "firefox", use: { ...devices["Desktop Firefox"] } }]
+      : []),
   ],
   webServer: {
     command: "pnpm --filter @ting-lab/web exec next start -p 3200",
     url: "http://127.0.0.1:3200",
-    reuseExistingServer: !process.env.CI,
+    reuseExistingServer: false,
     timeout: 120_000,
     env: { NEXT_PUBLIC_SITE_URL: "http://127.0.0.1:3200", CONTENT_PREVIEW: "1" },
   },
