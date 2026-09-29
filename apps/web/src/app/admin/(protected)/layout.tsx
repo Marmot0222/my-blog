@@ -2,8 +2,7 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { requireAdmin, AdminError } from "@/lib/admin/auth";
-import { Logout } from "@/components/admin/Logout";
-import { ThemeControl } from "@/components/theme/ThemeControl";
+import { AdminShell } from "@/components/admin/AdminShell";
 import styles from "@/components/admin/admin.module.scss";
 export default async function ProtectedLayout({ children }: { children: ReactNode }) {
   try {
@@ -18,25 +17,5 @@ export default async function ProtectedLayout({ children }: { children: ReactNod
       </main>
     );
   }
-  return (
-    <div className={styles.shell}>
-      <aside className={styles.nav}>
-        <Link href="/admin">TING LAB / 管理</Link>
-        <details open>
-          <summary>管理导航</summary>
-          <nav aria-label="管理导航">
-            <Link href="/admin/posts">文章与笔记</Link>
-            <Link href="/admin/settings/ai">模型配置</Link>
-            <a href="/api/admin/export" download>
-              导出内容
-            </a>
-            <Link href="/">查看博客</Link>
-            <Logout />
-            <ThemeControl className={styles.themeButton}>主题</ThemeControl>
-          </nav>
-        </details>
-      </aside>
-      <main className={styles.main}>{children}</main>
-    </div>
-  );
+  return <AdminShell>{children}</AdminShell>;
 }

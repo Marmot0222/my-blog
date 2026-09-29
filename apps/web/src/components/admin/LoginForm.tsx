@@ -45,7 +45,9 @@ export function LoginForm() {
           maxLength={256}
         />
       </Label>
-      <Button disabled={busy}>{busy ? "正在登录…" : "登录"}</Button>
+      <Button type="submit" disabled={busy}>
+        {busy ? "正在登录…" : "登录"}
+      </Button>
       <p role="status">{message}</p>
     </form>
   );

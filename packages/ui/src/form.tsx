@@ -11,6 +11,7 @@ export function Button({
   asChild = false,
   variant = "default",
   className = "",
+  type = "button",
   ...props
 }: ComponentProps<"button"> & {
   asChild?: boolean;
@@ -19,6 +20,7 @@ export function Button({
   const Comp = asChild ? Slot : "button";
   return (
     <Comp
+      type={asChild ? undefined : type}
       data-slot="button"
       data-variant={variant}
       className={`${styles.button} ${className}`}
