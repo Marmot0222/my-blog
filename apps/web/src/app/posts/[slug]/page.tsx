@@ -5,7 +5,6 @@ import { notFound } from "next/navigation";
 
 import { ArticleToc } from "@/components/article/ArticleToc";
 import { PostList } from "@/components/article/PostList";
-import { SiteHeader } from "@/components/home/SiteHeader";
 import { compilePostMdx } from "@/components/mdx/MdxContent";
 import { getContentRepository } from "@/lib/content";
 import { formatFullDate } from "@/lib/format-date";
@@ -91,7 +90,6 @@ export default async function PostPage({ params }: PostPageProps) {
           }),
         }}
       />
-      <SiteHeader />
       <main className={styles.page}>
         <article>
           <header className={styles.header}>

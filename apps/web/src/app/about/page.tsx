@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
-import { SiteHeader } from "@/components/home/SiteHeader";
 import { serializeJsonLd } from "@/lib/seo";
 import { absoluteUrl, siteConfig } from "@/lib/site";
 
@@ -58,7 +57,6 @@ export default function AboutPage() {
           }),
         }}
       />
-      <SiteHeader />
       <main className={styles.page}>
         <header className={styles.intro}>
           <p className={styles.eyebrow}>Profile / About</p>

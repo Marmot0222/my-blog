@@ -56,7 +56,9 @@ export function HeaderInteractive() {
         event.target instanceof HTMLElement &&
         (event.target.isContentEditable ||
           ["INPUT", "TEXTAREA", "SELECT"].includes(event.target.tagName));
-      if ((command || slash) && !editable) {
+      // Ctrl/Cmd+K can reopen a still-exiting search input. Only the plain slash
+      // shortcut is suppressed while typing in an editable control.
+      if (command || (slash && !editable)) {
         event.preventDefault();
         openSearch(
           searchButtonRef.current?.getClientRects().length
@@ -104,6 +106,7 @@ export function HeaderInteractive() {
             </button>
           </DialogTrigger>
           <DialogContent
+            motion="right"
             className={styles.mobileSheet}
             aria-describedby={undefined}
             onCloseAutoFocus={(event) => {

@@ -1,27 +1,22 @@
-.overlay {
+.dialog.dialog {
+  display: flex;
   position: fixed;
-  inset: 0;
-  z-index: 50;
-  display: flex;
-  justify-content: flex-end;
-  background: var(--color-overlay);
-  backdrop-filter: blur(0.15rem);
-  animation: tinglab-overlay-in var(--duration-normal) var(--ease-out);
-}
-
-.dialog {
-  display: flex;
-  position: relative;
+  top: 0;
+  right: 0;
+  left: auto;
+  transform: none;
+  border-radius: 0;
+  padding: 0;
+  max-height: 100dvh;
   flex-direction: column;
   width: min(42rem, 90vw);
   max-width: 100%;
-  height: 100%;
+  height: 100dvh;
   overflow: hidden;
   border-left: 1px solid var(--color-border-strong);
   background: var(--color-canvas);
   box-shadow: var(--shadow-dialog);
   outline: none;
-  animation: tinglab-dialog-in var(--duration-normal) var(--ease-out);
 }
 
 .dialogHeader {
@@ -174,28 +169,6 @@
   animation: tinglab-anchor-pulse 2s var(--ease-out);
 }
 
-@keyframes tinglab-overlay-in {
-  from {
-    opacity: 0;
-  }
-
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes tinglab-dialog-in {
-  from {
-    transform: translateX(1.5rem);
-    opacity: 0;
-  }
-
-  to {
-    transform: translateX(0);
-    opacity: 1;
-  }
-}
-
 @keyframes tinglab-anchor-pulse {
   0% {
     background: rgb(22 76 255 / 24%);
@@ -208,7 +181,7 @@
 }
 
 @media (max-width: 48rem) {
-  .dialog {
+  .dialog.dialog {
     width: 100%;
     border-left: 0;
   }
@@ -220,7 +193,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .overlay,
   .dialog,
   .anchorHighlight {
     animation: none;

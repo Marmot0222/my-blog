@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ArticleToc } from "@/components/article/ArticleToc";
-import { SiteHeader } from "@/components/home/SiteHeader";
 import { compilePostMdx } from "@/components/mdx/MdxContent";
 import { contentRepository } from "@/lib/content";
 import { isContentPreviewEnabled } from "@/lib/content-preview";
@@ -22,7 +21,6 @@ export default async function PreviewPost({
   const compiled = await compilePostMdx(post.content);
   return (
     <>
-      <SiteHeader />
       <main className={styles.page}>
         <article>
           <header className={styles.header}>

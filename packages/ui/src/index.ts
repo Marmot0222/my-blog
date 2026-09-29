@@ -1,5 +1,6 @@
 export { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "./select";
 export { RadioGroup, RadioGroupItem } from "./radio-group";
+export { useSelectionIndicator } from "./use-selection-indicator";
 export {
   Button,
   Input,

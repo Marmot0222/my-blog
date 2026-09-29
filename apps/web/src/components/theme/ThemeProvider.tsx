@@ -17,12 +17,18 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     setPreference(parseThemePreference(document.documentElement.dataset.themePreference));
     setReady(true);
+    const frame = requestAnimationFrame(() => {
+      document.documentElement.dataset.themeReady = "true";
+    });
     const sync = (event: StorageEvent) => {
       if (event.key === THEME_STORAGE_KEY || event.key === null)
         setPreference(parseThemePreference(event.newValue));
     };
     window.addEventListener("storage", sync);
-    return () => window.removeEventListener("storage", sync);
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener("storage", sync);
+    };
   }, []);
   useEffect(() => {
     if (!ready) return;

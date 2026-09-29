@@ -45,6 +45,10 @@
 }
 
 .close {
+  flex-shrink: 0;
+  transition:
+    color var(--duration-fast) ease,
+    background-color var(--duration-fast) ease;
   display: grid;
   width: 2.75rem;
   height: 2.75rem;
@@ -55,6 +59,12 @@
   background: var(--color-control);
   cursor: pointer;
   place-items: center;
+}
+@media (hover: hover) {
+  .close:hover {
+    color: var(--color-primary);
+    background: var(--color-control-hover);
+  }
 }
 
 .content {

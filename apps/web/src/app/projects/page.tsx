@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
-import { SiteHeader } from "@/components/home/SiteHeader";
 import { ProjectList } from "@/components/projects/ProjectList";
 import { contentRepository } from "@/lib/content";
 import { siteConfig } from "@/lib/site";
@@ -25,7 +24,6 @@ export default function ProjectsPage() {
 
   return (
     <>
-      <SiteHeader />
       <main className={styles.page}>
         <header className={styles.intro}>
           <p className={styles.eyebrow}>Selected / Projects</p>

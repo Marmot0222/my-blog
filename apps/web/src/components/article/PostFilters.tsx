@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   RadioGroup,
@@ -28,6 +28,7 @@ export function PostFilters({ tags }: Readonly<{ tags: readonly TagSummary[] }>)
   const current = normalize(new URLSearchParams(params.toString()));
   const desired = useRef<Filter>(current);
   const [pending, startTransition] = useTransition();
+  const [intent, setIntent] = useState<Filter>(current);
   // Only a completed navigation may replace the accumulated selection. During
   // a transition consecutive events merge into desired, never into stale props.
   useEffect(() => {
@@ -43,6 +44,7 @@ export function PostFilters({ tags }: Readonly<{ tags: readonly TagSummary[] }>)
   function navigate(patch: Filter, reset = false) {
     const next = reset ? {} : { ...desired.current, ...patch };
     desired.current = next;
+    setIntent(next);
     const query = new URLSearchParams();
     if (next.kind) query.set("kind", next.kind);
     if (next.tag) query.set("tag", next.tag);
@@ -56,6 +58,7 @@ export function PostFilters({ tags }: Readonly<{ tags: readonly TagSummary[] }>)
       <RadioGroup
         aria-label="内容类型"
         value={current.kind ?? "all"}
+        pendingValue={pending ? (intent.kind ?? "all") : undefined}
         onValueChange={(kind) => navigate({ kind: kind === "all" ? undefined : kind })}
         orientation="horizontal"
       >

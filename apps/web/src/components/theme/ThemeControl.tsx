@@ -48,7 +48,12 @@ export function ThemeControl({ className, children }: ThemeControlProps) {
       }}
     >
       <DropdownMenuTrigger asChild>
-        <button className={className} type="button" aria-label={`主题：${label}`}>
+        <button
+          data-preference={preference}
+          className={className}
+          type="button"
+          aria-label={`主题：${label}`}
+        >
           {children}
         </button>
       </DropdownMenuTrigger>

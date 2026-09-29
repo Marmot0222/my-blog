@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { SiteHeader } from "@/components/home/SiteHeader";
 import { compileMdxContent } from "@/components/mdx/MdxContent";
 import { ProjectLinks, ProjectStatus, TechList } from "@/components/projects/ProjectMeta";
 import { contentRepository } from "@/lib/content";
@@ -42,7 +41,6 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: serializeJsonLd(createProjectJsonLd(metadata)) }}
       />
-      <SiteHeader />
       <main className={styles.page}>
         <article>
           <header className={styles.header}>

@@ -2,7 +2,6 @@ import { AiPanel } from "@/components/home/AiPanel";
 import { FeaturedArticles } from "@/components/home/FeaturedArticles";
 import { HeroSection } from "@/components/home/HeroSection";
 import { LatestNotes } from "@/components/home/LatestNotes";
-import { SiteHeader } from "@/components/home/SiteHeader";
 import { TopicTags } from "@/components/home/TopicTags";
 import { getContentRepository } from "@/lib/content";
 import { serializeJsonLd } from "@/lib/seo";
@@ -37,7 +36,6 @@ export default async function Home() {
           }),
         }}
       />
-      <SiteHeader />
       <main className={styles.page}>
         <HeroSection articles={featuredArticles} />
         <FeaturedArticles articles={featuredArticles} />

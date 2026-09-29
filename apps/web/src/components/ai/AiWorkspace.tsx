@@ -5,8 +5,7 @@ import type { PublicRagSource } from "@ting-lab/retrieval";
 import type { TocHeading } from "@/components/mdx/MdxContent";
 import type { ReactNode } from "react";
 import { useRouter } from "next/navigation";
-import { useCallback } from "react";
-import Link from "next/link";
+import { useCallback, useEffect, useState } from "react";
 
 import { AiChat } from "./AiChat";
 import { ArticleDrawer } from "./ArticleDrawer";
@@ -35,6 +34,8 @@ function parseSourceUrl(url: string): { slug: string; anchor?: string } {
 
 export function AiWorkspace({ drawerPost, drawerStatus }: AiWorkspaceProps) {
   const router = useRouter();
+  const [closing, setClosing] = useState(false);
+  useEffect(() => setClosing(false), [drawerPost, drawerStatus]);
 
   const handleSourceOpen = useCallback(
     (source: PublicRagSource) => {
@@ -47,27 +48,14 @@ export function AiWorkspace({ drawerPost, drawerStatus }: AiWorkspaceProps) {
   );
 
   const closeDrawer = useCallback(() => {
-    router.push("/ai");
+    setClosing(true);
+    router.push("/ai", { scroll: false });
   }, [router]);
 
   const drawerOpen = Boolean(drawerPost) || drawerStatus === "not_found";
 
   return (
     <div className={styles.workspace}>
-      <header className={styles.topbar}>
-        <Link href="/" className={styles.brand} aria-label="Ting Lab 首页">
-          TING LAB
-        </Link>
-        <nav className={styles.topNav} aria-label="工作区导航">
-          <Link href="/posts" className={styles.topLink}>
-            文章
-          </Link>
-          <Link href="/" className={styles.topLink}>
-            返回博客
-          </Link>
-        </nav>
-      </header>
-
       <main className={styles.main}>
         <div className={styles.chatColumn}>
           {/* 不加 key：searchParams 变化只重渲染，不卸载 AiChat，聊天与共享 Chat 实例保持不变。 */}
@@ -75,9 +63,12 @@ export function AiWorkspace({ drawerPost, drawerStatus }: AiWorkspaceProps) {
         </div>
       </main>
 
-      {drawerOpen ? (
-        <ArticleDrawer post={drawerPost} status={drawerStatus} onClose={closeDrawer} />
-      ) : null}
+      <ArticleDrawer
+        open={drawerOpen && !closing}
+        post={drawerPost}
+        status={drawerStatus}
+        onClose={closeDrawer}
+      />
     </div>
   );
 }

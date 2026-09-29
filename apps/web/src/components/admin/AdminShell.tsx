@@ -57,7 +57,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
                   菜单
                 </Button>
               </DialogTrigger>
-              <DialogContent className={styles.sheet} aria-describedby={undefined}>
+              <DialogContent motion="left" className={styles.sheet} aria-describedby={undefined}>
                 <DialogTitle>管理导航</DialogTitle>
                 {navigation}
               </DialogContent>

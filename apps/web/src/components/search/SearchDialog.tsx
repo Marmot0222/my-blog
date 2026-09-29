@@ -117,7 +117,7 @@ export function SearchDialog({ open, onClose, returnFocusRef }: SearchDialogProp
         }}
         onCloseAutoFocus={(event) => {
           event.preventDefault();
-          returnFocusRef.current?.focus();
+          returnFocusRef.current?.focus({ preventScroll: true });
         }}
       >
         <DialogTitle className={styles.srOnly}>搜索 Ting Lab</DialogTitle>
@@ -152,7 +152,12 @@ export function SearchDialog({ open, onClose, returnFocusRef }: SearchDialogProp
             </svg>
           </button>
         </div>
-        <div className={styles.content} aria-live="polite" aria-busy={status === "loading"}>
+        <div
+          data-scroll-area
+          className={styles.content}
+          aria-live="polite"
+          aria-busy={status === "loading"}
+        >
           {status === "idle" ? <div className={styles.state}>输入关键词开始搜索</div> : null}
           {status === "loading" ? <div className={styles.state}>正在搜索…</div> : null}
           {status === "error" ? (

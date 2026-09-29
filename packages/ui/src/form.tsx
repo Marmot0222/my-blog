@@ -15,7 +15,7 @@ export function Button({
   ...props
 }: ComponentProps<"button"> & {
   asChild?: boolean;
-  variant?: "default" | "outline" | "destructive";
+  variant?: "default" | "outline" | "destructive" | "ghost";
 }) {
   const Comp = asChild ? Slot : "button";
   return (
@@ -46,15 +46,21 @@ export function DialogContent({
   children,
   className = "",
   hideClose = false,
+  motion = "dialog",
   onOpenAutoFocus,
   onCloseAutoFocus,
   ...props
-}: ComponentProps<typeof DialogPrimitive.Content> & { hideClose?: boolean }) {
+}: ComponentProps<typeof DialogPrimitive.Content> & {
+  hideClose?: boolean;
+  motion?: "dialog" | "left" | "right";
+}) {
   const previousFocus = useRef<HTMLElement | null>(null);
   return (
     <DialogPrimitive.Portal>
       <DialogPrimitive.Overlay data-slot="dialog-overlay" className={styles.overlay} />
       <DialogPrimitive.Content
+        data-motion={motion}
+        data-scroll-area
         className={`${styles.dialog} ${className}`}
         {...props}
         onOpenAutoFocus={(event) => {
@@ -66,7 +72,7 @@ export function DialogContent({
           onCloseAutoFocus?.(event);
           if (!event.defaultPrevented && previousFocus.current) {
             event.preventDefault();
-            previousFocus.current.focus();
+            previousFocus.current.focus({ preventScroll: true });
           }
         }}
       >

@@ -3,7 +3,6 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { PostList } from "@/components/article/PostList";
-import { SiteHeader } from "@/components/home/SiteHeader";
 import { getContentRepository } from "@/lib/content";
 
 import styles from "../../editorial-page.module.scss";
@@ -45,7 +44,6 @@ export default async function TagPage({ params }: TagPageProps) {
 
   return (
     <>
-      <SiteHeader />
       <main className={styles.page}>
         <p className={styles.eyebrow}>Topic / {topic.slug}</p>
         <h1 className={styles.title}># {topic.label}</h1>

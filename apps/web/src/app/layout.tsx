@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 
 import { ThemeProvider } from "@/components/theme/ThemeProvider";
+import { SiteHeader } from "@/components/home/SiteHeader";
+import { PublicHeader } from "@/components/navigation/PublicHeader";
 import { ChatProvider } from "@/components/ai/chat-provider";
 import { themeInitScript } from "@/lib/theme";
 import { siteConfig } from "@/lib/site";
@@ -51,7 +53,12 @@ export default function RootLayout({ children }: RootLayoutProps) {
       </head>
       <body>
         <ThemeProvider>
-          <ChatProvider>{children}</ChatProvider>
+          <ChatProvider>
+            <PublicHeader>
+              <SiteHeader />
+            </PublicHeader>
+            {children}
+          </ChatProvider>
         </ThemeProvider>
       </body>
     </html>

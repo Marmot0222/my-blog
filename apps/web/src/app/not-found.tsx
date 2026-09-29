@@ -1,13 +1,10 @@
 import Link from "next/link";
 
-import { SiteHeader } from "@/components/home/SiteHeader";
-
 import styles from "./editorial-page.module.scss";
 
 export default function NotFound() {
   return (
     <>
-      <SiteHeader />
       <main className={styles.page}>
         <p className={styles.eyebrow}>Not Found</p>
         <h1 className={styles.notFoundTitle}>404</h1>

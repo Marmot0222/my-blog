@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
-import { SiteHeader } from "@/components/home/SiteHeader";
 import { getContentRepository } from "@/lib/content";
 
 import styles from "../editorial-page.module.scss";
@@ -20,7 +19,6 @@ export default async function TagsPage() {
 
   return (
     <>
-      <SiteHeader />
       <main className={styles.page}>
         <p className={styles.eyebrow}>Index / Topics</p>
         <h1 className={styles.title}>热门话题</h1>

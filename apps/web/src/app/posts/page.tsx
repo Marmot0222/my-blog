@@ -3,7 +3,6 @@ import Link from "next/link";
 
 import { PostFilters } from "@/components/article/PostFilters";
 import { PostList } from "@/components/article/PostList";
-import { SiteHeader } from "@/components/home/SiteHeader";
 import { getContentRepository } from "@/lib/content";
 
 import styles from "../editorial-page.module.scss";
@@ -46,7 +45,6 @@ export default async function PostsPage({ searchParams }: Props) {
 
   return (
     <>
-      <SiteHeader />
       <main className={`${styles.page} ${archive.page}`}>
         <p className={styles.eyebrow}>Archive / Posts</p>
         <h1 className={styles.title}>文章</h1>
