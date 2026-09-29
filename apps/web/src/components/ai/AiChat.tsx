@@ -125,6 +125,7 @@ export function AiChat({ mode, onSourceOpen }: AiChatProps) {
       <div
         ref={scrollRef}
         className={styles.messages}
+        data-scroll-area
         onScroll={handleScroll}
         aria-live={isGenerating ? "off" : "polite"}
         aria-label="AI 对话记录"

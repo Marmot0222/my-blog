@@ -1,6 +1,6 @@
 .header {
   position: relative;
-  z-index: 10;
+  z-index: var(--z-header);
   height: var(--header-height);
   border-bottom: 1px solid var(--color-border);
   background: var(--color-header);
@@ -23,6 +23,7 @@
 }
 
 .desktopNav {
+  position: relative;
   display: flex;
   align-self: center;
   gap: clamp(1.5rem, 3vw, 3.5rem);
@@ -33,7 +34,8 @@
 .activeLink {
   position: relative;
   display: grid;
-  align-items: center;
+  place-items: center;
+  min-height: var(--control-height);
   min-width: 2.5rem;
   font-size: 0.9rem;
   font-weight: 540;
@@ -43,19 +45,49 @@
 .navLink {
   color: var(--color-text-secondary);
 
-  &:hover {
-    color: var(--color-text);
+  @media (hover: hover) {
+    &:hover {
+      color: var(--color-text);
+    }
   }
 }
 
-.activeLink::after {
+.navLabel {
+  position: relative;
+}
+.desktopNav:not([data-indicator-ready]) .activeLink .navLabel::after {
   position: absolute;
   right: 0;
   bottom: -0.45rem;
   left: 0;
   height: 2px;
+  border-radius: 1px;
   background: var(--color-primary);
   content: "";
+}
+
+.navIndicator {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: var(--indicator-width);
+  height: 2px;
+  border-radius: 1px;
+  background: var(--color-primary);
+  transform: translate(
+    var(--indicator-x),
+    calc(var(--indicator-y) + var(--indicator-height) + 0.45rem)
+  );
+  pointer-events: none;
+  opacity: 0;
+  &[data-visible="true"] {
+    opacity: 1;
+  }
+  &[data-animate="true"] {
+    transition:
+      transform var(--duration-normal) var(--ease-out),
+      width var(--duration-normal) var(--ease-out);
+  }
 }
 
 .actions {
@@ -66,6 +98,13 @@
 
 .iconButton,
 .themeButton {
+  border-radius: 50%;
+  transition:
+    color var(--duration-fast) ease,
+    background-color var(--duration-fast) ease;
+  &:active {
+    translate: 0 1px;
+  }
   display: grid;
   width: 2.75rem;
   height: 2.75rem;
@@ -93,9 +132,33 @@
     color var(--duration-fast) ease,
     background-color var(--duration-fast) ease;
 
-  &:not(:disabled):hover {
+  @media (hover: hover) {
+    &:not(:disabled):hover {
+      color: var(--color-primary);
+      background: var(--color-control-hover);
+    }
+  }
+}
+@media (hover: hover) {
+  .iconButton:hover {
     color: var(--color-primary);
     background: var(--color-control-hover);
+  }
+}
+.themeButton svg {
+  transition: rotate var(--duration-fast) var(--ease-out);
+}
+.themeButton[data-preference="dark"] svg {
+  rotate: 45deg;
+}
+@media (prefers-reduced-motion: reduce) {
+  .navIndicator[data-animate="true"],
+  .themeButton svg {
+    transition: none;
+  }
+  .iconButton:active,
+  .themeButton:active {
+    translate: none;
   }
 }
 

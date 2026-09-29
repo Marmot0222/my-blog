@@ -47,7 +47,7 @@ export default async function PostsPage({ searchParams }: Props) {
   return (
     <>
       <SiteHeader />
-      <main className={styles.page}>
+      <main className={`${styles.page} ${archive.page}`}>
         <p className={styles.eyebrow}>Archive / Posts</p>
         <h1 className={styles.title}>文章</h1>
         <p className={styles.description}>关于前端工程、系统设计与 AI 应用的长期记录。</p>

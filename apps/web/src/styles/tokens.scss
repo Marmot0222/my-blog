@@ -43,11 +43,21 @@
   --shadow-menu: 0 1rem 2rem rgb(20 22 26 / 7%);
   --shadow-dialog: 0 2rem 6rem rgb(20 22 26 / 18%);
   --duration-fast: 160ms;
+  --duration-exit: 140ms;
+  --control-height: 2.75rem;
+  --control-font-size: 0.85rem;
+  --color-on-primary: #ffffff;
+  --color-scrollbar-thumb: #a6a8ad;
+  --color-scrollbar-hover: #7b7e85;
+  --color-scrollbar-track: transparent;
   --duration-normal: 240ms;
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 :root[data-theme="dark"] {
+  --color-on-primary: #111827;
+  --color-scrollbar-thumb: #62666e;
+  --color-scrollbar-hover: #90959e;
   --color-canvas: #111315;
   --color-surface: #181b1f;
   --color-text: #f1f0eb;

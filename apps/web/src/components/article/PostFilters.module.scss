@@ -22,10 +22,19 @@
   text-underline-offset: 0.2em;
 }
 .pending {
+  min-width: 5rem;
+  min-height: 1.25rem;
   color: var(--color-text-secondary);
   font-size: 0.75rem;
 }
 @media (max-width: 30rem) {
+  .filters > [data-slot="radio-group"] {
+    order: -2;
+  }
+  .pending {
+    order: -1;
+    margin-left: auto;
+  }
   .tag {
     flex-basis: 100%;
     width: 100%;

@@ -15,7 +15,7 @@ export function SiteNavigation() {
           aria-current={navigationCurrent(pathname, item.href)}
           className={navigationCurrent(pathname, item.href) ? styles.activeLink : styles.navLink}
         >
-          {item.label}
+          <span className={styles.navLabel}>{item.label}</span>
         </Link>
       ))}
     </nav>

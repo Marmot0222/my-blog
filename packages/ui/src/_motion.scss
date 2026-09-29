@@ -1,0 +1,60 @@
+@mixin surface {
+  transition:
+    color var(--duration-fast) ease,
+    background-color var(--duration-fast) ease,
+    border-color var(--duration-fast) ease,
+    box-shadow var(--duration-fast) ease;
+}
+
+@mixin floating {
+  --motion-x: 0px;
+  --motion-y: -4px;
+  &[data-side="top"] {
+    --motion-y: 4px;
+  }
+  &[data-side="left"] {
+    --motion-x: 4px;
+    --motion-y: 0px;
+  }
+  &[data-side="right"] {
+    --motion-x: -4px;
+    --motion-y: 0px;
+  }
+  transform-origin: var(
+    --radix-select-content-transform-origin,
+    var(--radix-dropdown-menu-content-transform-origin)
+  );
+  &[data-state="open"] {
+    animation: float-in var(--duration-fast) var(--ease-out);
+  }
+  &[data-state="closed"] {
+    animation: float-out var(--duration-exit) ease-in;
+  }
+  @keyframes float-in {
+    from {
+      opacity: 0;
+      translate: var(--motion-x) var(--motion-y);
+      scale: 0.98;
+    }
+    to {
+      opacity: 1;
+      translate: 0 0;
+      scale: 1;
+    }
+  }
+  @keyframes float-out {
+    from {
+      opacity: 1;
+      translate: 0 0;
+      scale: 1;
+    }
+    to {
+      opacity: 0;
+      translate: var(--motion-x) var(--motion-y);
+      scale: 0.98;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    animation: none !important;
+  }
+}

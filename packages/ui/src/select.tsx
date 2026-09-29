@@ -46,7 +46,9 @@ export function SelectContent({
         <Primitive.ScrollUpButton className={styles.scrollButton}>
           <Icon name="up" />
         </Primitive.ScrollUpButton>
-        <Primitive.Viewport className={styles.viewport}>{children}</Primitive.Viewport>
+        <Primitive.Viewport data-scroll-area className={styles.viewport}>
+          {children}
+        </Primitive.Viewport>
         <Primitive.ScrollDownButton className={styles.scrollButton}>
           <Icon name="down" />
         </Primitive.ScrollDownButton>

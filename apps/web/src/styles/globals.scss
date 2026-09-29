@@ -4,6 +4,42 @@
 
 html {
   background: var(--color-canvas);
+  scrollbar-color: var(--color-scrollbar-thumb) var(--color-scrollbar-track);
+  scrollbar-width: auto;
+}
+
+// Color inherits into native local scrollers; width remains platform-controlled.
+// Restrict legacy fallback to actual scrolling surfaces, never wrap the viewport.
+@supports not (scrollbar-color: auto) {
+  html::-webkit-scrollbar,
+  [data-scroll-area]::-webkit-scrollbar,
+  pre::-webkit-scrollbar,
+  textarea::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+  }
+  html::-webkit-scrollbar-thumb,
+  [data-scroll-area]::-webkit-scrollbar-thumb,
+  pre::-webkit-scrollbar-thumb,
+  textarea::-webkit-scrollbar-thumb {
+    border: 3px solid transparent;
+    border-radius: 8px;
+    background: var(--color-scrollbar-thumb);
+    background-clip: padding-box;
+  }
+  @media (hover: hover) {
+    html::-webkit-scrollbar-thumb:hover,
+    [data-scroll-area]::-webkit-scrollbar-thumb:hover,
+    pre::-webkit-scrollbar-thumb:hover,
+    textarea::-webkit-scrollbar-thumb:hover {
+      background-color: var(--color-scrollbar-hover);
+    }
+  }
+}
+@media (forced-colors: active) {
+  html {
+    scrollbar-color: auto;
+  }
 }
 
 body {
@@ -11,15 +47,19 @@ body {
   background: var(--color-canvas);
 }
 
-html,
-body {
+:root[data-theme-ready] body,
+:root[data-theme-ready] header,
+:root[data-theme-ready] main,
+:root[data-theme-ready] [data-scroll-area],
+:root[data-theme-ready] [data-motion] {
   transition:
-    color var(--duration-normal) ease,
-    background-color var(--duration-normal) ease;
+    color var(--duration-fast) ease,
+    border-color var(--duration-fast) ease,
+    background-color var(--duration-fast) ease;
 }
 
 ::selection {
-  color: var(--color-surface);
+  color: var(--color-on-primary);
   background: var(--color-primary);
 }
 
