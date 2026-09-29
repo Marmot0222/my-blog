@@ -56,6 +56,8 @@ pnpm worker
 
 Compose worker 非 root、自动重启，连接 internal backend 和具有最高 gw_priority 的 frontend。任务有 pending/running/succeeded/failed、最多 3 次尝试、5 分钟 lease、30 秒重试间隔；模型工作有 3 分钟总期限。崩溃后的过期 lease 可被另一 worker 接管。正文发布不等待 Embedding，索引失败不会回滚发布，列表显示状态并允许重试。
 
+tools 镜像将 pnpm 预装到共享 `COREPACK_HOME=/opt/corepack`，非 root 用户使用同一缓存；运行时禁止 Corepack 下载，构建时以 `node` 用户在断网步骤验证版本。若旧镜像在 migrate 启动时提示下载 pnpm，更新 Dockerfile 后重新构建并重跑部署；不要为此给 migrate 开放公网或改为 root。
+
 完成时持有文章锁并检查 lease token、revision 和 fingerprint。检索 SQL 在组装 prompt 前也做相同资格检查，旧向量尚未清理不影响撤稿边界。相同内容 checksum 和空间复用已有向量，不重复调用 Embedding。
 
 登录采用全局持久限速（15 分钟 10 次），不信任客户端提供的代理 IP。CSRF 只信任固定 `ADMIN_ORIGIN`；反向代理 Host/Origin 配置必须与其一致。生产 Cookie 为 Secure，后台必须走 HTTPS。数据库断开时页面显示受控错误，搜索/RSS/API 返回 503，不显示连接串。
