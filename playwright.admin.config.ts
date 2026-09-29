@@ -5,6 +5,8 @@ if (!["127.0.0.1", "localhost"].includes(database.hostname) || !database.pathnam
   throw new Error("Admin E2E requires an isolated local *_test database");
 export default defineConfig({
   testDir: "./e2e-admin",
+  outputDir: "./test-results/admin",
+  globalSetup: "./e2e-admin/setup.ts",
   workers: 1,
   fullyParallel: false,
   timeout: 60000,

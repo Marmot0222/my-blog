@@ -261,6 +261,36 @@ const url = process.env.TEST_DATABASE_URL;
       );
       await assert.rejects(() => effectiveChat());
       assert.equal(recordToPost(await store.read(row.id), false).metadata.published, false);
+      const prefix = "paging-" + randomUUID();
+      for (let index = 0; index < 45; index++)
+        await store.create({
+          ...input,
+          slug: prefix + "-" + index,
+          metadata: {
+            ...input.metadata,
+            title: prefix + " " + index,
+            kind: index % 2 ? "note" : "article",
+          },
+        });
+      const paged = await store.querySummaries({ q: prefix, page: "3", pageSize: "20" });
+      assert.equal(paged.total, 45);
+      assert.equal(paged.rows.length, 5);
+      assert.ok(
+        paged.rows.every((row) => !("body" in row) && !("metadata" in row) && !("checksum" in row)),
+      );
+      assert.equal(
+        (await store.querySummaries({ q: prefix, kind: "note", pageSize: "10" })).total,
+        22,
+      );
+      assert.equal((await store.querySummaries({ q: prefix, pageSize: "50" })).rows.length, 45);
+      for (const item of paged.rows)
+        await store.change(item.id, item.version, "delete", "invalidated");
+      assert.equal((await store.querySummaries({ q: prefix, page: "3" })).page, 2);
+      assert.equal((await store.querySummaries({ q: prefix + "-missing" })).total, 0);
+      assert.equal(
+        (await store.querySummaries({ q: prefix, page: "-1", pageSize: "500" })).pageSize,
+        20,
+      );
       // Restore test-only configuration for the subsequent browser workflow.
       await runtime.pool.query("DELETE FROM model_profiles");
     } finally {

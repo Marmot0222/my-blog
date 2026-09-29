@@ -39,7 +39,15 @@ function failure(error: unknown) {
     );
   if (error instanceof z.ZodError)
     return NextResponse.json(
-      { message: "字段格式无效，请检查必填项、日期和类型。" },
+      {
+        message: "字段格式无效，请检查必填项、日期和类型。",
+        fieldErrors: Object.fromEntries(
+          error.issues.map((issue) => [
+            String(issue.path[0] === "metadata" ? issue.path[1] : issue.path[0]),
+            "请检查此字段的格式与必填要求。",
+          ]),
+        ),
+      },
       { status: 400, headers },
     );
   if (error && typeof error === "object" && "code" in error && error.code === "23505")
@@ -51,6 +59,10 @@ export async function GET(_request: Request, { params }: Context) {
     await requireAdmin();
     const parts = (await params).path,
       store = createPublishingStore();
+    if (parts[0] === "posts" && parts.length === 2) {
+      const row = await store.read(z.string().uuid().parse(parts[1]));
+      return NextResponse.json({ indexStatus: row.index_status }, { headers });
+    }
     if (parts.join("/") === "settings")
       return NextResponse.json(await settingsSummary(), { headers });
     if (parts.join("/") === "export") {
@@ -135,7 +147,8 @@ export async function POST(request: Request, { params }: Context) {
       let draft;
       try {
         draft = parseDraft(input);
-      } catch {
+      } catch (error) {
+        if (error instanceof z.ZodError) throw error;
         throw new AdminError(400, "文章格式无效：检查元数据与正文安全规则。");
       }
       return NextResponse.json(await store.create(draft), { status: 201, headers });
@@ -147,7 +160,8 @@ export async function POST(request: Request, { params }: Context) {
         let draft;
         try {
           draft = parseDraft(data.draft);
-        } catch {
+        } catch (error) {
+          if (error instanceof z.ZodError) throw error;
           throw new AdminError(400, "文章格式无效：检查元数据与正文安全规则。");
         }
         return NextResponse.json(await store.save(id, data.version, draft), { headers });

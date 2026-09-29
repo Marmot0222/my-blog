@@ -90,6 +90,60 @@ export function createPublishingStore(runtime: DatabaseRuntime = createDatabase(
   }
   return {
     read,
+    async querySummaries(input: {
+      q?: string;
+      kind?: string;
+      status?: string;
+      page?: string;
+      pageSize?: string;
+    }) {
+      const q = (input.q ?? "").trim().slice(0, 120);
+      const kind = input.kind === "article" || input.kind === "note" ? input.kind : "";
+      const status = ["published", "draft", "deleted"].includes(input.status ?? "")
+        ? input.status!
+        : "";
+      const pageSize = [10, 20, 50].includes(Number(input.pageSize)) ? Number(input.pageSize) : 20;
+      const requested =
+        /^\d+$/.test(input.page ?? "") && Number.isSafeInteger(Number(input.page))
+          ? Math.max(1, Number(input.page))
+          : 1;
+      const where = ` FROM articles a JOIN article_revisions r ON r.article_id=a.id AND r.revision=a.working_revision
+        WHERE ($1='' OR strpos(lower(r.metadata->>'title'),lower($1))>0)
+        AND ($2='' OR r.metadata->>'kind'=$2)
+        AND (CASE WHEN $3='deleted' THEN a.deleted_at IS NOT NULL ELSE a.deleted_at IS NULL END)
+        AND ($3 NOT IN ('published','draft') OR ($3='published' AND a.published_revision IS NOT NULL) OR ($3='draft' AND a.published_revision IS NULL))`;
+      return transaction(async (client) => {
+        await client.query("SET TRANSACTION ISOLATION LEVEL REPEATABLE READ, READ ONLY");
+        const count = await client.query<{ total: string }>(`SELECT COUNT(*) AS total${where}`, [
+          q,
+          kind,
+          status,
+        ]);
+        const total = Number(count.rows[0].total);
+        const pageCount = Math.max(1, Math.ceil(total / pageSize));
+        const page = Math.min(requested, pageCount);
+        const result = await client.query<
+          Pick<
+            ArticleRecord,
+            | "id"
+            | "slug"
+            | "version"
+            | "working_revision"
+            | "published_revision"
+            | "deleted_at"
+            | "modified_at"
+            | "index_status"
+          > & { title: string; kind: string }
+        >(
+          `SELECT a.id,a.slug,a.version,a.working_revision,a.published_revision,a.deleted_at,a.modified_at,
+          r.metadata->>'title' AS title,r.metadata->>'kind' AS kind,
+          (SELECT status FROM publishing_tasks t WHERE t.article_id=a.id ORDER BY CASE WHEN t.revision=a.published_revision AND t.fingerprint=a.embedding_fingerprint AND t.operation='index' THEN 0 ELSE 1 END,t.created_at DESC,t.id LIMIT 1) AS index_status
+          ${where} ORDER BY a.modified_at DESC,a.id LIMIT $4 OFFSET $5`,
+          [q, kind, status, pageSize, (page - 1) * pageSize],
+        );
+        return { rows: result.rows, total, page, pageCount, pageSize, q, kind, status };
+      });
+    },
     async exportContent() {
       const result = await pool.query<{
         id: string;

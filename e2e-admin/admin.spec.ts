@@ -47,11 +47,14 @@ test("login → draft → preview → publish → draft isolation → republish 
   const editURL = page.url();
   expect((await request.get(`/posts/${slug}`)).status()).toBe(404);
   await page.getByRole("link", { name: "预览已保存草稿" }).click();
-  await expect(page.getByRole("heading", { name: "Original heading" })).toBeVisible();
+  // First preview initializes the Markdown highlighter in the production server.
+  await expect(page.getByRole("heading", { name: "Original heading" })).toBeVisible({
+    timeout: 30000,
+  });
   await page.getByRole("link", { name: "返回编辑" }).click();
   await page.getByRole("button", { name: "发布", exact: true }).click();
   await page.getByRole("button", { name: "确认发布", exact: true }).click();
-  await expect(page.getByRole("status")).toContainText("已发布");
+  await expect(page.getByRole("status").first()).toContainText("已发布");
   const first = await request.get(`/posts/${slug}`);
   expect(first.status()).toBe(200);
   expect(await first.text()).toContain("Public original body.");
@@ -63,13 +66,13 @@ test("login → draft → preview → publish → draft isolation → republish 
   expect(await (await request.get("/tags/browsertest")).text()).toContain(title);
   await page.getByLabel("Markdown 正文").fill("## Revised heading\n\nPublic revised body.");
   await page.getByRole("button", { name: "保存草稿", exact: true }).click();
-  await expect(page.getByRole("status")).toContainText("草稿已保存");
+  await expect(page.getByRole("status").first()).toContainText("草稿已保存");
   const unchanged = await (await request.get(`/posts/${slug}`)).text();
   expect(unchanged).toContain("Public original body.");
   expect(unchanged).not.toContain("Public revised body.");
   await page.getByRole("button", { name: "发布", exact: true }).click();
   await page.getByRole("button", { name: "确认发布", exact: true }).click();
-  await expect(page.getByRole("status")).toContainText("已发布");
+  await expect(page.getByRole("status").first()).toContainText("已发布");
   expect(await (await request.get(`/posts/${slug}`)).text()).toContain("Public revised body.");
   await page.screenshot({ path: testInfo.outputPath("admin-editor-desktop.png"), fullPage: true });
   await page.setViewportSize({ width: 375, height: 900 });
@@ -80,7 +83,7 @@ test("login → draft → preview → publish → draft isolation → republish 
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await page.getByRole("button", { name: "取消发布", exact: true }).click();
   await page.getByRole("button", { name: "确认取消发布", exact: true }).click();
-  await expect(page.getByRole("status")).toContainText("公开入口移除");
+  await expect(page.getByRole("status").first()).toContainText("公开入口移除");
   expect((await request.get(`/posts/${slug}`)).status()).toBe(404);
   expect(
     JSON.stringify(await (await request.get(`/api/search?q=${encodeURIComponent(title)}`)).json()),
@@ -111,7 +114,7 @@ test("configuration save, fake connection feedback, activation and secret redact
   const key = "fixture-browser-secret-never-sent";
   await page.getByLabel("新 API Key").fill(key);
   await page.getByRole("button", { name: "保存配置草稿" }).click();
-  await expect(page.getByRole("status")).toContainText("尚未激活");
+  await expect(page.getByRole("status").first()).toContainText("尚未激活");
   await expect(page.getByLabel("新 API Key")).toHaveCount(0);
   // UI feedback uses a fake HTTP boundary. Real provider adapter is tested with a fake model separately.
   await page.route("**/api/admin/settings/test", (route) =>
@@ -119,9 +122,9 @@ test("configuration save, fake connection feedback, activation and secret redact
   );
   await page.getByRole("button", { name: "测试 Chat 连接" }).click();
   await page.getByRole("button", { name: "确认测试" }).click();
-  await expect(page.getByRole("status")).toContainText("连接成功");
+  await expect(page.getByRole("status").first()).toContainText("连接成功");
   await page.getByRole("button", { name: "激活配置" }).click();
-  await expect(page.getByRole("status")).toContainText("已激活");
+  await expect(page.getByRole("status").first()).toContainText("已激活");
   const summary = await (await page.request.get("/api/admin/settings")).text();
   expect(summary).not.toContain(key);
   expect(summary).not.toContain("ciphertext");
@@ -132,7 +135,7 @@ test("configuration save, fake connection feedback, activation and secret redact
   await page.screenshot({ path: testInfo.outputPath("admin-model-settings.png"), fullPage: true });
   await page.getByLabel("启用 Chat").uncheck();
   await page.getByRole("button", { name: "保存配置草稿" }).click();
-  await expect(page.getByRole("status")).toContainText("尚未激活");
+  await expect(page.getByRole("status").first()).toContainText("尚未激活");
   await page.getByRole("button", { name: "激活配置" }).click();
-  await expect(page.getByRole("status")).toContainText("已激活");
+  await expect(page.getByRole("status").first()).toContainText("已激活");
 });
