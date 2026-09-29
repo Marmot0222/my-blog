@@ -64,7 +64,7 @@ Ting Lab 是一个用于沉淀文章、项目与实验性数字产品的个人�
 - 公开项目进入本地搜索与 sitemap，并在搜索结果中标识为“项目”；RSS 默认仍只包含文章。
 - 数据库访问只在 `@ting-lab/database`；其他包不得直接创建数据库连接。
 - 模型 SDK、提示词和生成逻辑只在 `@ting-lab/ai`；不得从 UI 组件直接调用模型。
-- 模型 SDK 只能出现在 `@ting-lab/ai` 与服务端 Route Handler 中；Key、模型名、Base URL 和供应商选择不得进入客户端。
+- 模型 SDK 只能出现在 `@ting-lab/ai` 与服务端 Route Handler 中；Key 不得进入客户端；模型名、Base URL 和供应商等非秘密配置仅可传给已鉴权管理员设置页，不得暴露给访客。
 - AI 配置只能在真实请求或显式配置检查时解析；AI 未配置不能阻塞静态博客构建与阅读。
 - AI 测试必须使用配置 fixture、fake model 或自有边界，不得访问真实模型 API。
 - 向量化、索引、检索与上下文编排只在 `@ting-lab/retrieval`；它通过公共 API 组合 content、database 与 ai。
@@ -119,7 +119,7 @@ UI Message Stream 协议不变量（实现于 `apps/web/src/lib/chat/stream.ts`�
 ## 内容创作与阅读闭环
 
 - `pnpm content:new -- --kind article|note --slug <slug> --title <title>` 调用 content 包 CLI，固定写 `content/posts`，默认草稿，独占写入禁止覆盖；Windows 保留文件名也拒绝。复用 Front Matter schema 与 YAML 序列化。
-- `ContentRepository.queryPosts` 负责公开内容组合筛选与分页，每页 5 篇，日期倒序、slug 升序。`/posts?kind=note&tag=react&page=2` 使用标签 slug；非法 kind 回全部，未知标签空结果，无效页码回 1，超界夹到末页。GET 表单切换条件重置分页；重复参数取首值。
+- `ContentRepository.queryPosts` 负责公开内容组合筛选与分页，每页 5 篇，日期倒序、slug 升序。`/posts?kind=note&tag=react&page=2` 使用标签 slug；非法 kind 回全部，未知标签空结果，无效页码回 1，超界夹到末页。前台 Radix 筛选即时更新 URL 并重置分页；后台筛选统一表单提交并重置分页；重复参数取首值。
 - 带查询参数的归档 noindex/follow，canonical 固定 `/posts`，sitemap 不列组合 URL；保留 `/tags`。
 - `getRelatedPosts` 共同标签每项 2 分、同分类 1 分，日期/slug 打破同分，排除自身、草稿、重复和零分，最多 3 篇。
 - 只有 `NODE_ENV=development` 且 `CONTENT_PREVIEW=1` 开放 `/preview/posts/[slug]`，复用 MDX 编译与目录。生产始终 404，不修改公开读取边界；静态参数、搜索、RSS、sitemap、RAG 不包含草稿。
@@ -191,3 +191,15 @@ pnpm deploy:prod
 - 禁止在首页 compact 面板与 `/ai` 工作区之间复制聊天协议与状态逻辑；必须复用共享聊天内核。
 - 禁止在部署脚本中执行 `down -v`、清库、自动回滚、全局镜像清理或无确认的生产恢复。
 - 禁止将数据库端口发布到公网、把 secret 写入 Docker build args/镜像层，或在日志中输出密钥与连接密码。
+
+## 第十二轮界面约束
+
+- 搜索、确认弹窗与移动 Sheet 使用共享 Radix Dialog Portal。Overlay fixed inset:0；保留 Header 模糊。层级由 --z-header/menu/overlay/dialog/modal-menu 控制，嵌套菜单通过 ModalLayer 选择层级。
+- 文档视口为唯一页面滚动容器；html/body 不设置 overflow-x:clip 或 stable gutter。Radix/react-remove-scroll 是唯一锁滚动和滚动条补偿责任方，不叠加手写 padding/margin。经典滚动条回归移除 Chromium --hide-scrollbars 参数，比较实际坐标与宽度。
+- navigationCurrent 按路径段匹配；首页四栏目不选中，/tags 归文章，子页 aria-current=location。桌面和移动共用 navItems。
+- 根 ThemeProvider 是唯一运行时主题状态与 system 媒体监听责任方；ThemeControl 使用 DropdownMenu，storage 不可用时保留内存状态。
+- 后台和前台值选择统一共享 Select；Button 默认 type=button，表单提交必须显式 type=submit。
+- 管理文章列表只调用 database.querySummaries：参数化筛选、稳定排序、COUNT 与 LIMIT/OFFSET，摘要不包含正文；list/exportContent 完整修订契约保持独立。
+- 导出在列表工具栏确认，校验附件和 ting-lab-content-v1 后发起下载，错误响应不得下载。状态文案不能声称文件已写入磁盘。
+- 后台 E2E 使用 pnpm test:admin，globalSetup 仅允许本机 *_test 数据库，恢复测试密码并清理测试登录限速；禁止生产连接。截图与 trace 不记录秘密。
+- 跨浏览器回归设置 CROSS_BROWSER=1 后运行 pnpm test:e2e（需安装 Firefox；非默认缓存用 PLAYWRIGHT_BROWSERS_PATH）。前后台套件分开输出；冷启动 Markdown 预览断言允许初始化耗时，不跳过实际页面验证。
