@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { LinkPending } from "@/components/navigation/LinkPending";
 
 import type { PostMetadata } from "@ting-lab/content";
 
@@ -31,7 +32,10 @@ export function HeroSection({ articles }: HeroSectionProps) {
             <li key={article.slug} className={index === 0 ? styles.current : undefined}>
               <span>{String(index + 1).padStart(2, "0")}</span>
               <i aria-hidden="true" />
-              <Link href={`/posts/${article.slug}`}>{article.title}</Link>
+              <Link href={`/posts/${article.slug}`}>
+                {article.title}
+                <LinkPending />
+              </Link>
             </li>
           ))}
         </ol>

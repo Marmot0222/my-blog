@@ -12,7 +12,7 @@ import "@/styles/globals.scss";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.origin),
-  title: { default: siteConfig.title, template: "%s — Ting Lab" },
+  title: { default: siteConfig.title, template: `%s — ${siteConfig.name}` },
   description: siteConfig.description,
   authors: [{ name: siteConfig.author }],
   creator: siteConfig.author,
@@ -47,7 +47,7 @@ type RootLayoutProps = Readonly<{
 
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
-    <html lang="zh-CN" suppressHydrationWarning>
+    <html lang={siteConfig.language} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
       </head>

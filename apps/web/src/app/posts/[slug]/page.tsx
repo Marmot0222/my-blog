@@ -1,8 +1,11 @@
 import { postKindLabels } from "@ting-lab/content";
+import { scheduler } from "node:timers/promises";
 import { tagToSlug } from "@ting-lab/content";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { cache, Suspense } from "react";
+import { ArticleBodySkeleton } from "@/components/article/ArticleSkeleton";
 
 import { ArticleToc } from "@/components/article/ArticleToc";
 import { PostList } from "@/components/article/PostList";
@@ -21,10 +24,16 @@ type PostPageProps = Readonly<{
 export const dynamicParams = true;
 export const dynamic = "force-dynamic";
 
+// File repositories read on access; share the resolved post as well as the
+// repository so metadata and body use the same revision within this request.
+const getPost = cache(async (slug: string) => {
+  const repository = await getContentRepository();
+  return repository.getPostBySlug(slug);
+});
+
 export async function generateMetadata({ params }: PostPageProps): Promise<Metadata> {
-  const contentRepository = await getContentRepository();
   const { slug } = await params;
-  const post = contentRepository.getPostBySlug(slug);
+  const post = await getPost(slug);
 
   if (!post?.metadata.published) {
     return { title: "内容未找到", robots: { index: false, follow: false } };
@@ -35,8 +44,7 @@ export async function generateMetadata({ params }: PostPageProps): Promise<Metad
   return {
     title: metadata.title,
     description: metadata.description,
-    authors: [{ name: "Ting Lab" }],
-    keywords: metadata.tags,
+    authors: [{ name: siteConfig.author }],
     alternates: { canonical: `/posts/${metadata.slug}` },
     openGraph: {
       type: "article",
@@ -45,7 +53,7 @@ export async function generateMetadata({ params }: PostPageProps): Promise<Metad
       description: metadata.description,
       publishedTime: metadata.date,
       modifiedTime: metadata.updatedAt,
-      authors: ["Ting Lab"],
+      authors: [siteConfig.author],
       tags: metadata.tags,
       images: ["/opengraph-image"],
     },
@@ -58,17 +66,29 @@ export async function generateMetadata({ params }: PostPageProps): Promise<Metad
   };
 }
 
+async function ArticleBody({ content }: Readonly<{ content: string }>) {
+  // Give the shell a turn to flush before CPU-bound Markdown work. This is
+  // cooperative scheduling, not a timed delay or minimum loading duration.
+  await scheduler.yield();
+  const compiled = await compilePostMdx(content);
+  return (
+    <div className={styles.articleLayout}>
+      <div className={styles.body}>{compiled.content}</div>
+      <ArticleToc headings={compiled.headings} />
+    </div>
+  );
+}
+
 export default async function PostPage({ params }: PostPageProps) {
   const contentRepository = await getContentRepository();
   const { slug } = await params;
-  const post = contentRepository.getPostBySlug(slug);
+  const post = await getPost(slug);
 
   if (!post?.metadata.published) {
     notFound();
   }
 
   const { metadata, content } = post;
-  const compiled = await compilePostMdx(content);
   const related = contentRepository.getRelatedPosts(slug);
 
   return (
@@ -82,11 +102,11 @@ export default async function PostPage({ params }: PostPageProps) {
             headline: metadata.title,
             description: metadata.description,
             url: absoluteUrl(`/posts/${metadata.slug}`),
+            mainEntityOfPage: absoluteUrl(`/posts/${metadata.slug}`),
             datePublished: metadata.date,
             dateModified: metadata.updatedAt ?? metadata.date,
             inLanguage: siteConfig.language,
-            author: { "@type": "Person", name: siteConfig.author },
-            publisher: { "@type": "Organization", name: siteConfig.name },
+            author: { "@type": "Person", name: siteConfig.author, url: absoluteUrl("/about") },
             keywords: metadata.tags,
           }),
         }}
@@ -117,10 +137,9 @@ export default async function PostPage({ params }: PostPageProps) {
             </ul>
           </header>
 
-          <div className={styles.articleLayout}>
-            <div className={styles.body}>{compiled.content}</div>
-            <ArticleToc headings={compiled.headings} />
-          </div>
+          <Suspense fallback={<ArticleBodySkeleton />}>
+            <ArticleBody content={content} />
+          </Suspense>
 
           <footer className={styles.footer}>
             <Link href="/posts">← 返回文章列表</Link>

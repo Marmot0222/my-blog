@@ -9,6 +9,7 @@ import { getContentRepository } from "@/lib/content";
 
 export const metadata: Metadata = {
   title: "AI 问答",
+  robots: { index: false, follow: true },
   description: "与 Ting Lab 的 AI 助手对话，回答会引用本站已索引的博客文章作为来源。",
   alternates: { canonical: "/ai" },
   openGraph: { url: "/ai", title: "AI 问答" },

@@ -1,6 +1,7 @@
 import { postKindLabels } from "@ting-lab/content";
 import type { PostMetadata } from "@ting-lab/content";
 import Link from "next/link";
+import { LinkPending } from "@/components/navigation/LinkPending";
 
 import { formatFullDate } from "@/lib/format-date";
 
@@ -34,7 +35,10 @@ export function PostList({
               <span>{post.readingTime}</span>
             </div>
             <Heading>
-              <Link href={`/posts/${post.slug}`}>{post.title}</Link>
+              <Link href={`/posts/${post.slug}`}>
+                {post.title}
+                <LinkPending />
+              </Link>
             </Heading>
             <p>{post.description}</p>
             <ul className={styles.tags} aria-label={`${post.title} 的标签`}>

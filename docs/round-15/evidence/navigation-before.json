@@ -1,0 +1,1035 @@
+[
+  {
+    "width": 1440,
+    "prefetch": true,
+    "run": 0,
+    "visit": "first",
+    "titleMs": 8511,
+    "bodyMs": 8515,
+    "requests": [
+      {
+        "url": "/",
+        "ttfb": 10.5,
+        "download": 36.5,
+        "bytes": 415
+      },
+      {
+        "url": "/projects",
+        "ttfb": 8456.300000000745,
+        "download": 0.7999999998137355,
+        "bytes": 4167
+      },
+      {
+        "url": "/about",
+        "ttfb": 8453.5,
+        "download": 0.7000000001862645,
+        "bytes": 4690
+      },
+      {
+        "url": "/ai",
+        "ttfb": 33.10000000055879,
+        "download": 13.5,
+        "bytes": 426
+      },
+      {
+        "url": "/posts/why-i-left-redux",
+        "ttfb": 42.10000000055879,
+        "download": 5.099999999627471,
+        "bytes": 457
+      },
+      {
+        "url": "/posts/nextjs-concurrent-rendering",
+        "ttfb": 8.600000000558794,
+        "download": 2.7000000001862645,
+        "bytes": 463
+      },
+      {
+        "url": "/posts/why-i-left-redux",
+        "ttfb": 79.30000000074506,
+        "download": 8285.599999999627,
+        "bytes": 5366
+      },
+      {
+        "url": "/tags/react",
+        "ttfb": 10.799999999813735,
+        "download": 7.900000000372529,
+        "bytes": 443
+      },
+      {
+        "url": "/tags/frontend-engineering",
+        "ttfb": 14,
+        "download": 5.2000000001862645,
+        "bytes": 453
+      }
+    ]
+  },
+  {
+    "width": 1440,
+    "prefetch": true,
+    "run": 0,
+    "visit": "repeat",
+    "titleMs": 118,
+    "bodyMs": 121,
+    "requests": [
+      {
+        "url": "/",
+        "ttfb": 10.5,
+        "download": 36.5,
+        "bytes": 415
+      },
+      {
+        "url": "/projects",
+        "ttfb": 8456.300000000745,
+        "download": 0.7999999998137355,
+        "bytes": 4167
+      },
+      {
+        "url": "/about",
+        "ttfb": 8453.5,
+        "download": 0.7000000001862645,
+        "bytes": 4690
+      },
+      {
+        "url": "/ai",
+        "ttfb": 33.10000000055879,
+        "download": 13.5,
+        "bytes": 426
+      },
+      {
+        "url": "/posts/why-i-left-redux",
+        "ttfb": 42.10000000055879,
+        "download": 5.099999999627471,
+        "bytes": 457
+      },
+      {
+        "url": "/posts/nextjs-concurrent-rendering",
+        "ttfb": 8.600000000558794,
+        "download": 2.7000000001862645,
+        "bytes": 463
+      },
+      {
+        "url": "/posts/why-i-left-redux",
+        "ttfb": 79.30000000074506,
+        "download": 8285.599999999627,
+        "bytes": 5366
+      },
+      {
+        "url": "/tags/react",
+        "ttfb": 10.799999999813735,
+        "download": 7.900000000372529,
+        "bytes": 443
+      },
+      {
+        "url": "/tags/frontend-engineering",
+        "ttfb": 14,
+        "download": 5.2000000001862645,
+        "bytes": 453
+      },
+      {
+        "url": "/posts/why-i-left-redux",
+        "ttfb": 17.90000000037253,
+        "download": 18,
+        "bytes": 5248
+      }
+    ]
+  },
+  {
+    "width": 1440,
+    "prefetch": true,
+    "run": 1,
+    "visit": "first",
+    "titleMs": 131,
+    "bodyMs": 136,
+    "requests": [
+      {
+        "url": "/",
+        "ttfb": 4.6000000005587935,
+        "download": 13.799999999813735,
+        "bytes": 415
+      },
+      {
+        "url": "/projects",
+        "ttfb": 7.2999999998137355,
+        "download": 10.700000000186265,
+        "bytes": 4167
+      },
+      {
+        "url": "/about",
+        "ttfb": 10.200000000186265,
+        "download": 8.099999999627471,
+        "bytes": 4690
+      },
+      {
+        "url": "/ai",
+        "ttfb": 12.200000000186265,
+        "download": 5.699999999254942,
+        "bytes": 426
+      },
+      {
+        "url": "/posts/why-i-left-redux",
+        "ttfb": 15.799999999813735,
+        "download": 2.099999999627471,
+        "bytes": 457
+      },
+      {
+        "url": "/posts/nextjs-concurrent-rendering",
+        "ttfb": 4.300000000745058,
+        "download": 2,
+        "bytes": 463
+      },
+      {
+        "url": "/posts/why-i-left-redux",
+        "ttfb": 18.600000000558794,
+        "download": 19.299999999813735,
+        "bytes": 5365
+      },
+      {
+        "url": "/tags/react",
+        "ttfb": 4.2999999998137355,
+        "download": 4.5,
+        "bytes": 443
+      },
+      {
+        "url": "/tags/frontend-engineering",
+        "ttfb": 7.7999999998137355,
+        "download": 1.599999999627471,
+        "bytes": 453
+      }
+    ]
+  },
+  {
+    "width": 1440,
+    "prefetch": true,
+    "run": 1,
+    "visit": "repeat",
+    "titleMs": 67,
+    "bodyMs": 71,
+    "requests": [
+      {
+        "url": "/",
+        "ttfb": 4.6000000005587935,
+        "download": 13.799999999813735,
+        "bytes": 415
+      },
+      {
+        "url": "/projects",
+        "ttfb": 7.2999999998137355,
+        "download": 10.700000000186265,
+        "bytes": 4167
+      },
+      {
+        "url": "/about",
+        "ttfb": 10.200000000186265,
+        "download": 8.099999999627471,
+        "bytes": 4690
+      },
+      {
+        "url": "/ai",
+        "ttfb": 12.200000000186265,
+        "download": 5.699999999254942,
+        "bytes": 426
+      },
+      {
+        "url": "/posts/why-i-left-redux",
+        "ttfb": 15.799999999813735,
+        "download": 2.099999999627471,
+        "bytes": 457
+      },
+      {
+        "url": "/posts/nextjs-concurrent-rendering",
+        "ttfb": 4.300000000745058,
+        "download": 2,
+        "bytes": 463
+      },
+      {
+        "url": "/posts/why-i-left-redux",
+        "ttfb": 18.600000000558794,
+        "download": 19.299999999813735,
+        "bytes": 5365
+      },
+      {
+        "url": "/tags/react",
+        "ttfb": 4.2999999998137355,
+        "download": 4.5,
+        "bytes": 443
+      },
+      {
+        "url": "/tags/frontend-engineering",
+        "ttfb": 7.7999999998137355,
+        "download": 1.599999999627471,
+        "bytes": 453
+      },
+      {
+        "url": "/posts/why-i-left-redux",
+        "ttfb": 15.599999999627471,
+        "download": 13.600000000558794,
+        "bytes": 5249
+      }
+    ]
+  },
+  {
+    "width": 1440,
+    "prefetch": true,
+    "run": 2,
+    "visit": "first",
+    "titleMs": 153,
+    "bodyMs": 157,
+    "requests": [
+      {
+        "url": "/",
+        "ttfb": 3.2999999998137355,
+        "download": 12.299999999813735,
+        "bytes": 415
+      },
+      {
+        "url": "/projects",
+        "ttfb": 6.2000000001862645,
+        "download": 9.199999999254942,
+        "bytes": 4167
+      },
+      {
+        "url": "/about",
+        "ttfb": 8.299999999813735,
+        "download": 7.5,
+        "bytes": 4690
+      },
+      {
+        "url": "/ai",
+        "ttfb": 9.799999999813735,
+        "download": 5.2000000001862645,
+        "bytes": 426
+      },
+      {
+        "url": "/posts/why-i-left-redux",
+        "ttfb": 13.200000000186265,
+        "download": 2,
+        "bytes": 457
+      },
+      {
+        "url": "/posts/nextjs-concurrent-rendering",
+        "ttfb": 3.900000000372529,
+        "download": 2.099999999627471,
+        "bytes": 463
+      },
+      {
+        "url": "/posts/why-i-left-redux",
+        "ttfb": 28,
+        "download": 19.300000000745058,
+        "bytes": 5364
+      },
+      {
+        "url": "/tags/react",
+        "ttfb": 2.599999999627471,
+        "download": 5.1000000005587935,
+        "bytes": 443
+      },
+      {
+        "url": "/tags/frontend-engineering",
+        "ttfb": 6.7000000001862645,
+        "download": 1.099999999627471,
+        "bytes": 453
+      }
+    ]
+  },
+  {
+    "width": 1440,
+    "prefetch": true,
+    "run": 2,
+    "visit": "repeat",
+    "titleMs": 64,
+    "bodyMs": 67,
+    "requests": [
+      {
+        "url": "/",
+        "ttfb": 3.2999999998137355,
+        "download": 12.299999999813735,
+        "bytes": 415
+      },
+      {
+        "url": "/projects",
+        "ttfb": 6.2000000001862645,
+        "download": 9.199999999254942,
+        "bytes": 4167
+      },
+      {
+        "url": "/about",
+        "ttfb": 8.299999999813735,
+        "download": 7.5,
+        "bytes": 4690
+      },
+      {
+        "url": "/ai",
+        "ttfb": 9.799999999813735,
+        "download": 5.2000000001862645,
+        "bytes": 426
+      },
+      {
+        "url": "/posts/why-i-left-redux",
+        "ttfb": 13.200000000186265,
+        "download": 2,
+        "bytes": 457
+      },
+      {
+        "url": "/posts/nextjs-concurrent-rendering",
+        "ttfb": 3.900000000372529,
+        "download": 2.099999999627471,
+        "bytes": 463
+      },
+      {
+        "url": "/posts/why-i-left-redux",
+        "ttfb": 28,
+        "download": 19.300000000745058,
+        "bytes": 5364
+      },
+      {
+        "url": "/tags/react",
+        "ttfb": 2.599999999627471,
+        "download": 5.1000000005587935,
+        "bytes": 443
+      },
+      {
+        "url": "/tags/frontend-engineering",
+        "ttfb": 6.7000000001862645,
+        "download": 1.099999999627471,
+        "bytes": 453
+      },
+      {
+        "url": "/posts/why-i-left-redux",
+        "ttfb": 14.099999999627471,
+        "download": 12.900000000372529,
+        "bytes": 5245
+      }
+    ]
+  },
+  {
+    "width": 1440,
+    "prefetch": false,
+    "run": 0,
+    "visit": "first",
+    "titleMs": 168,
+    "bodyMs": 184,
+    "requests": []
+  },
+  {
+    "width": 1440,
+    "prefetch": false,
+    "run": 0,
+    "visit": "repeat",
+    "titleMs": 152,
+    "bodyMs": 164,
+    "requests": [
+      {
+        "url": "/",
+        "ttfb": 0,
+        "download": 129,
+        "bytes": 0
+      },
+      {
+        "url": "/posts",
+        "ttfb": 0,
+        "download": 132.1000000005588,
+        "bytes": 0
+      },
+      {
+        "url": "/projects",
+        "ttfb": 0,
+        "download": 132.29999999981374,
+        "bytes": 0
+      },
+      {
+        "url": "/about",
+        "ttfb": 0,
+        "download": 134.20000000018626,
+        "bytes": 0
+      },
+      {
+        "url": "/ai",
+        "ttfb": 0,
+        "download": 134.29999999981374,
+        "bytes": 0
+      },
+      {
+        "url": "/tags/react",
+        "ttfb": 0,
+        "download": 138,
+        "bytes": 0
+      },
+      {
+        "url": "/tags/frontend-engineering",
+        "ttfb": 0,
+        "download": 138.40000000037253,
+        "bytes": 0
+      }
+    ]
+  },
+  {
+    "width": 1440,
+    "prefetch": false,
+    "run": 1,
+    "visit": "first",
+    "titleMs": 181,
+    "bodyMs": 199,
+    "requests": [
+      {
+        "url": "/",
+        "ttfb": 0,
+        "download": 160.5,
+        "bytes": 0
+      },
+      {
+        "url": "/posts",
+        "ttfb": 0,
+        "download": 161.79999999981374,
+        "bytes": 0
+      },
+      {
+        "url": "/projects",
+        "ttfb": 0,
+        "download": 161.90000000037253,
+        "bytes": 0
+      },
+      {
+        "url": "/about",
+        "ttfb": 0,
+        "download": 162.20000000018626,
+        "bytes": 0
+      },
+      {
+        "url": "/ai",
+        "ttfb": 0,
+        "download": 162.5,
+        "bytes": 0
+      }
+    ]
+  },
+  {
+    "width": 1440,
+    "prefetch": false,
+    "run": 1,
+    "visit": "repeat",
+    "titleMs": 108,
+    "bodyMs": 123,
+    "requests": []
+  },
+  {
+    "width": 1440,
+    "prefetch": false,
+    "run": 2,
+    "visit": "first",
+    "titleMs": 167,
+    "bodyMs": 182,
+    "requests": []
+  },
+  {
+    "width": 1440,
+    "prefetch": false,
+    "run": 2,
+    "visit": "repeat",
+    "titleMs": 158,
+    "bodyMs": 160,
+    "requests": [
+      {
+        "url": "/",
+        "ttfb": 0,
+        "download": 116.70000000018626,
+        "bytes": 0
+      },
+      {
+        "url": "/posts",
+        "ttfb": 0,
+        "download": 116.79999999981374,
+        "bytes": 0
+      },
+      {
+        "url": "/projects",
+        "ttfb": 0,
+        "download": 116.90000000037253,
+        "bytes": 0
+      },
+      {
+        "url": "/about",
+        "ttfb": 0,
+        "download": 117,
+        "bytes": 0
+      },
+      {
+        "url": "/ai",
+        "ttfb": 0,
+        "download": 117,
+        "bytes": 0
+      },
+      {
+        "url": "/tags/react",
+        "ttfb": 0,
+        "download": 119.90000000037253,
+        "bytes": 0
+      },
+      {
+        "url": "/tags/frontend-engineering",
+        "ttfb": 0,
+        "download": 120.79999999981374,
+        "bytes": 0
+      }
+    ]
+  },
+  {
+    "width": 390,
+    "prefetch": true,
+    "run": 0,
+    "visit": "first",
+    "titleMs": 122,
+    "bodyMs": 125,
+    "requests": [
+      {
+        "url": "/",
+        "ttfb": 2.6000000005587935,
+        "download": 9.399999999441206,
+        "bytes": 415
+      },
+      {
+        "url": "/posts/why-i-left-redux",
+        "ttfb": 5.2999999998137355,
+        "download": 6.5,
+        "bytes": 457
+      },
+      {
+        "url": "/posts/nextjs-concurrent-rendering",
+        "ttfb": 7.7000000001862645,
+        "download": 4.2000000001862645,
+        "bytes": 463
+      },
+      {
+        "url": "/posts/koa-onion-model",
+        "ttfb": 10,
+        "download": 1.800000000745058,
+        "bytes": 454
+      },
+      {
+        "url": "/posts/why-i-left-redux",
+        "ttfb": 14.399999999441206,
+        "download": 14.200000000186265,
+        "bytes": 5366
+      },
+      {
+        "url": "/tags/react",
+        "ttfb": 4.5,
+        "download": 3.3999999994412065,
+        "bytes": 443
+      },
+      {
+        "url": "/tags/frontend-engineering",
+        "ttfb": 7,
+        "download": 0.7000000001862645,
+        "bytes": 453
+      }
+    ]
+  },
+  {
+    "width": 390,
+    "prefetch": true,
+    "run": 0,
+    "visit": "repeat",
+    "titleMs": 60,
+    "bodyMs": 62,
+    "requests": [
+      {
+        "url": "/",
+        "ttfb": 2.6000000005587935,
+        "download": 9.399999999441206,
+        "bytes": 415
+      },
+      {
+        "url": "/posts/why-i-left-redux",
+        "ttfb": 5.2999999998137355,
+        "download": 6.5,
+        "bytes": 457
+      },
+      {
+        "url": "/posts/nextjs-concurrent-rendering",
+        "ttfb": 7.7000000001862645,
+        "download": 4.2000000001862645,
+        "bytes": 463
+      },
+      {
+        "url": "/posts/koa-onion-model",
+        "ttfb": 10,
+        "download": 1.800000000745058,
+        "bytes": 454
+      },
+      {
+        "url": "/posts/why-i-left-redux",
+        "ttfb": 14.399999999441206,
+        "download": 14.200000000186265,
+        "bytes": 5366
+      },
+      {
+        "url": "/tags/react",
+        "ttfb": 4.5,
+        "download": 3.3999999994412065,
+        "bytes": 443
+      },
+      {
+        "url": "/tags/frontend-engineering",
+        "ttfb": 7,
+        "download": 0.7000000001862645,
+        "bytes": 453
+      },
+      {
+        "url": "/posts/why-i-left-redux",
+        "ttfb": 12.900000000372529,
+        "download": 10.699999999254942,
+        "bytes": 5249
+      }
+    ]
+  },
+  {
+    "width": 390,
+    "prefetch": true,
+    "run": 1,
+    "visit": "first",
+    "titleMs": 121,
+    "bodyMs": 123,
+    "requests": [
+      {
+        "url": "/",
+        "ttfb": 4.400000000372529,
+        "download": 14.099999999627471,
+        "bytes": 415
+      },
+      {
+        "url": "/posts/why-i-left-redux",
+        "ttfb": 7.2000000001862645,
+        "download": 11.200000000186265,
+        "bytes": 457
+      },
+      {
+        "url": "/posts/nextjs-concurrent-rendering",
+        "ttfb": 10.699999999254942,
+        "download": 8.300000000745058,
+        "bytes": 463
+      },
+      {
+        "url": "/posts/koa-onion-model",
+        "ttfb": 13.299999999813735,
+        "download": 5.6000000005587935,
+        "bytes": 454
+      },
+      {
+        "url": "/posts/why-i-left-redux",
+        "ttfb": 13.400000000372529,
+        "download": 13.099999999627471,
+        "bytes": 5364
+      },
+      {
+        "url": "/tags/react",
+        "ttfb": 3.1000000005587935,
+        "download": 3.8999999994412065,
+        "bytes": 443
+      },
+      {
+        "url": "/tags/frontend-engineering",
+        "ttfb": 6,
+        "download": 0.8999999994412065,
+        "bytes": 453
+      }
+    ]
+  },
+  {
+    "width": 390,
+    "prefetch": true,
+    "run": 1,
+    "visit": "repeat",
+    "titleMs": 144,
+    "bodyMs": 150,
+    "requests": [
+      {
+        "url": "/",
+        "ttfb": 4.400000000372529,
+        "download": 14.099999999627471,
+        "bytes": 415
+      },
+      {
+        "url": "/posts/why-i-left-redux",
+        "ttfb": 7.2000000001862645,
+        "download": 11.200000000186265,
+        "bytes": 457
+      },
+      {
+        "url": "/posts/nextjs-concurrent-rendering",
+        "ttfb": 10.699999999254942,
+        "download": 8.300000000745058,
+        "bytes": 463
+      },
+      {
+        "url": "/posts/koa-onion-model",
+        "ttfb": 13.299999999813735,
+        "download": 5.6000000005587935,
+        "bytes": 454
+      },
+      {
+        "url": "/posts/why-i-left-redux",
+        "ttfb": 13.400000000372529,
+        "download": 13.099999999627471,
+        "bytes": 5364
+      },
+      {
+        "url": "/tags/react",
+        "ttfb": 3.1000000005587935,
+        "download": 3.8999999994412065,
+        "bytes": 443
+      },
+      {
+        "url": "/tags/frontend-engineering",
+        "ttfb": 6,
+        "download": 0.8999999994412065,
+        "bytes": 453
+      },
+      {
+        "url": "/posts/why-i-left-redux",
+        "ttfb": 32.90000000037253,
+        "download": 31.699999999254942,
+        "bytes": 5248
+      }
+    ]
+  },
+  {
+    "width": 390,
+    "prefetch": true,
+    "run": 2,
+    "visit": "first",
+    "titleMs": 121,
+    "bodyMs": 125,
+    "requests": [
+      {
+        "url": "/",
+        "ttfb": 3.3999999994412065,
+        "download": 11,
+        "bytes": 415
+      },
+      {
+        "url": "/posts/why-i-left-redux",
+        "ttfb": 6.5,
+        "download": 8.700000000186265,
+        "bytes": 457
+      },
+      {
+        "url": "/posts/koa-onion-model",
+        "ttfb": 12,
+        "download": 3.099999999627471,
+        "bytes": 454
+      },
+      {
+        "url": "/posts/nextjs-concurrent-rendering",
+        "ttfb": 10.099999999627471,
+        "download": 5.1000000005587935,
+        "bytes": 463
+      },
+      {
+        "url": "/posts/why-i-left-redux",
+        "ttfb": 14.799999999813735,
+        "download": 13,
+        "bytes": 5366
+      },
+      {
+        "url": "/tags/react",
+        "ttfb": 3.2999999998137355,
+        "download": 5.099999999627471,
+        "bytes": 443
+      },
+      {
+        "url": "/tags/frontend-engineering",
+        "ttfb": 5.5,
+        "download": 3,
+        "bytes": 453
+      }
+    ]
+  },
+  {
+    "width": 390,
+    "prefetch": true,
+    "run": 2,
+    "visit": "repeat",
+    "titleMs": 110,
+    "bodyMs": 113,
+    "requests": [
+      {
+        "url": "/",
+        "ttfb": 3.3999999994412065,
+        "download": 11,
+        "bytes": 415
+      },
+      {
+        "url": "/posts/why-i-left-redux",
+        "ttfb": 6.5,
+        "download": 8.700000000186265,
+        "bytes": 457
+      },
+      {
+        "url": "/posts/koa-onion-model",
+        "ttfb": 12,
+        "download": 3.099999999627471,
+        "bytes": 454
+      },
+      {
+        "url": "/posts/nextjs-concurrent-rendering",
+        "ttfb": 10.099999999627471,
+        "download": 5.1000000005587935,
+        "bytes": 463
+      },
+      {
+        "url": "/posts/why-i-left-redux",
+        "ttfb": 14.799999999813735,
+        "download": 13,
+        "bytes": 5366
+      },
+      {
+        "url": "/tags/react",
+        "ttfb": 3.2999999998137355,
+        "download": 5.099999999627471,
+        "bytes": 443
+      },
+      {
+        "url": "/tags/frontend-engineering",
+        "ttfb": 5.5,
+        "download": 3,
+        "bytes": 453
+      },
+      {
+        "url": "/posts/why-i-left-redux",
+        "ttfb": 10.699999999254942,
+        "download": 12.5,
+        "bytes": 5249
+      }
+    ]
+  },
+  {
+    "width": 390,
+    "prefetch": false,
+    "run": 0,
+    "visit": "first",
+    "titleMs": 173,
+    "bodyMs": 179,
+    "requests": [
+      {
+        "url": "/",
+        "ttfb": 0,
+        "download": 148.09999999962747,
+        "bytes": 0
+      },
+      {
+        "url": "/tags/react",
+        "ttfb": 0,
+        "download": 148.79999999981374,
+        "bytes": 0
+      },
+      {
+        "url": "/tags/frontend-engineering",
+        "ttfb": 0,
+        "download": 148.8999999994412,
+        "bytes": 0
+      }
+    ]
+  },
+  {
+    "width": 390,
+    "prefetch": false,
+    "run": 0,
+    "visit": "repeat",
+    "titleMs": 127,
+    "bodyMs": 131,
+    "requests": [
+      {
+        "url": "/",
+        "ttfb": 0,
+        "download": 105.79999999981374,
+        "bytes": 0
+      },
+      {
+        "url": "/tags/react",
+        "ttfb": 0,
+        "download": 107.29999999981374,
+        "bytes": 0
+      },
+      {
+        "url": "/tags/frontend-engineering",
+        "ttfb": 0,
+        "download": 107.3999999994412,
+        "bytes": 0
+      }
+    ]
+  },
+  {
+    "width": 390,
+    "prefetch": false,
+    "run": 1,
+    "visit": "first",
+    "titleMs": 170,
+    "bodyMs": 173,
+    "requests": [
+      {
+        "url": "/",
+        "ttfb": 0,
+        "download": 139.20000000018626,
+        "bytes": 0
+      },
+      {
+        "url": "/tags/react",
+        "ttfb": 0,
+        "download": 139.3999999994412,
+        "bytes": 0
+      },
+      {
+        "url": "/tags/frontend-engineering",
+        "ttfb": 0,
+        "download": 139.5,
+        "bytes": 0
+      }
+    ]
+  },
+  {
+    "width": 390,
+    "prefetch": false,
+    "run": 1,
+    "visit": "repeat",
+    "titleMs": 144,
+    "bodyMs": 160,
+    "requests": []
+  },
+  {
+    "width": 390,
+    "prefetch": false,
+    "run": 2,
+    "visit": "first",
+    "titleMs": 181,
+    "bodyMs": 186,
+    "requests": [
+      {
+        "url": "/",
+        "ttfb": 0,
+        "download": 151.90000000037253,
+        "bytes": 0
+      },
+      {
+        "url": "/tags/react",
+        "ttfb": 0,
+        "download": 152,
+        "bytes": 0
+      },
+      {
+        "url": "/tags/frontend-engineering",
+        "ttfb": 0,
+        "download": 152.1000000005588,
+        "bytes": 0
+      }
+    ]
+  },
+  {
+    "width": 390,
+    "prefetch": false,
+    "run": 2,
+    "visit": "repeat",
+    "titleMs": 116,
+    "bodyMs": 131,
+    "requests": []
+  }
+]

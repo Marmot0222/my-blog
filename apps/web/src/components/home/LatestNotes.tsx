@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { LinkPending } from "@/components/navigation/LinkPending";
 
 import { postKindLabels, type PostMetadata } from "@ting-lab/content";
 
@@ -32,6 +33,7 @@ export function LatestNotes({ notes }: LatestNotesProps) {
             <NoteIcon />
             <Link href={`/posts/${note.slug}`}>
               {note.title}
+              <LinkPending />
               <small> · {postKindLabels[note.kind]}</small>
             </Link>
             <time dateTime={note.date}>{formatMonthDay(note.date)}</time>

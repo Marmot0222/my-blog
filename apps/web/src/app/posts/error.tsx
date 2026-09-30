@@ -1,17 +1,31 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useTransition } from "react";
 import { Button } from "@ting-lab/ui";
 import styles from "../editorial-page.module.scss";
 
-export default function PostsError({ reset }: { reset(): void }) {
+export default function PostsError({ reset }: Readonly<{ reset: () => void }>) {
+  const router = useRouter();
+  const [pending, startTransition] = useTransition();
   return (
     <main className={styles.page}>
-      <h1 className={styles.title}>内容暂时不可用</h1>
-      <p className={styles.description}>未能加载这次筛选或文章，请重试。</p>
+      <h1 className={styles.title}>内容暂时无法加载</h1>
+      <p className={styles.description}>请求未能完成，请重试或返回文章列表。</p>
       <div className={styles.actions}>
-        <Button onClick={reset}>重试加载</Button>
-        <Link href="/posts">返回全部文章</Link>
+        <Button
+          disabled={pending}
+          onClick={() =>
+            startTransition(() => {
+              router.refresh();
+              reset();
+            })
+          }
+        >
+          {pending ? "正在重试…" : "重新加载"}
+        </Button>
+        <Link href="/posts">返回文章列表</Link>
       </div>
     </main>
   );

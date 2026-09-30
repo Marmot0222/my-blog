@@ -61,6 +61,7 @@ test("搜索支持快捷键、键盘导航、空结果与旧请求取消", async
   await expect(
     page.getByRole("heading", { level: 1, name: "理解 Next.js 15 的并发渲染机制" }),
   ).toBeVisible();
+  await expect(page.getByRole("dialog", { name: "搜索 Ting Lab" })).toBeHidden();
 
   await page.keyboard.press("/");
   await input.fill("绝对不存在的内容 xyz");
@@ -192,7 +193,7 @@ test("站内搜索标识项目并进入项目详情", async ({ page }) => {
   const result = page.getByRole("option").first();
   await expect(result).toContainText("项目");
   await expect(result).toContainText("可配置 AI 对话流 Demo");
-  await result.getByRole("button").click();
+  await result.getByRole("link").click();
   await expect(page).toHaveURL(/\/projects\/configurable-ai-dialogue-flow$/);
 });
 

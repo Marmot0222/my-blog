@@ -1,5 +1,17 @@
 import type { PostMetadata, ProjectMetadata, TagSummary } from "@ting-lab/content";
+import { tagToSlug } from "@ting-lab/content";
 import type { MetadataRoute } from "next";
+
+export function archiveUrl(
+  result: Readonly<{ kind?: string; category?: string; tag?: string; page: number }>,
+): string {
+  const query = new URLSearchParams();
+  if (result.kind) query.set("kind", result.kind);
+  if (result.category) query.set("category", result.category);
+  if (result.tag) query.set("tag", result.tag);
+  if (result.page > 1) query.set("page", String(result.page));
+  return `/posts${query.size ? `?${query}` : ""}`;
+}
 
 export function joinUrl(origin: string, pathname: string): string {
   return new URL(pathname, `${origin.replace(/\/$/, "")}/`).toString();
@@ -20,18 +32,34 @@ export function createSitemap(
   tags: readonly TagSummary[],
 ): MetadataRoute.Sitemap {
   const published = posts.filter((post) => post.published);
-  const latest = published[0]?.updatedAt ?? published[0]?.date;
+  const latest = published
+    .flatMap((post) => [post.date, ...(post.updatedAt ? [post.updatedAt] : [])])
+    .sort()
+    .at(-1);
+  const projectLatest = projects
+    .filter((project) => project.published)
+    .map((project) => project.updatedAt)
+    .sort()
+    .at(-1);
+  const homeLatest = [latest, projectLatest]
+    .filter((date): date is string => Boolean(date))
+    .sort()
+    .at(-1);
   const entries: MetadataRoute.Sitemap = [
-    { url: joinUrl(origin, "/"), lastModified: latest, changeFrequency: "weekly", priority: 1 },
+    { url: joinUrl(origin, "/"), lastModified: homeLatest, changeFrequency: "weekly", priority: 1 },
     {
       url: joinUrl(origin, "/posts"),
       lastModified: latest,
       changeFrequency: "weekly",
       priority: 0.9,
     },
-    { url: joinUrl(origin, "/projects"), changeFrequency: "monthly", priority: 0.6 },
+    {
+      url: joinUrl(origin, "/projects"),
+      lastModified: projectLatest,
+      changeFrequency: "monthly",
+      priority: 0.6,
+    },
     { url: joinUrl(origin, "/about"), changeFrequency: "yearly", priority: 0.5 },
-    { url: joinUrl(origin, "/ai"), changeFrequency: "monthly", priority: 0.6 },
     {
       url: joinUrl(origin, "/tags"),
       lastModified: latest,
@@ -54,7 +82,11 @@ export function createSitemap(
       })),
     ...tags.map((tag) => ({
       url: joinUrl(origin, `/tags/${tag.slug}`),
-      lastModified: latest,
+      lastModified: published
+        .filter((post) => post.tags.some((label) => tagToSlug(label) === tag.slug))
+        .map((post) => post.updatedAt ?? post.date)
+        .sort()
+        .at(-1),
       changeFrequency: "weekly" as const,
       priority: 0.5,
     })),

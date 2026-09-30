@@ -46,7 +46,9 @@ const languageLabelTransformer: ShikiTransformer = {
 };
 
 export async function compileMdxContent(source: string) {
+  const started = performance.now();
   validateMarkdown(source);
+  const validated = performance.now();
   const headings: TocHeading[] = [];
   const { content } = await compileMDX({
     source,
@@ -62,6 +64,11 @@ export async function compileMdxContent(source: string) {
             {
               themes: { light: "github-light-default", dark: "github-dark-default" },
               defaultColor: false,
+              // Reuse Shiki's resource singleton, loading only encountered grammars.
+              // No rendered content or publication state is cached here.
+              langs: [],
+              lazy: true,
+              fallbackLanguage: "text",
               transformers: [languageLabelTransformer],
             },
           ],
@@ -69,6 +76,16 @@ export async function compileMdxContent(source: string) {
       },
     },
   });
+
+  if (process.env.CONTENT_TIMING === "1")
+    console.info(
+      JSON.stringify({
+        event: "content-timing",
+        stage: "markdown",
+        validateMs: validated - started,
+        compileMs: performance.now() - validated,
+      }),
+    );
 
   return {
     content: <div className={styles.content}>{content}</div>,

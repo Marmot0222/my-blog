@@ -34,12 +34,15 @@ test("深色窄屏阅读目录、代码与相关阅读", async ({ page }) => {
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
 });
 
-test("生产预览入口返回 404，筛选 noindex 且 canonical 固定", async ({ page, request }) => {
+test("生产预览入口返回 404，筛选 noindex 且 canonical 归一化", async ({ page, request }) => {
   expect((await request.get("/preview/posts/nextjs-concurrent-rendering")).status()).toBe(404);
   expect((await request.get("/posts/unknown-draft")).status()).toBe(404);
   await page.goto("/posts?kind=note&page=999");
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", /noindex/);
-  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", /\/posts$/);
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+    "href",
+    /\/posts\?kind=note$/,
+  );
   const sitemap = await (await request.get("/sitemap.xml")).text();
   expect(sitemap).not.toContain("/preview/");
   expect(sitemap).not.toContain("?kind=");

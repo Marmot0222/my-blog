@@ -1,6 +1,9 @@
 import { postKindLabels } from "@ting-lab/content";
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Suspense } from "react";
+import { archiveUrl } from "@/lib/seo";
+import { ArchiveSkeleton } from "@/components/article/ArticleSkeleton";
 
 import { PostFilters } from "@/components/article/PostFilters";
 import { PostList } from "@/components/article/PostList";
@@ -20,13 +23,41 @@ type Props = Readonly<{ searchParams: Promise<Record<string, string | string[] |
 const first = (value: string | string[] | undefined) => (Array.isArray(value) ? value[0] : value);
 
 export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
+  const repository = await getContentRepository();
+  const params = await searchParams;
+  const result = repository.queryPosts({
+    kind: first(params.kind),
+    category: first(params.category),
+    tag: first(params.tag),
+    page: first(params.page),
+  });
+  const canonical = archiveUrl(result);
+  const title = result.page > 1 ? `文章 · 第 ${result.page} 页` : "文章";
   return {
     ...metadata,
-    ...(Object.keys(await searchParams).length ? { robots: { index: false, follow: true } } : {}),
+    title,
+    alternates: { canonical },
+    openGraph: { url: canonical, title },
+    robots: { index: !Boolean(result.kind || result.category || result.tag), follow: true },
   };
 }
 
-export default async function PostsPage({ searchParams }: Props) {
+export default function PostsPage(props: Props) {
+  return (
+    <Suspense
+      fallback={
+        <main className={styles.page}>
+          <h1 className={styles.title}>文章</h1>
+          <ArchiveSkeleton />
+        </main>
+      }
+    >
+      <PostsArchive {...props} />
+    </Suspense>
+  );
+}
+
+async function PostsArchive({ searchParams }: Props) {
   const contentRepository = await getContentRepository();
   const params = await searchParams;
   const result = contentRepository.queryPosts({
@@ -41,12 +72,7 @@ export default async function PostsPage({ searchParams }: Props) {
   const tags = contentRepository.getAllTags();
   const selectedTag = tags.find((tag) => tag.slug === result.tag);
   const href = (page: number) => {
-    const query = new URLSearchParams();
-    if (result.kind) query.set("kind", result.kind);
-    if (result.category) query.set("category", result.category);
-    if (result.tag) query.set("tag", result.tag);
-    if (page > 1) query.set("page", String(page));
-    return `/posts${query.size ? `?${query}` : ""}`;
+    return archiveUrl({ ...result, page });
   };
 
   return (

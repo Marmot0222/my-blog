@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { LinkPending } from "@/components/navigation/LinkPending";
 
 import type { PostMetadata, PostVisual } from "@ting-lab/content";
 
@@ -33,7 +34,10 @@ export function ArticleCard({ article }: ArticleCardProps) {
             <span>{article.category}</span>
             <time dateTime={article.date}>{formatFullDate(article.date)}</time>
           </div>
-          <h3>{article.title}</h3>
+          <h3>
+            {article.title}
+            <LinkPending />
+          </h3>
           <p>{article.description}</p>
           <span className={styles.arrow} aria-hidden="true">
             →

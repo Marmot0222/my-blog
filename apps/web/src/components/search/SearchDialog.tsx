@@ -2,7 +2,9 @@
 import { postKindLabels } from "@ting-lab/content/kinds";
 
 import type { SearchResult } from "@ting-lab/content";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { LinkPending } from "@/components/navigation/LinkPending";
 import { Dialog, DialogContent, DialogTitle } from "@ting-lab/ui";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import type { KeyboardEvent, RefObject } from "react";
@@ -40,7 +42,13 @@ export function SearchDialog({ open, onClose, returnFocusRef }: SearchDialogProp
   const [status, setStatus] = useState<"idle" | "loading" | "ready" | "error">("idle");
   const [activeIndex, setActiveIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
-  const router = useRouter();
+  const pathname = usePathname();
+  const previousLocation = useRef(pathname);
+  useEffect(() => {
+    const location = pathname;
+    if (location !== previousLocation.current) onClose();
+    previousLocation.current = location;
+  }, [pathname, onClose]);
   const [retry, setRetry] = useState(0);
   const listId = useId();
   const requestId = useRef(0);
@@ -96,8 +104,7 @@ export function SearchDialog({ open, onClose, returnFocusRef }: SearchDialogProp
       setActiveIndex((current) => (current - 1 + results.length) % results.length);
     } else if (event.key === "Enter" && results[activeIndex]) {
       event.preventDefault();
-      onClose();
-      router.push(results[activeIndex].href);
+      document.getElementById(`${listId}-${activeIndex}`)?.querySelector("a")?.click();
     }
   }
 
@@ -184,15 +191,14 @@ export function SearchDialog({ open, onClose, returnFocusRef }: SearchDialogProp
                   id={`${listId}-${index}`}
                   aria-selected={index === activeIndex}
                 >
-                  <button
-                    type="button"
+                  <Link
+                    href={result.href}
                     tabIndex={-1}
                     className={styles.result}
                     data-active={index === activeIndex}
                     onMouseEnter={() => setActiveIndex(index)}
-                    onClick={() => {
-                      onClose();
-                      router.push(result.href);
+                    onNavigate={() => {
+                      if (result.href === pathname) onClose();
                     }}
                   >
                     <span className={styles.resultMeta}>
@@ -203,11 +209,12 @@ export function SearchDialog({ open, onClose, returnFocusRef }: SearchDialogProp
                     </span>
                     <span className={styles.resultTitle}>
                       <Highlight text={result.title} query={query} />
+                      <LinkPending />
                     </span>
                     <span className={styles.resultExcerpt}>
                       <Highlight text={result.description || result.excerpt} query={query} />
                     </span>
-                  </button>
+                  </Link>
                 </li>
               ))}
             </ul>

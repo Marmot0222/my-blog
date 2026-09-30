@@ -3,7 +3,41 @@ import test from "node:test";
 
 import type { PostMetadata, ProjectMetadata } from "@ting-lab/content";
 
-import { createRobots, createRss, createSitemap, escapeXml, serializeJsonLd } from "./seo";
+import {
+  archiveUrl,
+  createRobots,
+  createRss,
+  createSitemap,
+  escapeXml,
+  serializeJsonLd,
+} from "./seo";
+
+test("归档 canonical 使用已归一化的筛选与页码", () => {
+  assert.equal(archiveUrl({ page: 1 }), "/posts");
+  assert.equal(archiveUrl({ page: 2 }), "/posts?page=2");
+  assert.equal(
+    archiveUrl({ kind: "journal", category: "生活", tag: "react", page: 2 }),
+    "/posts?kind=journal&category=%E7%94%9F%E6%B4%BB&tag=react&page=2",
+  );
+});
+
+test("sitemap 汇总所有公开更新且不收录 AI", () => {
+  const sitemap = createSitemap(
+    "https://example.com",
+    [
+      post(),
+      post({ slug: "older", date: "2025-01-01", updatedAt: "2026-09-30" }),
+      post({ slug: "draft", published: false, updatedAt: "2027-01-01" }),
+    ],
+    [],
+    [],
+  );
+  assert.equal(sitemap.find((x) => x.url.endsWith("/posts"))?.lastModified, "2026-09-30");
+  assert.equal(
+    sitemap.some((x) => x.url.endsWith("/ai")),
+    false,
+  );
+});
 
 function post(overrides: Partial<PostMetadata> = {}): PostMetadata {
   return {
@@ -66,6 +100,11 @@ test("sitemap 排除草稿、使用内容更新时间且 URL 无重复", () => {
     sitemap.find(({ url }) => url.endsWith("/projects/ting-lab"))?.lastModified,
     "2026-07-21",
   );
+  assert.equal(
+    sitemap.find(({ url }) => url === "https://example.com/")?.lastModified,
+    "2026-07-21",
+  );
+  assert.equal(sitemap.find(({ url }) => url.endsWith("/projects"))?.lastModified, "2026-07-21");
   assert.equal(
     sitemap.some(({ url }) => url.includes("draft-project")),
     false,

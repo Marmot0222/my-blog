@@ -120,7 +120,7 @@ UI Message Stream 协议不变量（实现于 `apps/web/src/lib/chat/stream.ts`�
 
 - `pnpm content:new -- --kind article|note|journal --slug <slug> --title <title>` 调用 content 包 CLI，固定写 `content/posts`，默认草稿，独占写入禁止覆盖；Windows 保留文件名也拒绝。复用 Front Matter schema 与 YAML 序列化。
 - `ContentRepository.queryPosts` 负责公开内容组合筛选与分页，每页 5 篇，日期倒序、slug 升序。`/posts?kind=note&tag=react&page=2` 使用标签 slug；非法 kind 回全部，未知标签空结果，无效页码回 1，超界夹到末页。前台 Radix 筛选即时更新 URL 并重置分页；后台筛选统一表单提交并重置分页；重复参数取首值。
-- 带查询参数的归档 noindex/follow，canonical 固定 `/posts`，sitemap 不列组合 URL；保留 `/tags`。
+- 归档有效无筛选分页可索引，canonical 为实际页码自引用且标题含页码，page=1 归 `/posts`。kind/category/tag 筛选 noindex/follow，canonical 保留规范化筛选与实际页码；跟踪参数移除后归相同内容 URL。重复参数取首值、无效页码回 1、超界夹末页；sitemap 不列筛选组合 URL，保留 `/tags`。
 - `getRelatedPosts` 共同标签每项 2 分、同分类 1 分，日期/slug 打破同分，排除自身、草稿、重复和零分，最多 3 篇。
 - 只有 `NODE_ENV=development` 且 `CONTENT_PREVIEW=1` 开放 `/preview/posts/[slug]`，复用 MDX 编译与目录。生产始终 404，不修改公开读取边界；静态参数、搜索、RSS、sitemap、RAG 不包含草稿。
 - `packages/content/src/workflow.test.ts` 用临时目录测试 CLI/查询；Web 预览边界测试及 `e2e/content-workflow.spec.ts` 覆盖生产隔离、URL 恢复、阅读流程。完整发布操作见 `docs/content-workflow.md`。
@@ -222,3 +222,12 @@ pnpm deploy:prod
 - 内容列表使用数据库摘要分页，不获取正文；字段与操作分组底边对齐并共用 control-height，禁止用坐标补丁。发布状态与索引状态分列，modified_at 才是更新时间。
 - 查看博客仅作顶部/移动快捷操作，新标签页不得触发编辑器离开确认。索引错误保留真实状态，不在 UI 自动修复 Key 或批量重试。
 - 随记沿用草稿、修订、发布、索引、导出契约；本轮 metadata 无 DB enum/check 改动，不新增无意义 migration。生活 fixture 仅进入临时文件或本机 *_test 数据库，不发布到生产。
+
+## 第十五轮 SEO 与导航约束
+
+- 文章入口使用真实 Next Link，局部等待由 Link 子组件的 useLinkStatus 驱动，150ms 仅延迟指示器；不延迟请求、不拦截全局 fetch、不自建导航计时状态。搜索保留真实 href、新标签行为和键盘选择，完成导航后关闭弹层。
+- 详情先检查当前公开文章，再以局部 Suspense 编译正文；不得在祖先 loading 边界提前输出未知文章的 200。流式响应发出后无法更改 HTTP 状态，必须实测普通 UA 与 HTML 限制爬虫的 404/noindex。
+- Shiki 使用已有 singleton，langs:[] + lazy 按需加载语法；未知语言回退 text。只共享高亮资源，不缓存公开权限、正文或预览结果。
+- 归档 canonical 与实际规范化查询结果一致，规则见 docs/seo.md；/ai noindex/follow 且不进入 sitemap。文章作者统一 siteConfig.author，BlogPosting 使用真实作者与 mainEntityOfPage。
+- CONTENT_TIMING=1 为可选受控服务端计时，只输出阶段、条数与耗时，不输出内容、连接或 Key。性能结论必须区分冷启动、热请求、反馈延迟与服务端处理。
+- 性能脚本产物和导航连续帧写 test-results/round15，验收证据整理到 docs/round-15；不覆盖历史截图。未测线上或数据库时明确限制，不推测生产瓶颈。

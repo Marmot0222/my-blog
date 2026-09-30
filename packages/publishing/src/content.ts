@@ -54,9 +54,22 @@ export function recordToPost(row: ArticleRecord, published = true): Post {
 }
 export async function getContentSnapshot(options: ContentRepositoryOptions) {
   if (contentSource() === "file") return createContentRepository(options);
+  const started = performance.now();
   const records = await createPublishingStore().published();
-  return createContentRepository({
+  const read = performance.now();
+  const repository = createContentRepository({
     ...options,
     postEntries: records.map((row) => recordToPost(row)),
   });
+  if (process.env.CONTENT_TIMING === "1")
+    console.info(
+      JSON.stringify({
+        event: "content-timing",
+        stage: "snapshot",
+        count: records.length,
+        readMs: read - started,
+        validateMs: performance.now() - read,
+      }),
+    );
+  return repository;
 }
