@@ -28,3 +28,4 @@ export {
 export { createTaskStore, taskSource, type PublishingTask } from "./tasks";
 export { createProfileStore, type StoredProfile } from "./profiles";
 export { checkPublishingHealth } from "./health";
+export { createMediaStore, type MediaAsset } from "./media";

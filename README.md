@@ -46,6 +46,8 @@ Web 默认运行于 `http://localhost:3000`。`.env.local` 仅供本地使用，
 
 database 模式访问 `/admin/login`，在后台新建草稿、预览、发布、撤稿和恢复；保存草稿不改变线上版本。初始化、首次导入、主密钥和运维步骤见 [后台指南](docs/admin.md)。项目不由后台管理。
 
+编辑器支持未保存预览、桌面分屏与图片选择/拖放/粘贴上传，媒体库位于 `/admin/media`。图片二进制保存在独立 PostgreSQL 媒体库，由独立 `apps/media` 服务管理。升级必须配置独立运行账号和媒体服务凭据；图片完整备份使用成对停写备份。详见 [媒体服务与备份](docs/media-service.md) 和 [Markdown 编辑器](docs/markdown-editor.md)。
+
 file 模式使用 `pnpm content:new -- --kind article --slug my-first-post --title "我的第一篇文章"` 创建草稿，短笔记使用 `--kind note`。显式设置 `CONTENT_PREVIEW=1` 后 `pnpm dev`，访问 `/preview/posts/<slug>`；该旧开发入口在生产始终 404，管理员预览另有鉴权。
 
 `/posts` 支持文章/笔记、标签筛选与每页 5 篇的 URL 分页，详情提供最多 3 篇相关阅读。创建、校验、发布、取消发布和索引失败处理见 [内容工作流](docs/content-workflow.md)，后续范围见 [产品路线](docs/product-roadmap.md)。
@@ -112,14 +114,16 @@ docker compose --env-file .env.production -f compose.prod.yml ps
 docker compose --env-file .env.production -f compose.prod.yml logs -f --tail=200 app caddy
 ./scripts/deploy.sh                       # 拉取代码后重复部署
 docker compose --env-file .env.production -f compose.prod.yml stop
-./scripts/backup-db.sh                    # 写入 ./backups，默认保留最近 7 份
-BACKUP_RETENTION=14 ./scripts/backup-db.sh
+./scripts/backup-media.sh                 # 停写窗口内成对备份博客与图片库
+./scripts/backup-db.sh                    # 仅博客库，不是含图片的完整备份
 ./scripts/network-smoke-check.sh .env.production # 验证 db 与外部 Provider DNS，不调用 API
 ```
 
 证书签发失败时，先检查 DNS 是否已传播、A/AAAA 是否都能从公网到达、80/443 是否开放，以及 Caddy 日志。不要删除 `caddy_data` 来“重试”，这会丢失证书状态并可能触发 CA 频率限制。
 
 ### 数据库恢复（人工确认）
+
+启用第十六轮图床后，必须同时恢复匹配的媒体数据库，参见 [成对备份与隔离恢复](docs/media-service.md#成对备份与隔离恢复)。下列旧单库示例仅适用于尚未使用图床的数据。
 
 数据库现包含不可由 Git 重建的文章、修订、管理员和配置密文。主密钥必须单独备份。先在新建隔离数据库演练恢复并核对公开修订/checksum；正式恢复前停止 app/worker 写入，确认目标并保存当前备份，再由运维执行恢复。不要直接向正在服务的数据库导入：
 

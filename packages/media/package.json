@@ -1,0 +1,28 @@
+{
+  "name": "@ting-lab/media",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./client": "./src/client.ts"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "test": "tsx --test src/*.test.ts"
+  },
+  "dependencies": {
+    "sharp": "^0.34.5",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@ting-lab/typescript-config": "workspace:*",
+    "@ting-lab/eslint-config": "workspace:*",
+    "@types/node": "^20.17.57",
+    "eslint": "^9.29.0",
+    "typescript": "^5.8.3",
+    "tsx": "^4.23.1"
+  }
+}

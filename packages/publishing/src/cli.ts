@@ -18,6 +18,7 @@ import {
 } from "@ting-lab/retrieval";
 import { hashPassword } from "./secrets";
 import { contentSource, parseDraft } from "./content";
+import { prepareMedia } from "@ting-lab/media/client";
 import {
   freezeEmbedding,
   publishFingerprint,
@@ -82,6 +83,7 @@ try {
     if (process.exitCode) throw new Error("Import validation failed");
     const apply = args.includes("--apply");
     const fingerprint = apply ? await publishFingerprint() : "dry-run";
+    if (apply) for (const input of inputs) await prepareMedia(input.mediaIds, input.checksum);
     const report = await createPublishingStore().importBatch(inputs, apply, fingerprint);
     console.table(report);
     if (report.some((row) => row.status === "conflict"))

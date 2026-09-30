@@ -11,6 +11,7 @@ export default async function EditPost({ params }: { params: Promise<{ id: strin
   const row = await createPublishingStore().read(id);
   return (
     <PostEditor
+      key={row.id}
       post={{
         id: row.id,
         slug: row.slug,

@@ -72,7 +72,7 @@ export APP_VERSION="$COMMIT_SHA"
 echo "开始部署 Ting Lab，版本: $COMMIT_SHA"
 
 CURRENT_STAGE="构建生产镜像"
-"${COMPOSE[@]}" build app migrate indexer worker
+"${COMPOSE[@]}" build app migrate indexer worker media media-init media-migrate
 
 CURRENT_STAGE="启动数据库"
 "${COMPOSE[@]}" up -d db
@@ -92,6 +92,12 @@ fi
 
 CURRENT_STAGE="执行数据库迁移"
 "${COMPOSE[@]}" run --rm migrate
+
+CURRENT_STAGE="初始化独立数据库角色与媒体迁移"
+"${COMPOSE[@]}" run --rm media-init
+"${COMPOSE[@]}" run --rm media-migrate
+"${COMPOSE[@]}" up -d media
+wait_for_healthy media 60
 
 if (( INITIALIZE_ADMIN )); then
   CURRENT_STAGE="检查首次文章导入"

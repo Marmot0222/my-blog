@@ -12,7 +12,7 @@ RUN corepack enable && corepack prepare pnpm@9.15.9 --activate \
 FROM base AS pruner
 RUN pnpm add --global turbo@2.10.5
 COPY . .
-RUN turbo prune @ting-lab/web --docker
+RUN turbo prune @ting-lab/web @ting-lab/media-server --docker
 
 FROM base AS builder
 COPY --from=pruner /app/out/json/ ./
@@ -29,6 +29,10 @@ ENV COREPACK_ENABLE_NETWORK=0
 USER node
 RUN --network=none test "$(pnpm --version)" = "9.15.9"
 CMD ["pnpm", "--help"]
+
+FROM tools AS media-runner
+EXPOSE 3100
+CMD ["pnpm", "--filter", "@ting-lab/media-server", "start"]
 
 FROM node:22-bookworm-slim AS web-runner
 ARG APP_VERSION=unknown

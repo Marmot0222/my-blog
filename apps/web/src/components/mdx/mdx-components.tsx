@@ -1,4 +1,5 @@
 import type { ComponentPropsWithoutRef } from "react";
+import { CodeBlock, ContentImage } from "./ReadingContent";
 
 function MdxLink({ href = "", children, ...props }: ComponentPropsWithoutRef<"a">) {
   const isExternal = /^https?:\/\//.test(href);
@@ -17,4 +18,6 @@ function MdxLink({ href = "", children, ...props }: ComponentPropsWithoutRef<"a"
 
 export const mdxComponents = {
   a: MdxLink,
+  pre: CodeBlock,
+  img: ContentImage,
 };

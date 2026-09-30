@@ -1,4 +1,7 @@
 {$DOMAIN} {
+	request_body {
+		max_size 21MB
+	}
 	@compress not path /api/chat
 	encode @compress zstd gzip
 

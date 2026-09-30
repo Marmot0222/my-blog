@@ -8,6 +8,7 @@ export type RevisionInput = Readonly<{
   metadata: Record<string, unknown>;
   body: string;
   checksum: string;
+  mediaIds?: readonly string[];
 }>;
 export type ArticleRecord = {
   id: string;
@@ -64,6 +65,11 @@ export function createPublishingStore(runtime: DatabaseRuntime = createDatabase(
       "INSERT INTO article_revisions(article_id,revision,metadata,body,checksum) VALUES($1,$2,$3,$4,$5)",
       [id, number, input.metadata, input.body, input.checksum],
     );
+    for (const mediaId of input.mediaIds ?? [])
+      await client.query(
+        "INSERT INTO article_media_references(article_id,revision,media_id) VALUES($1,$2,$3)",
+        [id, number, mediaId],
+      );
   }
   async function enqueue(
     client: PoolClient,
@@ -90,6 +96,41 @@ export function createPublishingStore(runtime: DatabaseRuntime = createDatabase(
   }
   return {
     read,
+    async mediaAccessStates(ids: readonly string[]) {
+      return (
+        await pool.query<{ media_id: string; published: boolean }>(
+          `SELECT r.media_id,BOOL_OR(r.revision=a.published_revision AND a.deleted_at IS NULL) IS TRUE AS published
+         FROM article_media_references r JOIN articles a ON a.id=r.article_id WHERE r.media_id=ANY($1::uuid[]) GROUP BY r.media_id`,
+          [ids],
+        )
+      ).rows;
+    },
+    async mediaReferences(id: string) {
+      return (
+        await pool.query<{
+          article_id: string;
+          revision: number;
+          working: boolean;
+          published: boolean;
+        }>(
+          `SELECT r.article_id,r.revision,r.revision=a.working_revision AS working,
+        (r.revision=a.published_revision AND a.deleted_at IS NULL) AS published
+        FROM article_media_references r JOIN articles a ON a.id=r.article_id WHERE r.media_id=$1`,
+          [id],
+        )
+      ).rows;
+    },
+    async mediaIsPublished(id: string) {
+      return Boolean(
+        (
+          await pool.query(
+            `SELECT 1 FROM article_media_references r JOIN articles a ON a.id=r.article_id
+         WHERE r.media_id=$1 AND r.revision=a.published_revision AND a.deleted_at IS NULL LIMIT 1`,
+            [id],
+          )
+        ).rowCount,
+      );
+    },
     async querySummaries(input: {
       q?: string;
       kind?: string;

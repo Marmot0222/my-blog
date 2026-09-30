@@ -9,6 +9,7 @@ const nextConfig = {
   outputFileTracingRoot: path.join(currentDirectory, "../.."),
   transpilePackages: [
     "@ting-lab/ui",
+    "@ting-lab/media",
     "@ting-lab/content",
     "@ting-lab/database",
     "@ting-lab/ai",

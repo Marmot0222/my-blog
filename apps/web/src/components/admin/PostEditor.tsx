@@ -19,6 +19,8 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@ting-lab/ui";
+import { MarkdownEditor } from "./MarkdownEditor";
+import { draftWithoutUploads } from "./upload-state";
 import styles from "./admin.module.scss";
 import { indexStatusLabel } from "./index-status";
 
@@ -84,6 +86,7 @@ export function PostEditor({ post }: { post?: EditorPost }) {
     },
     [saved, setSaved] = useState(JSON.stringify(draft)),
     dirty = JSON.stringify(draft) !== saved;
+  const [uploadsPending, setUploadsPending] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [leaveHref, setLeaveHref] = useState<string | null>(null);
   const [busy, setBusy] = useState(false),
@@ -176,8 +179,14 @@ export function PostEditor({ post }: { post?: EditorPost }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(
           record
-            ? { action, version: record.version, ...(action === "save" ? { draft } : {}) }
-            : draft,
+            ? {
+                action,
+                version: record.version,
+                ...(action === "save"
+                  ? { draft: { ...draft, body: draftWithoutUploads(body) } }
+                  : {}),
+              }
+            : { ...draft, body: draftWithoutUploads(body) },
         ),
       });
       const data = await response.json();
@@ -211,7 +220,7 @@ export function PostEditor({ post }: { post?: EditorPost }) {
       if (action === "save") {
         setSlug(data.slug);
         setMetadata(data.metadata);
-        setBody(data.body);
+        if (!uploadsPending) setBody(data.body);
         setTags(data.metadata.tags.join(", "));
         setSaved(JSON.stringify({ slug: data.slug, metadata: data.metadata, body: data.body }));
       }
@@ -291,7 +300,7 @@ export function PostEditor({ post }: { post?: EditorPost }) {
               <>
                 <Button
                   type="button"
-                  disabled={busy || dirty}
+                  disabled={busy || dirty || uploadsPending}
                   onClick={() => setConfirm("publish")}
                 >
                   发布
@@ -484,19 +493,13 @@ export function PostEditor({ post }: { post?: EditorPost }) {
               </Select>
             </div>
           </div>
-          <Label>
-            Markdown 正文
-            <Textarea
-              className={styles.bodyEditor}
-              id="editor-body"
-              aria-invalid={!!fieldErrors.body}
-              aria-describedby={fieldErrors.body ? "error-body" : undefined}
-              value={body}
-              maxLength={200000}
-              onChange={(event) => setBody(event.target.value)}
-            />
-            {fieldErrors.body && <span id="error-body">{fieldErrors.body}</span>}
-          </Label>
+          <MarkdownEditor
+            body={body}
+            setBody={setBody}
+            metadata={metadata}
+            onPending={setUploadsPending}
+          />
+          {fieldErrors.body && <p id="error-body">{fieldErrors.body}</p>}
           <p>
             支持 Markdown、代码块、表格。图片使用站内路径或 HTTPS 地址；不支持
             HTML、JSX、导入与表达式。

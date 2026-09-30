@@ -23,7 +23,8 @@
     "@ting-lab/database": "workspace:*",
     "@ting-lab/ai": "workspace:*",
     "@ting-lab/retrieval": "workspace:*",
-    "zod": "^3.25.76"
+    "zod": "^3.25.76",
+    "@ting-lab/media": "workspace:*"
   },
   "devDependencies": {
     "@ting-lab/typescript-config": "workspace:*",

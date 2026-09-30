@@ -1,0 +1,72 @@
+.editor {
+  min-width: 0;
+  margin-block: 1.5rem;
+}
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  align-items: center;
+  padding-block: 0.6rem;
+}
+.panes {
+  display: grid;
+  gap: 1.5rem;
+  min-width: 0;
+  border-block: 1px solid var(--color-border);
+  padding-block: 1rem;
+}
+.editPane,
+.previewPane {
+  min-width: 0;
+}
+.editPane textarea {
+  min-height: 32rem;
+  width: 100%;
+  font-family: Consolas, monospace;
+  line-height: 1.8;
+  resize: vertical;
+}
+.panes[data-mode="edit"] .previewPane,
+.panes[data-mode="preview"] .editPane {
+  display: none;
+}
+.previewPane {
+  overflow-wrap: anywhere;
+}
+.splitButton {
+  display: none;
+}
+.upload {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  margin-block: 0.5rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  > span {
+    flex: 1 1 14rem;
+    overflow-wrap: anywhere;
+  }
+}
+.library {
+  width: min(95vw, 60rem);
+  max-width: 60rem;
+  max-height: 90dvh;
+  overflow-y: auto;
+}
+@media (min-width: 60rem) {
+  .splitButton {
+    display: inline-flex;
+  }
+  .panes[data-mode="split"] {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+@media (max-width: 59.99rem) {
+  .panes[data-mode="split"] .previewPane {
+    display: none;
+  }
+}

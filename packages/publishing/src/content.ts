@@ -5,6 +5,7 @@ import {
   isSafeSlug,
   tagToSlug,
   validateMarkdown,
+  managedMediaIds,
   type Post,
   type ContentRepositoryOptions,
 } from "@ting-lab/content";
@@ -38,7 +39,7 @@ export function parseDraft(value: unknown) {
   input.metadata.tags.forEach(tagToSlug);
   validateMarkdown(input.body);
   const checksum = createHash("sha256").update(JSON.stringify(input)).digest("hex");
-  return { ...input, checksum };
+  return { ...input, checksum, mediaIds: managedMediaIds(input.body) };
 }
 export function recordToPost(row: ArticleRecord, published = true): Post {
   const metadata = postFrontMatterSchema.parse({ ...row.metadata, published });

@@ -18,7 +18,7 @@
     "content:check": "tsx src/check.ts",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "test": "tsx --test src/posts.test.ts src/projects.test.ts src/search.test.ts src/workflow.test.ts src/markdown.test.ts",
+    "test": "tsx --test src/posts.test.ts src/projects.test.ts src/search.test.ts src/workflow.test.ts src/markdown.test.ts src/media.test.ts",
     "content:new": "tsx src/new.ts"
   },
   "dependencies": {

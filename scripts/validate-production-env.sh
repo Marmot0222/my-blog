@@ -39,7 +39,7 @@ require_value() {
   [[ -n "${ENV_VALUES[$key]:-}" ]] || errors+=("缺少必填字段: $key")
 }
 
-for key in DOMAIN POSTGRES_DB POSTGRES_USER POSTGRES_PASSWORD DATABASE_URL CONTENT_SOURCE TRUST_PROXY NEXT_PUBLIC_SITE_URL SKIP_CONTENT_INDEX AI_ALLOWED_HOSTS; do
+for key in DOMAIN POSTGRES_DB POSTGRES_USER POSTGRES_PASSWORD DATABASE_URL CONTENT_SOURCE TRUST_PROXY NEXT_PUBLIC_SITE_URL SKIP_CONTENT_INDEX AI_ALLOWED_HOSTS BLOG_DB_USER BLOG_DB_PASSWORD MEDIA_DB_NAME MEDIA_DB_USER MEDIA_DB_PASSWORD MEDIA_DATABASE_URL MEDIA_SERVICE_URL MEDIA_SERVICE_TOKEN; do
   require_value "$key"
 done
 
@@ -97,8 +97,15 @@ if (( CONFIG_ONLY == 0 )); then
     errors+=("POSTGRES_PASSWORD 仅允许 URL 安全字符 A-Z a-z 0-9 . _ ~ -")
   fi
 
-  expected_database_url="postgresql://${ENV_VALUES[POSTGRES_USER]:-}:$password@db:5432/${ENV_VALUES[POSTGRES_DB]:-}"
-  [[ "${ENV_VALUES[DATABASE_URL]:-}" == "$expected_database_url" ]] || errors+=("DATABASE_URL 与 POSTGRES_USER/POSTGRES_PASSWORD/POSTGRES_DB 不一致")
+  expected_database_url="postgresql://${ENV_VALUES[BLOG_DB_USER]:-}:${ENV_VALUES[BLOG_DB_PASSWORD]:-}@db:5432/${ENV_VALUES[POSTGRES_DB]:-}"
+  [[ "${ENV_VALUES[DATABASE_URL]:-}" == "$expected_database_url" ]] || errors+=("DATABASE_URL 必须使用独立 BLOG_DB_USER/BLOG_DB_PASSWORD")
+  [[ "${ENV_VALUES[MEDIA_DATABASE_URL]:-}" == "postgresql://${ENV_VALUES[MEDIA_DB_USER]:-}:${ENV_VALUES[MEDIA_DB_PASSWORD]:-}@db:5432/${ENV_VALUES[MEDIA_DB_NAME]:-}" ]] || errors+=("MEDIA_DATABASE_URL 不一致")
+  [[ "${ENV_VALUES[MEDIA_SERVICE_URL]:-}" == "http://media:3100" ]] || errors+=("生产媒体服务需使用内部地址 http://media:3100")
+  for key in BLOG_DB_PASSWORD MEDIA_DB_PASSWORD MEDIA_SERVICE_TOKEN; do
+    value="${ENV_VALUES[$key]:-}"
+    (( ${#value} >= 32 )) && [[ "$value" != *replace* && "$value" =~ ^[A-Za-z0-9._~-]+$ ]] || errors+=("$key 需要至少 32 字符的独立 URL 安全随机值")
+  done
+  [[ "${ENV_VALUES[MEDIA_SERVICE_TOKEN]:-}" != "${ENV_VALUES[ADMIN_SESSION_SECRET]:-}" ]] || errors+=("媒体服务密钥不可复用会话密钥")
   [[ "${ENV_VALUES[NEXT_PUBLIC_SITE_URL]:-}" == "https://$domain" ]] || errors+=("NEXT_PUBLIC_SITE_URL 必须等于 https://DOMAIN")
   if [[ "${ENV_VALUES[CONTENT_SOURCE]:-}" == "database" ]]; then
     [[ "${ENV_VALUES[ADMIN_ORIGIN]:-}" == "https://$domain" ]] || errors+=("ADMIN_ORIGIN 必须等于 https://DOMAIN")
@@ -117,6 +124,12 @@ if (( CONFIG_ONLY == 0 )); then
     fi
   done
 fi
+
+for key in POSTGRES_DB POSTGRES_USER BLOG_DB_USER MEDIA_DB_NAME MEDIA_DB_USER; do
+  [[ "${ENV_VALUES[$key]:-}" =~ ^[a-z][a-z0-9_]{0,62}$ ]] || errors+=("$key 不是安全数据库标识")
+done
+[[ "${ENV_VALUES[MEDIA_DB_NAME]:-}" != "${ENV_VALUES[POSTGRES_DB]:-}" ]] || errors+=("媒体与博客必须是独立数据库")
+[[ "${ENV_VALUES[MEDIA_DB_USER]:-}" != "${ENV_VALUES[BLOG_DB_USER]:-}" && "${ENV_VALUES[MEDIA_DB_USER]:-}" != "${ENV_VALUES[POSTGRES_USER]:-}" && "${ENV_VALUES[BLOG_DB_USER]:-}" != "${ENV_VALUES[POSTGRES_USER]:-}" ]] || errors+=("数据库管理员、博客和媒体账号必须独立")
 
 if (( ${#errors[@]} > 0 )); then
   printf '生产环境预检失败：\n' >&2

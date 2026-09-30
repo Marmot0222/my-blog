@@ -2,6 +2,7 @@ import {
   boolean,
   date,
   halfvec,
+  foreignKey,
   index,
   integer,
   jsonb,
@@ -90,6 +91,23 @@ export const publishingTasks = pgTable(
       table.operation,
       table.fingerprint,
     ),
+  ],
+);
+
+export const articleMediaReferences = pgTable(
+  "article_media_references",
+  {
+    articleId: uuid("article_id").notNull(),
+    revision: integer("revision").notNull(),
+    mediaId: uuid("media_id").notNull(),
+  },
+  (table) => [
+    primaryKey({ columns: [table.articleId, table.revision, table.mediaId] }),
+    foreignKey({
+      columns: [table.articleId, table.revision],
+      foreignColumns: [articleRevisions.articleId, articleRevisions.revision],
+    }),
+    index("article_media_lookup").on(table.mediaId),
   ],
 );
 

@@ -9,6 +9,7 @@ import styles from "./admin.module.scss";
 const items = [
   { href: "/admin", label: "概览" },
   { href: "/admin/posts", label: "内容管理" },
+  { href: "/admin/media", label: "媒体库" },
   { href: "/admin/settings/ai", label: "模型配置" },
 ];
 export function AdminShell({ children }: { children: ReactNode }) {

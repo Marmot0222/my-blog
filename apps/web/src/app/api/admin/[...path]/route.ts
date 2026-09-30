@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { prepareMedia } from "@ting-lab/media/client";
 import { createPublishingStore, createProfileStore, PublishingConflict } from "@ting-lab/database";
 import {
   parseDraft,
@@ -151,6 +152,7 @@ export async function POST(request: Request, { params }: Context) {
         if (error instanceof z.ZodError) throw error;
         throw new AdminError(400, "文章格式无效：检查元数据与正文安全规则。");
       }
+      await prepareMedia(draft.mediaIds, draft.checksum);
       return NextResponse.json(await store.create(draft), { status: 201, headers });
     }
     if (parts[0] === "posts" && parts.length === 2) {
@@ -164,6 +166,7 @@ export async function POST(request: Request, { params }: Context) {
           if (error instanceof z.ZodError) throw error;
           throw new AdminError(400, "文章格式无效：检查元数据与正文安全规则。");
         }
+        await prepareMedia(draft.mediaIds, draft.checksum);
         return NextResponse.json(await store.save(id, data.version, draft), { headers });
       }
       if (data.action === "retry") {

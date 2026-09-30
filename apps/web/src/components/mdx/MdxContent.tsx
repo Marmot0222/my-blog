@@ -10,6 +10,8 @@ import type { ShikiTransformer } from "shiki";
 import { visit } from "unist-util-visit";
 
 import { mdxComponents } from "./mdx-components";
+import { mediaRequest, assetSchema } from "@ting-lab/media/client";
+import { managedMediaIds } from "@ting-lab/content";
 import styles from "./MdxContent.module.scss";
 
 export type TocHeading = Readonly<{
@@ -42,6 +44,7 @@ const languageLabelTransformer: ShikiTransformer = {
   name: "ting-lab-language-label",
   pre(node) {
     node.properties["data-language"] = this.options.lang;
+    node.properties["data-code"] = this.source;
   },
 };
 
@@ -50,13 +53,57 @@ export async function compileMdxContent(source: string) {
   validateMarkdown(source);
   const validated = performance.now();
   const headings: TocHeading[] = [];
+  const dimensions = new Map<string, { width: number; height: number }>();
+  const mediaDeadline = AbortSignal.timeout(5000);
+  for (const id of managedMediaIds(source)) {
+    if (mediaDeadline.aborted) break;
+    try {
+      const response = await mediaRequest(`/assets/${id}`, { signal: mediaDeadline });
+      if (response.ok) {
+        const asset = assetSchema.parse(await response.json());
+        dimensions.set(`/media/${id}`, { width: asset.width, height: asset.height });
+      }
+    } catch {
+      /* Reading text remains available when media is down. */
+    }
+  }
+  function remarkImages() {
+    return (tree: MdastRoot) => {
+      let index = 0;
+      const definitions = new Map<string, { url: string; title?: string | null }>();
+      visit(tree, "definition", (node) => {
+        if (!definitions.has(node.identifier.toLowerCase()))
+          definitions.set(node.identifier.toLowerCase(), node);
+      });
+      visit(tree, "imageReference", (node, position, parent) => {
+        const definition = definitions.get(node.identifier.toLowerCase());
+        if (definition && parent && typeof position === "number")
+          parent.children[position] = {
+            type: "image",
+            url: definition.url,
+            title: definition.title,
+            alt: node.alt,
+            position: node.position,
+          };
+      });
+      visit(tree, "image", (node, _position, parent) => {
+        node.data ??= {};
+        node.data.hProperties = {
+          ...node.data.hProperties,
+          ...dimensions.get(node.url),
+          loading: index++ === 0 ? "eager" : "lazy",
+          "data-linked": parent?.type === "link" || parent?.type === "linkReference",
+        };
+      });
+    };
+  }
   const { content } = await compileMDX({
     source,
     components: mdxComponents,
     options: {
       mdxOptions: {
         format: "md",
-        remarkPlugins: [remarkGfm, createHeadingCollector(headings)],
+        remarkPlugins: [remarkGfm, createHeadingCollector(headings), remarkImages],
         rehypePlugins: [
           rehypeSlug,
           [

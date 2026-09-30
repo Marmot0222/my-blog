@@ -1,0 +1,25 @@
+{
+  "name": "@ting-lab/media-server",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "start": "tsx src/server.ts"
+  },
+  "dependencies": {
+    "@ting-lab/database": "workspace:*",
+    "@ting-lab/media": "workspace:*",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@ting-lab/typescript-config": "workspace:*",
+    "@ting-lab/eslint-config": "workspace:*",
+    "@types/node": "^20.17.57",
+    "eslint": "^9.29.0",
+    "typescript": "^5.8.3",
+    "tsx": "^4.23.1"
+  }
+}
