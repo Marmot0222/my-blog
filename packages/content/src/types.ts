@@ -1,4 +1,5 @@
-export type PostKind = "article" | "note";
+import type { PostKind } from "./kinds";
+export type { PostKind } from "./kinds";
 
 export type PostVisual = "interface" | "system" | "code";
 

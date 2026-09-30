@@ -35,7 +35,7 @@ test("CLI 生成合法草稿，正确序列化中文/引号/冒号/换行且不�
   const directory = mkdtempSync(path.join(tmpdir(), "ting-workflow-"));
   try {
     const title = '中文："引号"\n第二行';
-    for (const kind of ["article", "note"]) {
+    for (const kind of ["article", "note", "journal"]) {
       const args = ["--", "--kind", kind, "--slug", kind, "--title", title];
       const target = createPostDraft(directory, args);
       const before = readFileSync(target, "utf8");
@@ -54,9 +54,9 @@ test("CLI 生成合法草稿，正确序列化中文/引号/冒号/换行且不�
     assert.throws(() => createPostDraft(directory, ["--kind", "unknown"]));
     assert.throws(() => createPostDraft(directory, ["--kind", "article", "--slug", "missing"]));
     assert.throws(() => createPostDraft(directory, ["--output", "elsewhere"]));
-    assert.equal(readdirSync(directory).length, 2);
+    assert.equal(readdirSync(directory).length, 3);
     const repo = createContentRepository({ postsDirectory: directory });
-    assert.equal(repo.validate().length, 2);
+    assert.equal(repo.validate().length, 3);
     assert.deepEqual(repo.getPublishedPosts(), []);
     assert.deepEqual(repo.getAllPostSlugs(), []);
     assert.deepEqual(repo.getSearchDocuments(), []);
@@ -108,4 +108,31 @@ test("相关阅读按标签 2 分/分类 1 分排序，排除自身、草稿、�
   );
   assert.deepEqual(relatedPosts(posts, "draft"), []);
   assert.deepEqual(relatedPosts(posts, "unrelated"), []);
+});
+
+test("形式、分类、标签独立组合；未知分类为空且草稿主题不进入公开索引", () => {
+  const entries = [
+    post("tech-article", { category: "技术" }),
+    post("life-article", { category: "生活", tags: ["旅行"] }),
+    post("life-journal", { kind: "journal", category: "生活", tags: ["旅行"] }),
+    post("tech-journal", { kind: "journal", category: "技术" }),
+    post("secret-journal", { kind: "journal", category: "未公开主题", published: false }),
+  ];
+  assert.deepEqual(
+    queryPosts(entries, { kind: "journal", category: "技术", tag: "react" }).posts.map(
+      (p) => p.slug,
+    ),
+    ["tech-journal"],
+  );
+  assert.equal(queryPosts(entries, { category: "生活" }).total, 2);
+  assert.equal(queryPosts(entries, { kind: "article", category: "生活" }).total, 1);
+  assert.equal(queryPosts(entries, { category: "未知" }).total, 0);
+  assert.equal(queryPosts(entries, { category: "未公开主题" }).total, 0);
+  const repo = createContentRepository({
+    postsDirectory: "unused-snapshot",
+    postEntries: entries.map((metadata) => ({ metadata, content: "测试正文" })),
+  });
+  assert.equal(repo.getPublishedPosts().length, 4);
+  assert.ok(!repo.getSearchDocuments().some((entry) => entry.category === "未公开主题"));
+  assert.ok(repo.getSearchDocuments().some((entry) => entry.kind === "journal"));
 });

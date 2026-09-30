@@ -12,17 +12,22 @@ import {
   SelectItem,
 } from "@ting-lab/ui";
 import type { TagSummary } from "@ting-lab/content";
+import { isPostKind, postKinds, postKindLabels } from "@ting-lab/content/kinds";
 import styles from "./PostFilters.module.scss";
 
-type Filter = { kind?: string; tag?: string };
+type Filter = { kind?: string; tag?: string; category?: string };
 function normalize(params: URLSearchParams): Filter {
   const kind = params.get("kind");
   return {
-    kind: kind === "article" || kind === "note" ? kind : undefined,
+    kind: isPostKind(kind) ? kind : undefined,
+    category: params.get("category") || undefined,
     tag: params.get("tag") || undefined,
   };
 }
-export function PostFilters({ tags }: Readonly<{ tags: readonly TagSummary[] }>) {
+export function PostFilters({
+  tags,
+  categories,
+}: Readonly<{ tags: readonly TagSummary[]; categories: readonly string[] }>) {
   const router = useRouter();
   const params = useSearchParams();
   const current = normalize(new URLSearchParams(params.toString()));
@@ -47,6 +52,7 @@ export function PostFilters({ tags }: Readonly<{ tags: readonly TagSummary[] }>)
     setIntent(next);
     const query = new URLSearchParams();
     if (next.kind) query.set("kind", next.kind);
+    if (next.category) query.set("category", next.category);
     if (next.tag) query.set("tag", next.tag);
     startTransition(() =>
       router.push(query.size ? `/posts?${query}` : "/posts", { scroll: false }),
@@ -63,9 +69,35 @@ export function PostFilters({ tags }: Readonly<{ tags: readonly TagSummary[] }>)
         orientation="horizontal"
       >
         <RadioGroupItem value="all">全部</RadioGroupItem>
-        <RadioGroupItem value="article">文章</RadioGroupItem>
-        <RadioGroupItem value="note">笔记</RadioGroupItem>
+        {postKinds.map((kind) => (
+          <RadioGroupItem key={kind} value={kind}>
+            {postKindLabels[kind]}
+          </RadioGroupItem>
+        ))}
       </RadioGroup>
+      <div className={styles.tag}>
+        <Select
+          value={current.category ? `category:${current.category}` : "all"}
+          onValueChange={(value) =>
+            navigate({ category: value === "all" ? undefined : value.slice(9) })
+          }
+        >
+          <SelectTrigger aria-label="分类">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">全部分类</SelectItem>
+            {current.category && !categories.includes(current.category) && (
+              <SelectItem value={`category:${current.category}`}>未知分类</SelectItem>
+            )}
+            {categories.map((category) => (
+              <SelectItem key={category} value={`category:${category}`}>
+                {category}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
       <div className={styles.tag}>
         <Select
           value={current.tag ? `tag:${current.tag}` : "all"}
@@ -90,7 +122,7 @@ export function PostFilters({ tags }: Readonly<{ tags: readonly TagSummary[] }>)
           </SelectContent>
         </Select>
       </div>
-      {current.kind || current.tag ? (
+      {current.kind || current.tag || current.category ? (
         <button className={styles.reset} onClick={() => navigate({}, true)}>
           重置
         </button>

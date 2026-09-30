@@ -1,4 +1,5 @@
 export { createContentRepository, type ContentRepositoryOptions } from "./posts";
+export { postKinds, postKindLabels, isPostKind } from "./kinds";
 export {
   postFrontMatterSchema,
   projectFrontMatterSchema,

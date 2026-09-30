@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import type { PostFrontMatter } from "@ting-lab/content";
+import { postKinds, postKindLabels, isPostKind } from "@ting-lab/content/kinds";
 import {
   Button,
   Input,
@@ -19,6 +20,7 @@ import {
   DialogDescription,
 } from "@ting-lab/ui";
 import styles from "./admin.module.scss";
+import { indexStatusLabel } from "./index-status";
 
 export type EditorPost = {
   id: string;
@@ -241,7 +243,9 @@ export function PostEditor({ post }: { post?: EditorPost }) {
       <p>
         {record?.publishedRevision ? "已发布 · 保存修改不会影响线上版本" : "未发布"} ·{" "}
         {busy ? "正在处理" : !record ? "尚未保存" : dirty ? "有未保存修改" : "已保存"} · 索引：
-        {record?.indexStatus ?? "未入队"}
+        <span className={record?.indexStatus === "failed" ? styles.indexFailure : undefined}>
+          {indexStatusLabel(record?.indexStatus)}
+        </span>
       </p>
       {Object.keys(fieldErrors).length > 0 && (
         <div role="alert" className={styles.notice}>
@@ -333,6 +337,7 @@ export function PostEditor({ post }: { post?: EditorPost }) {
             <Input
               required
               maxLength={200}
+              placeholder={metadata.kind === "journal" ? "用简短标题记下这一刻" : undefined}
               id="editor-title"
               aria-invalid={!!fieldErrors.title}
               aria-describedby={fieldErrors.title ? "error-title" : undefined}
@@ -356,6 +361,11 @@ export function PostEditor({ post }: { post?: EditorPost }) {
               <span id="error-description">{fieldErrors.description}</span>
             )}
           </Label>
+          <p>标题与描述必填。内容发布后公开，图片可使用 Markdown 链接。</p>
+          <datalist id="category-suggestions">
+            <option value="技术" />
+            <option value="生活" />
+          </datalist>
           <div className={styles.grid}>
             <Label>
               Slug
@@ -376,14 +386,19 @@ export function PostEditor({ post }: { post?: EditorPost }) {
               <Label htmlFor="editor-kind">类型</Label>
               <Select
                 value={metadata.kind}
-                onValueChange={(value) => field("kind", value === "note" ? "note" : "article")}
+                onValueChange={(value) => {
+                  if (isPostKind(value)) field("kind", value);
+                }}
               >
                 <SelectTrigger id="editor-kind">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="article">文章</SelectItem>
-                  <SelectItem value="note">笔记</SelectItem>
+                  {postKinds.map((kind) => (
+                    <SelectItem key={kind} value={kind}>
+                      {postKindLabels[kind]}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
@@ -392,6 +407,7 @@ export function PostEditor({ post }: { post?: EditorPost }) {
               <Input
                 required
                 maxLength={100}
+                list="category-suggestions"
                 id="editor-category"
                 aria-invalid={!!fieldErrors.category}
                 aria-describedby={fieldErrors.category ? "error-category" : undefined}

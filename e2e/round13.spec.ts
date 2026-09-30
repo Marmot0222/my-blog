@@ -1,7 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 import { mkdir, writeFile } from "node:fs/promises";
 
-const root = "docs/round-13/after";
+const root = "test-results/round13/after";
 async function aligned(page: Page) {
   await expect
     .poll(() =>
@@ -235,14 +235,15 @@ test("real motion samples, exit presence and reduced-motion behavior", async ({
     await page.keyboard.press("Escape");
     await expect(drawer).toHaveCount(0);
     await expect(page).toHaveURL(/\/ai$/);
-    await mkdir("docs/round-13/motion", { recursive: true });
+    await mkdir("test-results/round13/motion", { recursive: true });
     await writeFile(
-      `docs/round-13/motion/samples-${info.project.name}.json`,
+      `test-results/round13/motion/samples-${info.project.name}.json`,
       `${JSON.stringify({ movement, closing }, null, 2)}\n`,
     );
   } finally {
     await context.close();
-    if (video) await video.saveAs(`docs/round-13/motion/interaction-${info.project.name}.webm`);
+    if (video)
+      await video.saveAs(`test-results/round13/motion/interaction-${info.project.name}.webm`);
   }
 });
 
@@ -315,9 +316,9 @@ test("search lock preserves long-page coordinates and short-page width", async (
     }
     records.push({ height, before, during, after });
   }
-  await mkdir("docs/round-13/after", { recursive: true });
+  await mkdir("test-results/round13/after", { recursive: true });
   await writeFile(
-    `docs/round-13/after/scroll-${info.project.name}.json`,
+    `test-results/round13/after/scroll-${info.project.name}.json`,
     `${JSON.stringify(records, null, 2)}\n`,
   );
   await page.emulateMedia({ forcedColors: "active" });

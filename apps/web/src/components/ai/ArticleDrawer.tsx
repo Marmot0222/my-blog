@@ -1,5 +1,6 @@
 "use client";
 
+import { postKindLabels } from "@ting-lab/content/kinds";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Dialog, DialogContent, DialogTitle } from "@ting-lab/ui";
@@ -98,7 +99,7 @@ export function ArticleDrawer({ open, post, status, onClose }: ArticleDrawerProp
           <div>
             {found ? (
               <p className={styles.eyebrow}>
-                {shown.metadata.kind === "article" ? "Article" : "Note"} / {shown.metadata.category}
+                {postKindLabels[shown.metadata.kind]} / {shown.metadata.category}
               </p>
             ) : null}
             <DialogTitle className={styles.title}>

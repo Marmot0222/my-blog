@@ -1,3 +1,4 @@
+import { postKindLabels } from "@ting-lab/content";
 import type { Metadata } from "next";
 import Link from "next/link";
 
@@ -10,7 +11,7 @@ import archive from "./page.module.scss";
 
 const metadata: Metadata = {
   title: "文章",
-  description: "关于前端工程、系统设计与 AI 应用的长期记录。",
+  description: "关于技术、生活与日常思考的长期记录。",
   alternates: { canonical: "/posts" },
   openGraph: { url: "/posts", title: "文章" },
 };
@@ -31,13 +32,18 @@ export default async function PostsPage({ searchParams }: Props) {
   const result = contentRepository.queryPosts({
     kind: first(params.kind),
     tag: first(params.tag),
+    category: first(params.category),
     page: first(params.page),
   });
+  const categories = [
+    ...new Set(contentRepository.getPublishedPosts().map((post) => post.category)),
+  ].sort();
   const tags = contentRepository.getAllTags();
   const selectedTag = tags.find((tag) => tag.slug === result.tag);
   const href = (page: number) => {
     const query = new URLSearchParams();
     if (result.kind) query.set("kind", result.kind);
+    if (result.category) query.set("category", result.category);
     if (result.tag) query.set("tag", result.tag);
     if (page > 1) query.set("page", String(page));
     return `/posts${query.size ? `?${query}` : ""}`;
@@ -48,12 +54,12 @@ export default async function PostsPage({ searchParams }: Props) {
       <main className={`${styles.page} ${archive.page}`}>
         <p className={styles.eyebrow}>Archive / Posts</p>
         <h1 className={styles.title}>文章</h1>
-        <p className={styles.description}>关于前端工程、系统设计与 AI 应用的长期记录。</p>
-        <PostFilters tags={tags} />
+        <p className={styles.description}>关于技术、生活与日常思考的长期记录。</p>
+        <PostFilters tags={tags} categories={categories} />
         <p className={archive.status} role="status">
-          {result.kind === "article" ? "文章" : result.kind === "note" ? "笔记" : "全部内容"} ·{" "}
-          {selectedTag?.label ?? (result.tag ? "未知标签" : "全部标签")} · 共 {result.total} 篇 · 第{" "}
-          {result.page} / {result.pageCount} 页
+          {result.kind ? postKindLabels[result.kind] : "全部内容"} · {result.category ?? "全部分类"}{" "}
+          · {selectedTag?.label ?? (result.tag ? "未知标签" : "全部标签")} · 共 {result.total} 篇 ·
+          第 {result.page} / {result.pageCount} 页
         </p>
         {result.total ? (
           <PostList posts={result.posts} />

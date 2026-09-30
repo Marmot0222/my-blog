@@ -118,7 +118,7 @@ UI Message Stream 协议不变量（实现于 `apps/web/src/lib/chat/stream.ts`�
 
 ## 内容创作与阅读闭环
 
-- `pnpm content:new -- --kind article|note --slug <slug> --title <title>` 调用 content 包 CLI，固定写 `content/posts`，默认草稿，独占写入禁止覆盖；Windows 保留文件名也拒绝。复用 Front Matter schema 与 YAML 序列化。
+- `pnpm content:new -- --kind article|note|journal --slug <slug> --title <title>` 调用 content 包 CLI，固定写 `content/posts`，默认草稿，独占写入禁止覆盖；Windows 保留文件名也拒绝。复用 Front Matter schema 与 YAML 序列化。
 - `ContentRepository.queryPosts` 负责公开内容组合筛选与分页，每页 5 篇，日期倒序、slug 升序。`/posts?kind=note&tag=react&page=2` 使用标签 slug；非法 kind 回全部，未知标签空结果，无效页码回 1，超界夹到末页。前台 Radix 筛选即时更新 URL 并重置分页；后台筛选统一表单提交并重置分页；重复参数取首值。
 - 带查询参数的归档 noindex/follow，canonical 固定 `/posts`，sitemap 不列组合 URL；保留 `/tags`。
 - `getRelatedPosts` 共同标签每项 2 分、同分类 1 分，日期/slug 打破同分，排除自身、草稿、重复和零分，最多 3 篇。
@@ -214,3 +214,11 @@ pnpm deploy:prod
 - 滚动条保持原生和平台宽度，只对真实滚动区设样式。SelectViewport 必须保留长列表可拖动滚动条；forced-colors 优先默认；禁止根 gutter 或第二份滚动条补偿。
 - 视觉验收需保留实际截图及录屏/连续帧，说明环境与缩放方式；历史基线不得被回归测试覆盖，临时产物写 test-results。
 - CROSS_BROWSER=1 的 Firefox 使用 headed 模式实测原生滚动条（Linux CI 需显示服务/Xvfb）；当前 Playwright Firefox headless 会强制隐藏滚动条，不能把该环境冒充覆盖式平台验收。
+
+## 第十四轮内容与后台约束
+
+- kind 的值、显示名和校验集中在 `@ting-lab/content/kinds`（article/note/journal）；客户端只通过该纯模块入口读取，不引入服务端文件读取能力。
+- category 保持独立自由文本，不与 journal 强绑定；公开分类选项只从请求快照的全部已发布内容取得。前台 category 使用 URL 编码完整分类值，tag 保留稳定 slug；后台 category/tag 为完整文本，筛选提交并重置页码，清空保留 pageSize。
+- 内容列表使用数据库摘要分页，不获取正文；字段与操作分组底边对齐并共用 control-height，禁止用坐标补丁。发布状态与索引状态分列，modified_at 才是更新时间。
+- 查看博客仅作顶部/移动快捷操作，新标签页不得触发编辑器离开确认。索引错误保留真实状态，不在 UI 自动修复 Key 或批量重试。
+- 随记沿用草稿、修订、发布、索引、导出契约；本轮 metadata 无 DB enum/check 改动，不新增无意义 migration。生活 fixture 仅进入临时文件或本机 *_test 数据库，不发布到生产。

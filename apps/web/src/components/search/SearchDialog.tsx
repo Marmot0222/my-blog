@@ -1,4 +1,5 @@
 "use client";
+import { postKindLabels } from "@ting-lab/content/kinds";
 
 import type { SearchResult } from "@ting-lab/content";
 import { useRouter } from "next/navigation";
@@ -196,11 +197,7 @@ export function SearchDialog({ open, onClose, returnFocusRef }: SearchDialogProp
                   >
                     <span className={styles.resultMeta}>
                       <span>
-                        {result.type === "project"
-                          ? "项目"
-                          : result.kind === "article"
-                            ? "文章"
-                            : "笔记"}
+                        {result.kind === "project" ? "项目" : postKindLabels[result.kind]}
                       </span>
                       <time dateTime={result.date}>{result.date}</time>
                     </span>

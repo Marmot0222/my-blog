@@ -1,17 +1,20 @@
 import type { PostMetadata } from "./types";
+import { isPostKind } from "./kinds";
 import { comparePostsByDate, tagToSlug } from "./utils";
 
 export const POSTS_PAGE_SIZE = 5;
-export type PostQuery = Readonly<{ kind?: string; tag?: string; page?: string }>;
+export type PostQuery = Readonly<{ kind?: string; category?: string; tag?: string; page?: string }>;
 
 export function queryPosts(posts: readonly PostMetadata[], query: PostQuery = {}) {
-  const kind = query.kind === "article" || query.kind === "note" ? query.kind : undefined;
+  const kind = isPostKind(query.kind) ? query.kind : undefined;
+  const category = query.category || undefined;
   const tag = query.tag || undefined;
   const matches = posts
     .filter(
       (post) =>
         post.published &&
         (!kind || post.kind === kind) &&
+        (!category || post.category === category) &&
         (!tag || post.tags.some((label) => tagToSlug(label) === tag)),
     )
     .sort(comparePostsByDate);
@@ -26,6 +29,7 @@ export function queryPosts(posts: readonly PostMetadata[], query: PostQuery = {}
     page,
     pageCount,
     kind,
+    category,
     tag,
   };
 }

@@ -13,7 +13,7 @@ export const dynamic = "force-dynamic";
 export default async function Home() {
   const contentRepository = await getContentRepository();
   const featuredArticles = contentRepository.getFeaturedPosts().slice(0, 3);
-  const latestNotes = contentRepository.getLatestNotes().slice(0, 3);
+  const latestNotes = contentRepository.getPublishedPosts().slice(0, 3);
   const topics = contentRepository.getAllTags().slice(0, 8);
 
   return (

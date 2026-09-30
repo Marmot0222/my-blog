@@ -63,7 +63,7 @@ export function ExportContent() {
       <DialogContent>
         <DialogTitle>导出内容</DialogTitle>
         <DialogDescription>
-          下载 ting-lab-content-v1 JSON，包含全部文章与笔记各修订的 MDX
+          下载 ting-lab-content-v1 JSON，包含全部文章、笔记与随记各修订的 MDX
           文本，可能包含草稿和回收站。此操作不限于当前筛选或页面，也不是完整数据库备份。
         </DialogDescription>
         <p role="status" className={styles.notice}>

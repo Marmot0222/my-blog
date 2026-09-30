@@ -8,7 +8,7 @@ import { Logout } from "./Logout";
 import styles from "./admin.module.scss";
 const items = [
   { href: "/admin", label: "概览" },
-  { href: "/admin/posts", label: "文章与笔记" },
+  { href: "/admin/posts", label: "内容管理" },
   { href: "/admin/settings/ai", label: "模型配置" },
 ];
 export function AdminShell({ children }: { children: ReactNode }) {
@@ -39,7 +39,6 @@ export function AdminShell({ children }: { children: ReactNode }) {
           {item.label}
         </Link>
       ))}
-      <Link href="/">查看博客</Link>
     </nav>
   );
   return (
@@ -60,17 +59,30 @@ export function AdminShell({ children }: { children: ReactNode }) {
               <DialogContent motion="left" className={styles.sheet} aria-describedby={undefined}>
                 <DialogTitle>管理导航</DialogTitle>
                 {navigation}
+                <div className={styles.shortcuts}>
+                  <p>快捷操作</p>
+                  <Button asChild variant="ghost">
+                    <Link href="/" target="_blank" rel="noopener" onClick={() => setOpen(false)}>
+                      查看博客 ↗
+                    </Link>
+                  </Button>
+                </div>
               </DialogContent>
             </Dialog>
           </div>
           <span>{current?.label ?? "管理"}</span>
           <div className={styles.account}>
+            <Button asChild variant="ghost" className={styles.blogLink}>
+              <Link href="/" target="_blank" rel="noopener">
+                查看博客 ↗
+              </Link>
+            </Button>
             <ThemeControl className={styles.themeButton}>主题</ThemeControl>
             <Logout />
           </div>
         </header>
         <main className={styles.main}>
-          {pathname.startsWith("/admin/posts/") && <Link href={returnTo}>← 返回文章列表</Link>}
+          {pathname.startsWith("/admin/posts/") && <Link href={returnTo}>← 返回内容列表</Link>}
           {children}
         </main>
       </div>

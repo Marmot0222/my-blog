@@ -1,3 +1,4 @@
+import { postKindLabels } from "@ting-lab/content";
 import { tagToSlug } from "@ting-lab/content";
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -94,7 +95,7 @@ export default async function PostPage({ params }: PostPageProps) {
         <article>
           <header className={styles.header}>
             <p className={styles.eyebrow}>
-              {metadata.kind === "article" ? "Article" : "Note"} / {metadata.category}
+              {postKindLabels[metadata.kind]} / {metadata.category}
             </p>
             <h1>{metadata.title}</h1>
             <p className={styles.description}>{metadata.description}</p>

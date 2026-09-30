@@ -32,15 +32,15 @@ test("45 isolated articles: filters, pagination, export and mobile shell", async
   }
   await page.goto(`/admin/posts?q=${prefix}`);
   await expect(page.getByText(/共 45 篇/)).toBeVisible();
-  await expect(page.locator("main li")).toHaveCount(20);
+  await expect(page.locator("main tbody tr")).toHaveCount(20);
   await page.getByRole("link", { name: "下一页", exact: true }).click();
   await expect(page).toHaveURL(/page=2/);
   await page.getByRole("link", { name: "下一页", exact: true }).click();
-  await expect(page.locator("main li")).toHaveCount(5);
+  await expect(page.locator("main tbody tr")).toHaveCount(5);
   await page.getByRole("combobox", { name: "每页条数" }).click();
   await page.getByRole("option", { name: "50", exact: true }).click();
   await page.getByRole("button", { name: "筛选", exact: true }).click();
-  await expect(page.locator("main li")).toHaveCount(45);
+  await expect(page.locator("main tbody tr")).toHaveCount(45);
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.screenshot({
     animations: "disabled",

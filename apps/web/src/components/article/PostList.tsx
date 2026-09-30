@@ -1,3 +1,4 @@
+import { postKindLabels } from "@ting-lab/content";
 import type { PostMetadata } from "@ting-lab/content";
 import Link from "next/link";
 
@@ -27,7 +28,7 @@ export function PostList({
         <li key={post.slug}>
           <article className={styles.item}>
             <div className={styles.meta}>
-              <span>{post.kind === "article" ? "文章" : "笔记"}</span>
+              <span>{postKindLabels[post.kind]}</span>
               <span>{post.category}</span>
               <time dateTime={post.date}>{formatFullDate(post.date)}</time>
               <span>{post.readingTime}</span>

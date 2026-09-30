@@ -7,6 +7,10 @@
     ".": {
       "types": "./src/index.ts",
       "default": "./src/index.ts"
+    },
+    "./kinds": {
+      "types": "./src/kinds.ts",
+      "default": "./src/kinds.ts"
     }
   },
   "scripts": {

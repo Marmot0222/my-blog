@@ -4,6 +4,7 @@ import { parseArgs } from "node:util";
 import matter from "gray-matter";
 import { postFrontMatterSchema } from "./schema";
 import { isSafeSlug } from "./utils";
+import { isPostKind, postKinds } from "./kinds";
 
 export function createPostDraft(postsDirectory: string, args: string[], now = new Date()): string {
   const { values } = parseArgs({
@@ -15,23 +16,25 @@ export function createPostDraft(postsDirectory: string, args: string[], now = ne
   if (!slug || !isSafeSlug(slug) || /^(con|prn|aux|nul|com[0-9]|lpt[0-9])$/.test(slug)) {
     throw new Error("--slug 必须是 URL 安全的小写英文 slug，且不能是 Windows 保留文件名");
   }
-  if ((kind !== "article" && kind !== "note") || !title?.trim()) {
-    throw new Error("请提供 --kind article|note 和非空 --title");
+  if (!isPostKind(kind) || !title?.trim()) {
+    throw new Error(`请提供 --kind ${postKinds.join("|")} 和非空 --title`);
   }
   const metadata = postFrontMatterSchema.parse({
     title,
     kind,
     description: "待补充：用一句话概括本文。",
     date: now.toISOString().slice(0, 10),
-    tags: ["工程化"],
-    category: "工程实践",
+    tags: [kind === "journal" ? "日常" : "工程化"],
+    category: kind === "journal" ? "生活" : "工程实践",
     published: false,
     featured: false,
   });
   const sections =
     kind === "article"
       ? ["问题背景", "约束", "尝试", "方案", "验证", "局限"]
-      : ["问题", "记录", "下一步"];
+      : kind === "journal"
+        ? ["今日记录", "感想"]
+        : ["问题", "记录", "下一步"];
   const body = sections
     .map((heading) => `## ${heading}\n\n待填写：${heading}相关的真实记录。`)
     .join("\n\n");

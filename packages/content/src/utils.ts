@@ -10,6 +10,13 @@ const knownTagSlugs = new Map<string, string>([
   ["工程化", "engineering"],
   ["数据结构与算法", "data-structures-and-algorithms"],
   ["前端工程", "frontend-engineering"],
+  ["日常", "daily"],
+  ["记录", "records"],
+  ["旅行", "travel"],
+  ["健身", "fitness"],
+  ["吉他", "guitar"],
+  ["读书", "reading"],
+  ["前端", "frontend"],
 ]);
 
 export function isSafeSlug(value: string): boolean {

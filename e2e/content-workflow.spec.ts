@@ -3,6 +3,8 @@ import { writeFileSync, unlinkSync } from "node:fs";
 import path from "node:path";
 
 test("深色窄屏阅读目录、代码与相关阅读", async ({ page }) => {
+  // Headed Firefox cold window/navigation initialization can exceed 30 seconds.
+  test.setTimeout(60000);
   await page.setViewportSize({ width: 360, height: 800 });
   await page.emulateMedia({ colorScheme: "dark" });
   await page.goto("/posts/nextjs-concurrent-rendering");
@@ -64,5 +66,48 @@ test("真实未发布文件不会暴露给生产详情、预览或搜索", async
     }
   } finally {
     unlinkSync(target);
+  }
+});
+
+test("随记 file 模式：组合分页、历史恢复和草稿分类隔离", async ({ page, request }) => {
+  const prefix = `e2e-journal-${process.pid}`;
+  const targets: string[] = [];
+  try {
+    for (let index = 0; index < 9; index++) {
+      const slug = `${prefix}-${index}`;
+      const target = path.resolve("content/posts", slug + ".mdx");
+      const category = index === 8 ? "未公开主题" : index === 7 ? "技术" : "生活";
+      writeFileSync(
+        target,
+        `---\ntitle: ${slug}\ndescription: Isolated journal fixture\ndate: "2026-09-30"\ntags: [${prefix}]\ncategory: ${category}\npublished: ${index !== 8}\nkind: ${index === 6 ? "article" : "journal"}\n---\n## 记录\n\n测试随记。`,
+        { flag: "wx" },
+      );
+      targets.push(target);
+    }
+    await page.goto(
+      `/posts?kind=journal&category=${encodeURIComponent("生活")}&tag=${prefix}&page=2`,
+    );
+    await expect(page.getByRole("status")).toContainText("共 6 篇");
+    await expect(page.getByRole("status")).toContainText("2 / 2");
+    await expect(page.locator("main article")).toHaveCount(1);
+    await page.reload();
+    await expect(page.getByRole("status")).toContainText("2 / 2");
+    await page.getByRole("combobox", { name: "分类", exact: true }).click();
+    await expect(page.getByRole("option", { name: "未公开主题", exact: true })).toHaveCount(0);
+    await page.getByRole("option", { name: "技术", exact: true }).click();
+    await expect(page.getByRole("status")).toContainText("共 1 篇");
+    await expect(page).not.toHaveURL(/page=/);
+    await page.goBack();
+    await expect(page.getByRole("status")).toContainText("2 / 2");
+    await page.goForward();
+    await expect(page.getByRole("status")).toContainText("共 1 篇");
+    await page.getByRole("radio", { name: "文章", exact: true }).click();
+    await expect(page.getByRole("status")).toContainText("共 0 篇");
+    await page.goto(`/posts?category=${encodeURIComponent("未知分类")}`);
+    await expect(page.getByRole("status")).toContainText("共 0 篇");
+    for (const url of ["/", "/posts", "/feed.xml", "/sitemap.xml", `/api/search?q=${prefix}`])
+      expect(await (await request.get(url)).text()).not.toContain(prefix + "-8");
+  } finally {
+    for (const target of targets) unlinkSync(target);
   }
 });

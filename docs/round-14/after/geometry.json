@@ -1,0 +1,236 @@
+[
+  {
+    "zoom": 1,
+    "boxes": [
+      {
+        "label": "",
+        "rect": {
+          "x": 305.59375,
+          "y": 320.21875,
+          "width": 186.796875,
+          "height": 44,
+          "top": 320.21875,
+          "right": 492.390625,
+          "bottom": 364.21875,
+          "left": 305.59375
+        },
+        "parentAlign": "normal"
+      },
+      {
+        "label": "全部",
+        "rect": {
+          "x": 504.390625,
+          "y": 320.21875,
+          "width": 138.8125,
+          "height": 44,
+          "top": 320.21875,
+          "right": 643.203125,
+          "bottom": 364.21875,
+          "left": 504.390625
+        },
+        "parentAlign": "normal"
+      },
+      {
+        "label": "全部",
+        "rect": {
+          "x": 655.203125,
+          "y": 320.21875,
+          "width": 138.796875,
+          "height": 44,
+          "top": 320.21875,
+          "right": 794,
+          "bottom": 364.21875,
+          "left": 655.203125
+        },
+        "parentAlign": "normal"
+      },
+      {
+        "label": "全部",
+        "rect": {
+          "x": 806,
+          "y": 320.21875,
+          "width": 138.8125,
+          "height": 44,
+          "top": 320.21875,
+          "right": 944.8125,
+          "bottom": 364.21875,
+          "left": 806
+        },
+        "parentAlign": "normal"
+      },
+      {
+        "label": "全部",
+        "rect": {
+          "x": 956.8125,
+          "y": 320.21875,
+          "width": 138.8125,
+          "height": 44,
+          "top": 320.21875,
+          "right": 1095.625,
+          "bottom": 364.21875,
+          "left": 956.8125
+        },
+        "parentAlign": "normal"
+      },
+      {
+        "label": "20",
+        "rect": {
+          "x": 1107.625,
+          "y": 320.21875,
+          "width": 138.8125,
+          "height": 44,
+          "top": 320.21875,
+          "right": 1246.4375,
+          "bottom": 364.21875,
+          "left": 1107.625
+        },
+        "parentAlign": "normal"
+      },
+      {
+        "label": "筛选",
+        "rect": {
+          "x": 1258.4375,
+          "y": 320.21875,
+          "width": 57.984375,
+          "height": 44,
+          "top": 320.21875,
+          "right": 1316.421875,
+          "bottom": 364.21875,
+          "left": 1258.4375
+        },
+        "parentAlign": "center"
+      },
+      {
+        "label": "清空",
+        "rect": {
+          "x": 1324.421875,
+          "y": 320.21875,
+          "width": 57.984375,
+          "height": 44,
+          "top": 320.21875,
+          "right": 1382.40625,
+          "bottom": 364.21875,
+          "left": 1324.421875
+        },
+        "parentAlign": "center"
+      }
+    ]
+  },
+  {
+    "zoom": 1.25,
+    "boxes": [
+      {
+        "label": "",
+        "rect": {
+          "x": 382,
+          "y": 399.796875,
+          "width": 201.828125,
+          "height": 55,
+          "top": 399.796875,
+          "right": 583.828125,
+          "bottom": 454.796875,
+          "left": 382
+        },
+        "parentAlign": "normal"
+      },
+      {
+        "label": "全部",
+        "rect": {
+          "x": 598.828125,
+          "y": 399.796875,
+          "width": 141.84375,
+          "height": 55,
+          "top": 399.796875,
+          "right": 740.671875,
+          "bottom": 454.796875,
+          "left": 598.828125
+        },
+        "parentAlign": "normal"
+      },
+      {
+        "label": "全部",
+        "rect": {
+          "x": 755.671875,
+          "y": 399.796875,
+          "width": 141.828125,
+          "height": 55,
+          "top": 399.796875,
+          "right": 897.5,
+          "bottom": 454.796875,
+          "left": 755.671875
+        },
+        "parentAlign": "normal"
+      },
+      {
+        "label": "全部",
+        "rect": {
+          "x": 912.5,
+          "y": 399.796875,
+          "width": 141.84375,
+          "height": 55,
+          "top": 399.796875,
+          "right": 1054.34375,
+          "bottom": 454.796875,
+          "left": 912.5
+        },
+        "parentAlign": "normal"
+      },
+      {
+        "label": "全部",
+        "rect": {
+          "x": 1069.34375,
+          "y": 399.796875,
+          "width": 141.828125,
+          "height": 55,
+          "top": 399.796875,
+          "right": 1211.171875,
+          "bottom": 454.796875,
+          "left": 1069.34375
+        },
+        "parentAlign": "normal"
+      },
+      {
+        "label": "20",
+        "rect": {
+          "x": 1226.171875,
+          "y": 399.796875,
+          "width": 141.828125,
+          "height": 55,
+          "top": 399.796875,
+          "right": 1368,
+          "bottom": 454.796875,
+          "left": 1226.171875
+        },
+        "parentAlign": "normal"
+      },
+      {
+        "label": "筛选",
+        "rect": {
+          "x": 382,
+          "y": 474.796875,
+          "width": 72,
+          "height": 55,
+          "top": 474.796875,
+          "right": 454,
+          "bottom": 529.796875,
+          "left": 382
+        },
+        "parentAlign": "center"
+      },
+      {
+        "label": "清空",
+        "rect": {
+          "x": 464,
+          "y": 474.796875,
+          "width": 72,
+          "height": 55,
+          "top": 474.796875,
+          "right": 536,
+          "bottom": 529.796875,
+          "left": 464
+        },
+        "parentAlign": "center"
+      }
+    ]
+  }
+]

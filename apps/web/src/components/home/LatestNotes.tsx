@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import type { PostMetadata } from "@ting-lab/content";
+import { postKindLabels, type PostMetadata } from "@ting-lab/content";
 
 import { formatMonthDay } from "@/lib/format-date";
 
@@ -23,21 +23,24 @@ export function LatestNotes({ notes }: LatestNotesProps) {
   return (
     <div className={styles.block}>
       <div className={styles.titleRow}>
-        <h2>最新笔记</h2>
-        <span>NOTES</span>
+        <h2>最新内容</h2>
+        <span>RECENT</span>
       </div>
       <ul>
         {notes.map((note) => (
-          <li key={note.title}>
+          <li key={note.slug}>
             <NoteIcon />
-            <Link href={`/posts/${note.slug}`}>{note.title}</Link>
+            <Link href={`/posts/${note.slug}`}>
+              {note.title}
+              <small> · {postKindLabels[note.kind]}</small>
+            </Link>
             <time dateTime={note.date}>{formatMonthDay(note.date)}</time>
           </li>
         ))}
       </ul>
-      {notes.length === 0 ? <p className={styles.empty}>暂无笔记。</p> : null}
-      <Link className={styles.more} href="/posts?kind=note">
-        查看全部笔记 <span aria-hidden="true">→</span>
+      {notes.length === 0 ? <p className={styles.empty}>暂无内容。</p> : null}
+      <Link className={styles.more} href="/posts">
+        查看全部内容 <span aria-hidden="true">→</span>
       </Link>
     </div>
   );

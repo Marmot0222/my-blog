@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { postKinds } from "./kinds";
 
 const isoDatePattern = /^\d{4}-\d{2}-\d{2}$/;
 
@@ -33,7 +34,7 @@ export const postFrontMatterSchema = z
     category: requiredText,
     published: z.boolean(),
     featured: z.boolean().default(false),
-    kind: z.enum(["article", "note"]),
+    kind: z.enum(postKinds),
     visual: z.enum(["interface", "system", "code"]).optional(),
   })
   .strict();

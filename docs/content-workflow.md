@@ -76,3 +76,15 @@ docker compose --env-file .env.production -f compose.prod.yml run --rm indexer
 筛选及分页 URL 统一 canonical `/posts`，带查询参数时 noindex/follow；sitemap 不生成组合 URL，原 `/tags` 路由保留。相关阅读共同标签每项 2 分、相同分类 1 分，同分按日期倒序及 slug 升序；排除自身、草稿、重复项及零分项，最多 3 篇。
 
 验收顺序：创建草稿并预览 → 内容校验 → 筛选文章/笔记和标签 → 翻页、刷新、前进后退 → 打开相关阅读 → 确认生产预览 404。单元测试使用临时目录，浏览器测试使用现有公开内容，不添加虚构公开文章；AI 回归只使用 fake stream。
+
+## 第十四轮：随记与分类
+
+内容形式由 `@ting-lab/content/kinds` 集中定义：`article` 文章、`note` 笔记、`journal` 随记。分类仍为必填自由文本，编辑器提供“技术/生活”建议，也允许自定义；切换形式不覆盖分类、正文或标签。标题、描述及至少一个标签仍必填，所有形式发布后公开。
+
+`pnpm content:new -- --kind journal --slug evening-light --title "傍晚的光"` 创建 file 模式草稿；默认生活分类可自行修改。常用生活标签日常、记录、旅行、健身、吉他、读书已有稳定 slug 映射，其余标签仍遵循原有校验规则。
+
+公开归档参数：`kind` 使用形式值，`category` 使用完整分类文本（通过 URLSearchParams 编码），`tag` 使用已有标签 slug，`page` 每页 5 篇。四者组合筛选；修改任一筛选重置页码；未知分类/标签为空结果，非法 kind 回全部；重复参数取首值。分类选项来自全部已发布内容，不取当前分页，不包含草稿或数据库 working revision。
+
+数据库 kind/category 都在 revision metadata 中，没有新增列或枚举约束，因此本轮无需 SQL migration。API、file 读取、公开快照、搜索、RSS、sitemap、相关文章及索引沿用原有管线。新版本兼容原 article/note 内容与历史修订；旧版本 schema 不识别 journal，回退旧程序前必须考虑该限制，不能直接读取含随记的内容库。
+
+导出格式仍为 ting-lab-content-v1，保留每条修订、working/published revision、删除标志及完整 metadata。测试验证导出 MDX 经 file repository 和现有 importBatch 保留 journal/category。现有首次导入是内容导入，不是全量数据库恢复：恢复 UUID、历史修订、账户与会话仍需数据库备份，不能把逐份 MDX 导入冒充完整恢复。

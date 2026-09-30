@@ -8,7 +8,7 @@ export default async function AdminPage() {
   return (
     <>
       <h1>内容工作台</h1>
-      <p>管理文章、笔记和模型配置。</p>
+      <p>管理文章、笔记、随记和模型配置。</p>
       <div className={styles.notice}>
         <p>
           {rows.filter((row) => !row.deleted_at).length} 篇内容 ·{" "}
